@@ -33,11 +33,11 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app); 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL as string || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL as string || 'https://my-health-2025.vercel.app',
     credentials: true
   }
 });
-setupSocket(io, container); 
+setupSocket(io, container);  
 
 
 app.use(cors({

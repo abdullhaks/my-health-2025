@@ -36,19 +36,18 @@ export default class UserAuthController implements IUserAuthCtrl {
 
 
       res.cookie("userRefreshToken", result.refreshToken, {
-          httpOnly: true,
-          sameSite: "strict",
-          secure: false, 
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        httpOnly: true,
+        sameSite: "none",   // allow cross-site
+        secure: true,       // only over HTTPS
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
-        
-        res.cookie("userAccessToken", result.accessToken, {
-          httpOnly: true,
-          sameSite: "strict",
-          secure: false, 
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        }); 
+      res.cookie("userAccessToken", result.accessToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
        res.status(HttpStatusCode.OK).json({message:result.message,user:result.user});
     } catch (error) {
@@ -83,17 +82,17 @@ export default class UserAuthController implements IUserAuthCtrl {
         console.log("log out ............ ctrl....")
       res.clearCookie("userRefreshToken", {
         httpOnly: true,
-        sameSite: "strict",
-        secure: false, 
+        sameSite: "none",
+        secure: true,
       });
 
-      res.clearCookie("userAccessToken" , {
+      res.clearCookie("userAccessToken", {
         httpOnly: true,
-        sameSite: "strict",
-        secure: false, 
+        sameSite: "none",
+        secure: true,
       });
 
-       res.status(HttpStatusCode.OK)
+      res.status(HttpStatusCode.OK).json({ msg: "Logged out successfully" });
 
     } catch (error) {
       console.log(error);
@@ -261,12 +260,12 @@ export default class UserAuthController implements IUserAuthCtrl {
 
       console.log("result from ctrl is afrt destructr...", accessToken);
 
-      res.cookie("userAccessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: false, 
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+     res.cookie("userAccessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
        res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
