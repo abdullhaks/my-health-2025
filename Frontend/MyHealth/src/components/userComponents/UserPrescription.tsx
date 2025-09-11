@@ -5,7 +5,7 @@ import { ArrowLeft, Download, Pill, Calendar, User, FileText } from "lucide-reac
 import moment from "moment";
 import { jsPDF } from "jspdf";
 import { getPrescription } from "../../api/user/userApi";
-import appLogoblue from "../../assets/appLogoblue.png";
+import appLogoblue from "../../assets/applogoblue.png";
 
 interface Prescription {
   _id: string;
