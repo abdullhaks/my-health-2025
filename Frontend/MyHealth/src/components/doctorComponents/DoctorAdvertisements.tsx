@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, memo } from 'react';
-import { FaEdit, FaTrash, FaEye, FaHeart, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaEye, FaPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { 
     getAdds,
@@ -10,7 +10,7 @@ import { advertisement } from '../../interfaces/advertisement';
 import { IDoctorData } from '../../interfaces/doctor';
 
 // Blog Card Component
-const AddCard = memo(({ add, onView, onEdit, onDelete }: {
+const AddCard = memo(({ add,onEdit, onDelete }: {
   add: advertisement;
   onView: (add: advertisement) => void;
   onEdit: (add: advertisement) => void;
@@ -75,7 +75,6 @@ const DoctorAdds = () => {
 
   const Doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
   const [adds, setAdds] = useState<advertisement[]>([]);
-  const [selectedAdd,setSelectedAdd] = useState(null)
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState<string | null>(null);
@@ -110,7 +109,7 @@ const DoctorAdds = () => {
     navigate('/doctor/advertisement-create', { state: { add } });
   }, [navigate]);
 
-  const handleDeleteAdd = useCallback(async (addId: string) => {
+  const handleDeleteAdd = useCallback(async () => {
     if (window.confirm('Are you sure you want to delete this add?')) {
       try {
         // await deleteAdd(addId);

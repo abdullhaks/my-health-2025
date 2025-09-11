@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, memo } from 'react';
-import { FaEdit, FaTrash, FaEye, FaHeart, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaEye,FaPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { getBlogs,
   //  deleteBlog 
@@ -74,7 +74,6 @@ const DoctorBlogs = () => {
 
   const Doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
   const [blogs, setBlogs] = useState<blogCreate[]>([]);
-  const [selectedBlog,setSelectedBlog] = useState(null)
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +108,7 @@ const DoctorBlogs = () => {
     navigate('/doctor/blog-create-edit', { state: { blog } });
   }, [navigate]);
 
-  const handleDeleteBlog = useCallback(async (blogId: string) => {
+  const handleDeleteBlog = useCallback(async (/*blogId: string*/) => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
       try {
         // await deleteBlog(blogId);

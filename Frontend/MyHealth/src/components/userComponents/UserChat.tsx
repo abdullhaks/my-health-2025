@@ -43,10 +43,10 @@ const UserChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [docMessage, setDocMessage] = useState<File | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [typingUser, setTypingUser] = useState<string | null>(null);
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string>("");
+  // const [selectedUser, setSelectedUser] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
@@ -404,27 +404,27 @@ useEffect(() => {
     }
   };
 
-  const handleCreateConversation = async () => {
-    if (!selectedUser) {
-      message.error("Please select a user to start a conversation");
-      return;
-    }
+  // const handleCreateConversation = async () => {
+  //   if (!selectedUser) {
+  //     message.error("Please select a user to start a conversation");
+  //     return;
+  //   }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/api/user/conversation",
-        { userIds: [userId, selectedUser] },
-        { withCredentials: true }
-      );
-      const newConversation = response.data;
-      setConversations((prev) => [...prev, newConversation]);
-      setCurrentChat(newConversation);
-      setSelectedUser("");
-    } catch (error) {
-      console.error("Failed to create conversation:", error);
-      message.error("Failed to create conversation. Please try again.");
-    }
-  };
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:3000/api/user/conversation",
+  //       { userIds: [userId, selectedUser] },
+  //       { withCredentials: true }
+  //     );
+  //     const newConversation = response.data;
+  //     setConversations((prev) => [...prev, newConversation]);
+  //     setCurrentChat(newConversation);
+  //     setSelectedUser("");
+  //   } catch (error) {
+  //     console.error("Failed to create conversation:", error);
+  //     message.error("Failed to create conversation. Please try again.");
+  //   }
+  // };
 
   const handleTyping = () => {
     if (!currentChat || !socketRef.current) return;

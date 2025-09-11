@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
-  FaHome, FaUserFriends, FaCalendarCheck, FaComments, FaChartBar,
+  FaHome,FaCalendarCheck, FaComments,
   FaSignOutAlt, FaBars, FaTimes, FaChevronLeft, FaChevronRight,
   FaSearch, FaBell, FaCalendarAlt, FaUser, FaBlog, FaCreditCard,
   FaPlus, FaUsers, FaInfoCircle
@@ -44,13 +44,13 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showSubscription, setShowSubscription] = useState(false);
+  const [/*showSubscription*/, setShowSubscription] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const notificationRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  const limit = 10;
+  // const limit = 10;
   const [notificationSet, setNotificationSet] = useState(1);
 
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
@@ -147,7 +147,7 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
         }
       });
 
-      socket.on("notification", (notification: Notification) => {
+      socket.on("notification", (/*notification: Notification*/) => {
 
         fetchNotifications();
         // setNotifications((prev) => {
@@ -357,7 +357,7 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
         <Link
           to={isPremiumOnly ? "/doctor/plans" : item.path}
           key={index}
-          onClick={(e) => {
+          onClick={() => {
             if (isPremiumOnly) {
               setShowSubscription(true);
             }

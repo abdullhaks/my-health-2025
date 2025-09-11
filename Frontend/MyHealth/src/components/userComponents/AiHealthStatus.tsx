@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react"; 
 import { FaHeartbeat, FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { GoogleGenerativeAI } from "@google/generative-ai"; 
-import { ApiError } from "../../interfaces/error";
 
 const AiHealthStatusGenerator = () => {
   const [height, setHeight] = useState<string>("");

@@ -25,13 +25,13 @@ interface FormErrors {
 }
 
 // Define interface for API response and error
-interface ForgetPasswordResponse {
-  email: string;
-}
+// interface ForgetPasswordResponse {
+//   email: string;
+// }
 
-interface ApiErrorResponse {
-  msg?: string;
-}
+// interface ApiErrorResponse {
+//   msg?: string;
+// }
 
 function AdminForgetPassword() {
   const navigate = useNavigate();

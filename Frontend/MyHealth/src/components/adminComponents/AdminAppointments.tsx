@@ -72,20 +72,20 @@ const AdminAppointments = () => {
       title: "Patient",
       dataIndex: "userName",
       key: "userName",
-      render: (text: string, record: Appointment) => `${record.userName}`,
+      render: ( record: Appointment) => `${record.userName}`,
     },
     {
       title: "Doctor",
       dataIndex: "doctorName",
       key: "doctorName",
-      render: (text: string, record: Appointment) => `Dr.${record.doctorName}`,
+      render: ( record: Appointment) => `Dr.${record.doctorName}`,
     },
 
     {
       title: "Date & Time",
       dataIndex: "date",
       key: "date",
-      render: (text: string, record: Appointment) =>
+      render: ( record: Appointment) =>
         `${moment(record.date).format("MMM DD, YYYY")} ${moment(record.start).format("h:mm A")}`,
     },
 

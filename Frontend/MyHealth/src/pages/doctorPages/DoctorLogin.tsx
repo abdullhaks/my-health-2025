@@ -11,7 +11,6 @@ import { useDispatch } from "react-redux";
 import { loginDoctor as login, logoutDoctor } from "../../redux/slices/doctorSlices";
 import toast from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
-import { AxiosError } from "axios"; // Import AxiosError
 import { ApiError } from "../../interfaces/error";
 
 // Define the validation schema
@@ -31,22 +30,21 @@ interface FormErrors {
   password: string;
 }
 
-interface Doctor {
-  email: string;
-  isVerified: boolean;
-  isBlocked: boolean;
-  adminVerified: number;
-  // Add other doctor properties as needed
-}
+// interface Doctor {
+//   email: string;
+//   isVerified: boolean;
+//   isBlocked: boolean;
+//   adminVerified: number;
+// }
 
-interface LoginDoctorResponse {
-  doctor: Doctor;
-  message?: string;
-}
+// interface LoginDoctorResponse {
+//   doctor: Doctor;
+//   message?: string;
+// }
 
-interface ApiErrorResponse {
-  msg?: string;
-}
+// interface ApiErrorResponse {
+//   msg?: string;
+// }
 
 function DoctorLogin() {
   const navigate = useNavigate();

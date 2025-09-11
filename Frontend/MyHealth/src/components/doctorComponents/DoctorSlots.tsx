@@ -36,11 +36,11 @@ import {sessionData as Session}  from "../../interfaces/session"
 import { IDoctorData } from "../../interfaces/doctor";
 
 
-interface Appointment {
-  _id: string;
-  slotId: string;
-  status: "booked" | "cancelled" | "completed" | "pending" | "confirmed";
-}
+// interface Appointment {
+//   _id: string;
+//   slotId: string;
+//   status: "booked" | "cancelled" | "completed" | "pending" | "confirmed";
+// }
 
 interface AppointmentSlot {
   id: string;

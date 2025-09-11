@@ -12,7 +12,6 @@ import { useDispatch } from "react-redux";
 import { loginAdmin as login, logoutAdmin } from "../../redux/slices/adminSlices";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AxiosError } from "axios"; // Import AxiosError
 import { ApiError } from "../../interfaces/error";
 
 // Define the validation schema
@@ -32,10 +31,10 @@ interface FormErrors {
   password: string;
 }
 
-// Define interface for API error response
-interface ApiErrorResponse {
-  msg?: string;
-}
+// // Define interface for API error response
+// interface ApiErrorResponse {
+//   msg?: string;
+// }
 
 function AdminLogin() {
   const navigate = useNavigate();

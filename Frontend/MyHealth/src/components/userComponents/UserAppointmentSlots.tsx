@@ -34,7 +34,7 @@ const UserAppointmentSlots = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [appointmentSlots, setAppointmentSlots] = useState<AppointmentSlot[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [bookingStatus, setBookingStatus] = useState<"idle" | "booking" | "success" | "error">("idle");
+  const [bookingStatus, /*setBookingStatus*/] = useState<"idle" | "booking" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [bookedSlots, setBookedSlots] = useState<string[]>([]); 
   const [unAvailableDays, setUnAvailableDays] = useState<string[]>([]);

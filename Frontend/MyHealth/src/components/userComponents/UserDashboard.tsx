@@ -55,7 +55,7 @@ const UserDashboard = () => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const navigate = useNavigate();
   const user = useSelector((state: IUserData) => state.user.user);
-  const [location, setLocation] = useState<{
+  const [/*location*/, setLocation] = useState<{
         latitude: number,
         longitude:number,
       } | null >(null);

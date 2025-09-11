@@ -30,14 +30,14 @@ interface FormErrors {
   recPass: string;
 }
 
-// Define interface for API response and error
-interface VerifyResponse {
-  msg: string;
-}
+// // Define interface for API response and error
+// interface VerifyResponse {
+//   msg: string;
+// }
 
-interface ApiErrorResponse {
-  msg?: string;
-}
+// interface ApiErrorResponse {
+//   msg?: string;
+// }
 
 function AdminRecoveryPassword() {
   const navigate = useNavigate();

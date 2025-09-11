@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, message } from "antd";
+import { Button } from "antd";
 import { ArrowLeft, Download, Pill, Calendar, User, FileText } from "lucide-react";
 import moment from "moment";
 import { jsPDF } from "jspdf";
@@ -41,7 +41,7 @@ const UserPrescriptionDetails = () => {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const logoUrl = "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png";
+  // const logoUrl = "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png";
 
   const fetchPrescription = async () => {
     try {

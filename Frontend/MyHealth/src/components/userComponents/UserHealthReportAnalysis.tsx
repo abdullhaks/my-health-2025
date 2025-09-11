@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,8 +19,8 @@ const UserHealthReportAnalysis = () => {
   const [concerns, setConcerns] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [reports, setReports] = useState<reportAnalysisData[]>([]);
-  const [loadingReports, setLoadingReports] = useState(false);
+  const [reports, /*setReports*/] = useState<reportAnalysisData[]>([]);
+  const [loadingReports, /*setLoadingReports*/] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
   const maxFiles = 5;
   const maxFileSize = 5 * 1024 * 1024; // 5MB per file
@@ -164,42 +163,42 @@ const UserHealthReportAnalysis = () => {
     }
   };
 
-  const handleUpload = async (sessionId: string) => {
-    try {
-      setUploading(true);
-      const uploadPromises = files.map(async (file) => {
-        const { data } = await axios.post(
-          "/api/upload/s3-presigned-url",
-          { fileName: file.name, fileType: file.type },
-          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-        );
-        await axios.put(data.url, file, { headers: { "Content-Type": file.type } });
-        return data.key;
-      });
+  // const handleUpload = async (sessionId: string) => {
+  //   try {
+  //     setUploading(true);
+  //     const uploadPromises = files.map(async (file) => {
+  //       const { data } = await axios.post(
+  //         "/api/upload/s3-presigned-url",
+  //         { fileName: file.name, fileType: file.type },
+  //         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  //       );
+  //       await axios.put(data.url, file, { headers: { "Content-Type": file.type } });
+  //       return data.key;
+  //     });
 
-      const s3Keys = await Promise.all(uploadPromises);
+  //     const s3Keys = await Promise.all(uploadPromises);
 
-      // Save report data to database
-      const { data: report } = await axios.post(
-        "/api/user/reports",
-        {
-          doctorId: doctor._id,
-          concerns,
-          documents: s3Keys,
-          stripeSessionId: sessionId,
-        },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
+  //     // Save report data to database
+  //     const { data: report } = await axios.post(
+  //       "/api/user/reports",
+  //       {
+  //         doctorId: doctor._id,
+  //         concerns,
+  //         documents: s3Keys,
+  //         stripeSessionId: sessionId,
+  //       },
+  //       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+  //     );
 
-      setReports([...reports, report]);
-      setConcerns("");
-      setFiles([]);
-    } catch (error) {
-      toast.error("Failed to upload report.");
-    } finally {
-      setUploading(false);
-    }
-  };
+  //     setReports([...reports, report]);
+  //     setConcerns("");
+  //     setFiles([]);
+  //   } catch (error) {
+  //     toast.error("Failed to upload report.");
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
 
   if (!doctor) return null;
 

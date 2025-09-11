@@ -191,7 +191,7 @@ const AdminPayouts = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (text: string, record: Transaction) => {
+      render: (record: Transaction) => {
         if (record.status === 'requested') {
           return (
             <div className="flex gap-2">

@@ -28,8 +28,8 @@ interface EditDoctorProfileModalProps {
 
 const EditDoctorProfileModal = ({ isOpen, onClose, onSave, initialData }: EditDoctorProfileModalProps) => {
   const [formData, setFormData] = useState<DoctorProfileData>(initialData);
-  const [specializationInput, setSpecializationInput] = useState<string>("");
-  const [certificateInput, setCertificateInput] = useState<string>("");
+  const [/*specializationInput*/, setSpecializationInput] = useState<string>("");
+  const [/*certificateInput*/, setCertificateInput] = useState<string>("");
   const [errors, setErrors] = useState<{ [key: string]: string | undefined }>({});
 
   useEffect(() => {
@@ -100,30 +100,30 @@ const EditDoctorProfileModal = ({ isOpen, onClose, onSave, initialData }: EditDo
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleAddSpecialization = () => {
-    if (!specializationInput.trim() || !certificateInput.trim()) {
-      setErrors((prev) => ({
-        ...prev,
-        specializationInput: !specializationInput.trim() ? "Specialization title is required" : undefined,
-        certificateInput: !certificateInput.trim() ? "Certificate is required" : undefined,
-      }));
-      return;
-    }
-    setFormData((prev) => ({
-      ...prev,
-      specializations: [...(prev.specializations || []), { title: specializationInput, certificate: certificateInput }],
-    }));
-    setSpecializationInput("");
-    setCertificateInput("");
-    setErrors((prev) => ({ ...prev, specializationInput: undefined, certificateInput: undefined }));
-  };
+  // const handleAddSpecialization = () => {
+  //   if (!specializationInput.trim() || !certificateInput.trim()) {
+  //     setErrors((prev) => ({
+  //       ...prev,
+  //       specializationInput: !specializationInput.trim() ? "Specialization title is required" : undefined,
+  //       certificateInput: !certificateInput.trim() ? "Certificate is required" : undefined,
+  //     }));
+  //     return;
+  //   }
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     specializations: [...(prev.specializations || []), { title: specializationInput, certificate: certificateInput }],
+  //   }));
+  //   setSpecializationInput("");
+  //   setCertificateInput("");
+  //   setErrors((prev) => ({ ...prev, specializationInput: undefined, certificateInput: undefined }));
+  // };
 
-  const handleRemoveSpecialization = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      specializations: prev.specializations?.filter((_, i) => i !== index) || [],
-    }));
-  };
+  // const handleRemoveSpecialization = (index: number) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     specializations: prev.specializations?.filter((_, i) => i !== index) || [],
+  //   }));
+  // };
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string | undefined } = {};

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import PeerService, { initializeSocket } from "../services/peerServices";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { Button, Tooltip, Input, List, Avatar, Modal, Form, Select, DatePicker, Tabs ,message as antAlert, Card, Badge, Divider, Tag, Space, Timeline, Descriptions } from "antd";
+import { Button, Tooltip, Input, List,Modal, Form,Tabs ,message as antAlert, Card, Badge,Tag,Timeline, Descriptions } from "antd";
 import {AudioOutlined,AudioMutedOutlined,VideoCameraOutlined, VideoCameraFilled,PhoneOutlined,
-  MessageOutlined, SendOutlined,SnippetsOutlined,PlusOutlined,MinusCircleOutlined, UserOutlined, CalendarOutlined, MedicineBoxOutlined, AlertOutlined, HistoryOutlined} from '@ant-design/icons';
+  MessageOutlined, SendOutlined,SnippetsOutlined,PlusOutlined,MinusCircleOutlined,MedicineBoxOutlined, AlertOutlined, HistoryOutlined} from '@ant-design/icons';
 import { io } from "socket.io-client";
 import { getPrescriptions,submitPrescription , getUser} from "../api/doctor/doctorApi";
 import { IUser } from "../interfaces/user";
@@ -55,22 +55,22 @@ const VideoCall = ({ role }: VideoCallProps) => {
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const [callStarted, setCallStarted] = useState(false);
+  const [/*callStarted*/, setCallStarted] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showPrescription, setShowPrescription] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
-  const [newPrescription, setNewPrescription] = useState<Prescription>({
-    appointmentId: appointmentId || "",
-    userId: "",
-    doctorId: "",
-    medicalCondition:"",
-    medications: [],
-    medicationPeriod:3,
-    notes: "",
-    createdAt: new Date()
-  });
+  // const [newPrescription, setNewPrescription] = useState<Prescription>({
+  //   appointmentId: appointmentId || "",
+  //   userId: "",
+  //   doctorId: "",
+  //   medicalCondition:"",
+  //   medications: [],
+  //   medicationPeriod:3,
+  //   notes: "",
+  //   createdAt: new Date()
+  // });
   const [otherParticipant, setOtherParticipant] = useState<{
     id: string;
     role: "doctor" | "user";
@@ -384,7 +384,7 @@ const VideoCall = ({ role }: VideoCallProps) => {
             navigate(`/${role}/appointments`, { replace: true });
           });
 
-        socket.on("userLeft", ({ userId }) => {
+        socket.on("userLeft", (/*{ userId }*/) => {
             if (role === "doctor") {
               setRemoteVideoStatus("Patient left, waiting to rejoin");
               if (remoteVideoRef.current) {

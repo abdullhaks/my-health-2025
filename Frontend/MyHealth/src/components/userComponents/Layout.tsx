@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
-  FaHome, FaUserMd, FaCalendarAlt, FaFileMedical, FaClipboardList, FaUserFriends, FaChartLine, FaBell,
+  FaHome, FaUserMd, FaCalendarAlt,FaUserFriends,FaBell,
   FaCog, FaSignOutAlt, FaBars, FaTimes, FaChevronLeft, FaChevronRight, FaSearch, FaComments, FaPodcast,
   FaCreditCard, FaBlog, FaPlus, FaUsers, FaInfoCircle
 } from "react-icons/fa";
@@ -143,7 +143,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
         }
       });
 
-      socket.on("notification", (notification: Notification) => {
+      socket.on("notification", (/*notification: Notification*/) => {
 
         fetchNotifications();
         // setNotifications((prev) => {

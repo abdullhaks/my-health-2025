@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, Variants } from 'framer-motion';
 import appLogo from "../../assets/applogoblue.png"
 import { 
@@ -20,15 +20,12 @@ import {
   Star,
   CheckCircle,
   ArrowRight,
-  Play,
   Menu,
   X,
   ShoppingCart,
   Globe,
   Award,
   Zap,
-  Clock,
-  UserPlus
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -69,10 +66,10 @@ const LandingPage = () => {
     }
   };
 
-  const scaleIn:Variants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } }
-  };
+  // const scaleIn:Variants = {
+  //   hidden: { opacity: 0, scale: 0.8 },
+  //   visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } }
+  // };
 
   const slideInLeft:Variants = {
     hidden: { opacity: 0, x: -60 },
@@ -243,7 +240,7 @@ const LandingPage = () => {
               >
                 {['Services', 'Features', 'Our Mission', 'Contact'].map((item, index) => (
                   <motion.a 
-                    key={item}
+                    key={item || index}
                     href={`#${item.toLowerCase().replace(' ', '-')}`}
                     className="block py-3 text-gray-700 hover:text-blue-600 font-medium"
                     variants={fadeInUp}

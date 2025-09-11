@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {  BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { IDoctorData } from "../../interfaces/doctor";
-import { number, string } from "zod";
 
 const DoctorDashboard = () => {
   const doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
@@ -131,7 +130,7 @@ const DoctorDashboard = () => {
                   date === new Date().toISOString().split("T")[0];
                 return (
                   <div
-                    key={date}
+                    key={date || index }
                     className={`rounded-lg px-4 py-3 flex justify-between items-center ${
                       isToday ? "bg-red-100" : "bg-gray-100"
                     }`}

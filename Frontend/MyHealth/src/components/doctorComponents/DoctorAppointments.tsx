@@ -235,11 +235,11 @@ const DoctorAppointments = () => {
   };
 
   const isJoinable = (start: string, end: string) => {
-    // const now = new Date().getTime();
-    // const startTime = new Date(start).getTime();
-    // const endTime = new Date(end).getTime();
-    // const buffer = 5 * 60 * 1000; // 5-minute buffer
-    // return now >= startTime - buffer && now <= endTime + buffer;
+    const now = new Date().getTime();
+    const startTime = new Date(start).getTime();
+    const endTime = new Date(end).getTime();
+    const buffer = 5 * 60 * 1000; // 5-minute buffer
+    return now >= startTime - buffer && now <= endTime + buffer;
 
     return true;
   };

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { signupUser } from "../../api/user/userApi";
 
-// ✅ Schema for signup validation
+//schema - signup validation
 const signupSchema = z
   .object({
     email: z.string().email("Invalid email address"),
