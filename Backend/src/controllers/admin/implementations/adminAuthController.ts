@@ -37,15 +37,15 @@ export default class AdminAuthController implements IAuthCtrl {
 
              res.cookie("adminRefreshToken", result.refreshToken, {
                 httpOnly: true,
-                sameSite: "strict",
-                secure: false,
+                sameSite: "none",
+                secure: true,
                 maxAge: 7 * 24 * 60 * 60 * 1000,
                 });
 
             res.cookie("adminAccessToken", result.accessToken, {
                 httpOnly: true,
-                sameSite: "strict",
-                secure: false, 
+                sameSite: "none",
+                secure: true, 
                 maxAge: 7 * 24 * 60 * 60 * 1000,
                 }); 
 
@@ -157,8 +157,8 @@ export default class AdminAuthController implements IAuthCtrl {
 
             res.cookie("adminAccessToken", accessToken, {
                 httpOnly: true,
-                sameSite: "strict",
-                secure: false, 
+                sameSite: "none",
+                secure: true, 
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
 

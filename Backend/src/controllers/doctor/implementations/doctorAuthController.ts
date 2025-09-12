@@ -40,22 +40,22 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
 
       res.cookie("doctorRefreshToken", result.refreshToken, {
       httpOnly: true,
-      sameSite: "strict",
-      secure: false,
+      sameSite: "none",   // allow cross-site
+      secure: true,       // only over HTTPS
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie("doctorAccessToken", result.accessToken, {
       httpOnly: true,
-      sameSite: "strict",
-      secure: false,
+      sameSite: "none",
+      secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie("doctorEmail", result.doctor.email, {
       httpOnly: true,
-      sameSite: "strict",
-      secure: false,
+      sameSite: "none",
+      secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
@@ -199,8 +199,8 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
     
           res.cookie("doctorAccessToken", accessToken, {
             httpOnly: true,
-            sameSite: "strict",
-            secure: false, 
+            sameSite: "none",
+            secure: true, 
             maxAge: 7 * 24 * 60 * 60 * 1000,
           });
     
