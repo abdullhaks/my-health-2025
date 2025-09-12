@@ -11,7 +11,7 @@ dotenv.config();
 import { generateAccessToken,generateRefreshToken , verifyRefreshToken } from "../../../utils/jwt";
 import { Request, Response, NextFunction } from "express";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
-import {IResponseDTO} from "../../../dto/commonDTO";
+import { IResponseDTO } from "../../../dto/commonDto";
 
 console.log("Admin auth service is running....");
 

@@ -15,7 +15,7 @@ import { generateOtpMail } from "../../../utils/generateOtpMail";
 import dotenv from "dotenv";
 import {generateAccessToken,generateRefreshToken,verifyRefreshToken,} from "../../../utils/jwt";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
-import { IResponseDTO } from "../../../dto/commonDTO";
+import { IResponseDTO } from "../../../dto/commonDto";
 import {getSignedImageURL,uploadFileToS3,} from "../../../middlewares/common/uploadS3";
 import { IDoctor } from "../../../dto/doctorDTO";
 

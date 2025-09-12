@@ -16,7 +16,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { generateAccessToken,generateRefreshToken , verifyRefreshToken } from "../../../utils/jwt";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
-import { IResponseDTO } from "../../../dto/commonDTO";
+import { IResponseDTO } from "../../../dto/commonDto";
 import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import { UserMapper } from "../../../mappers/user.mapper";
 import { AuthResponseDTO } from "../../../dto/userDTO";

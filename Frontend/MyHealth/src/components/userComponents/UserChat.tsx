@@ -156,10 +156,10 @@ const UserChat = () => {
             socket.auth = { token: newToken };
             socket.connect();
           } catch {
-            message.error("Failed to reconnect. Please log in again.");
+            // message.error("Failed to reconnect. Please log in again.");
           }
         } else {
-          message.error("Failed to connect to chat server: " + err.message);
+          // message.error("Failed to connect to chat server: " + err.message);
         }
       });
 
