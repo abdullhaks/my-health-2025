@@ -12,7 +12,7 @@ export const generateDeclineMail = (email: string, reason: string) => {
 
 We regret to inform you that your application to join MyHealth as a doctor has been declined. Reason: ${reason}.
 
-Please review your application and ensure all credentials are valid and up-to-date. You are welcome to reapply with corrected information at http://localhost:5173/doctor/signup.
+Please review your application and ensure all credentials are valid and up-to-date. You are welcome to reapply with corrected information at https://www.myhealth.abdullhakalamban.online/doctor/signup.
 
 If you have any questions, please contact our support team at support@myhealth.com.
 
@@ -35,7 +35,7 @@ MyHealth Team`,
           ${reason}
         </p>
         <p style="font-size: 14px; color: #555; text-align: center;">
-          Please review your application and ensure all credentials are valid and up-to-date. You are welcome to reapply with corrected information at <a href="http://localhost:5173/doctor/signup" style="color: #2196F3; text-decoration: none;">http://localhost:5173/doctor/signup</a>.
+          Please review your application and ensure all credentials are valid and up-to-date. You are welcome to reapply with corrected information at <a href="https://www.myhealth.abdullhakalamban.online/doctor/signup" style="color: #2196F3; text-decoration: none;">https://www.myhealth.abdullhakalamban.online/doctor/signup</a>.
         </p>
         <p style="font-size: 14px; color: #555; text-align: center;">
           If you have any questions, please contact our support team at <a href="mailto:support@myhealth.com" style="color: #2196F3; text-decoration: none;">support@myhealth.com</a>.

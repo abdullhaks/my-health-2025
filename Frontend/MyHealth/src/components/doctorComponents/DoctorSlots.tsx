@@ -149,7 +149,7 @@ const DoctorSlots = () => {
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/doctor/refreshToken",
+        "https://api.abdullhakalamban.online/api/doctor/refreshToken",
         {},
         { withCredentials: true }
       );
@@ -174,7 +174,7 @@ const DoctorSlots = () => {
         token = await getAccessToken();
       }
       const socket = io(
-        import.meta.env.VITE_REACT_APP_SOCKET_URL || "http://localhost:3000",
+        import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online",
         {
           transports: ["websocket"],
           reconnection: true,

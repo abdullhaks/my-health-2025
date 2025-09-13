@@ -94,7 +94,7 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/doctor/refreshToken",
+        "https://api.abdullhakalamban.online/api/doctor/refreshToken",
         {},
         { withCredentials: true }
       );
@@ -119,7 +119,7 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "http://localhost:3000", {
+      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
         transports: ["websocket"],
         reconnection: true,
         auth: { token },
@@ -287,7 +287,7 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
 
       try {
         await axios.put(
-          `http://localhost:3000/api/doctor/notifications/${notification._id}/read`,
+          `https://api.abdullhakalamban.online/api/doctor/notifications/${notification._id}/read`,
           {},
           { withCredentials: true }
         );
@@ -311,7 +311,7 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
         }
     try {
       await axios.put(
-        `http://localhost:3000/api/doctor/notifications/read-all`,
+        `https://api.abdullhakalamban.online/api/doctor/notifications/read-all`,
         { userId: doctor._id },
         { withCredentials: true }
       );

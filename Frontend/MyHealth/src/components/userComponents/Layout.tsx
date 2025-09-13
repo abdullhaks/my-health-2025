@@ -90,7 +90,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/refreshToken",
+        "https://api.abdullhakalamban.online/api/user/refreshToken",
         {},
         { withCredentials: true }
       );
@@ -115,7 +115,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "http://localhost:3000", {
+      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
         transports: ["websocket"],
         reconnection: true,
         auth: { token },
@@ -284,7 +284,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
 
       try {
         // await axios.put(
-        //   `http://localhost:3000/api/user/notifications/${notification._id}/read`,
+        //   `https://api.abdullhakalamban.online/api/user/notifications/${notification._id}/read`,
         //   {},
         //   { withCredentials: true }
         // );
@@ -304,7 +304,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
   const markAllAsRead = async () => {
     try {
       await axios.put(
-        `http://localhost:3000/api/user/notifications/read-all`,
+        `https://api.abdullhakalamban.online/api/user/notifications/read-all`,
         { userId: user._id },
         { withCredentials: true }
       );

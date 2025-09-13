@@ -7,7 +7,7 @@ let socket: ReturnType<typeof io> | null = null;
 const getAccessToken = async (role: string): Promise<string> => {
   try {
     const response = await axios.post(
-      `http://localhost:3000/api/${role}/refreshToken`,
+      `https://api.abdullhakalamban.online/api/${role}/refreshToken`,
       {},
       { withCredentials: true }
     );
@@ -39,7 +39,7 @@ export const initializeSocket = async (role: string) => {
   const token = await getToken(role);
   // Ensure we only create a new socket if one doesn't exist or needs re-initialization
   if (!socket || !socket.connected) { 
-    socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "http://localhost:3000", {
+    socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
       auth: { token },
       reconnection: true,
       reconnectionAttempts: 5,

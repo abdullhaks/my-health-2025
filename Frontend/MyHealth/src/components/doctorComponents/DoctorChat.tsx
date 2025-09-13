@@ -56,7 +56,7 @@ const DoctorChat = () => {
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/doctor/refreshToken",
+        "https://api.abdullhakalamban.online/api/doctor/refreshToken",
         {},
         { withCredentials: true }
       );
@@ -84,7 +84,7 @@ const DoctorChat = () => {
 
       console.log("Token in frontend:", token);
 
-      const socket = io("http://localhost:3000", {
+      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
         transports: ["websocket"],
         reconnection: true,
         auth: { token },
@@ -329,7 +329,7 @@ const DoctorChat = () => {
     try {
       console.log("doctorId and selected user:", doctorId, selectedUser);
       const response = await axios.post(
-        "http://localhost:3000/api/doctor/conversation",
+        "https://api.abdullhakalamban.online/api/doctor/conversation",
         { userIds: [doctorId, selectedUser] },
         { withCredentials: true }
       );

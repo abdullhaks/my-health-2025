@@ -277,7 +277,7 @@ export default class UserAuthController implements IUserAuthCtrl {
 
 
   async googleLoginRedirect (req: Request, res: Response): Promise<void>  {
-    const redirectURI = "http://localhost:3000/api/user/google/callback";
+    const redirectURI = "https://api.abdullhakalamban.online/api/user/google/callback";
     const clientId = process.env.GOOGLE_CLIENT_ID!;
     const scope = encodeURIComponent("profile email");
     const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectURI}&response_type=code&scope=${scope}`;
@@ -295,7 +295,7 @@ export default class UserAuthController implements IUserAuthCtrl {
           code,
           client_id: process.env.GOOGLE_CLIENT_ID!,
           client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-          redirect_uri: "http://localhost:3000/api/user/google/callback",
+          redirect_uri: "https://api.abdullhakalamban.online/api/user/google/callback",
           grant_type: "authorization_code",
         },
         { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
@@ -361,7 +361,7 @@ export default class UserAuthController implements IUserAuthCtrl {
       });
   
       // Redirect to frontend dashboard
-      res.redirect("http://localhost:5173/user/google-success");
+      res.redirect("https://www.myhealth.abdullhakalamban.online//user/google-success");
   
     } catch (err) {
       console.error("Google login error:", err);

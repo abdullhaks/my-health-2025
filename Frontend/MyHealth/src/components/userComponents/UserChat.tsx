@@ -60,7 +60,7 @@ const UserChat = () => {
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/refreshToken",
+        "https://api.abdullhakalamban.online/api/user/refreshToken",
         {},
         { withCredentials: true }
       );
@@ -105,7 +105,7 @@ const UserChat = () => {
 
           } else {
             const response = await axios.post(
-              "http://localhost:3000/api/user/conversation",
+              "https://api.abdullhakalamban.online/api/user/conversation",
               { userIds: [userId, doctorId] },
               { withCredentials: true }
             );
@@ -140,7 +140,7 @@ const UserChat = () => {
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL||"http://localhost:3000", {
+      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL||"https://api.abdullhakalamban.online", {
         transports: ["websocket"],
         reconnection: true,
         auth: { token },
@@ -412,7 +412,7 @@ useEffect(() => {
 
   //   try {
   //     const response = await axios.post(
-  //       "http://localhost:3000/api/user/conversation",
+  //       "https://api.abdullhakalamban.online/api/user/conversation",
   //       { userIds: [userId, selectedUser] },
   //       { withCredentials: true }
   //     );

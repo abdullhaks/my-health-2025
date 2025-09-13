@@ -67,7 +67,7 @@ const UserAppointments = () => {
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/refreshToken",
+        "https://api.abdullhakalamban.online/api/user/refreshToken",
         {},
         { withCredentials: true }
       );
@@ -92,7 +92,7 @@ const UserAppointments = () => {
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "http://localhost:3000", {
+      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
         transports: ["websocket"],
         reconnection: true,
         auth: { token },
