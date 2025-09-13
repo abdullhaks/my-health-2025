@@ -45,7 +45,7 @@ declare module "axios" {
 const apiUrl = import.meta.env.VITE_API_URL as string;
 
 
- //Helper to determine role from URL path
+ //Helper to determine role from URL pathsdf
 
 const getRoleFromURL = (url?: string): "user" | "doctor" | "admin" | null => {
   
