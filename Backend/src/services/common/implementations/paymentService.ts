@@ -76,22 +76,11 @@ export default class PaymentService implements IPaymentService {
               throw new Error("Doctor not found.");
             };
             
-            // let todaty = new Date();
-            // let beforOneMont= new Date(todaty.setMonth(todaty.getMonth()-1));
-            // const appointmentsWithSameDoc = await this._appointmentsRepository.findAll({
-            //   userId: metadata.userId,
-            //   doctorId: metadata.doctorId,
-            //   $and: [
-            //     { start: { $gte: beforOneMont } },
-            //     { start: { $lte: todaty } }
-            //   ]
-            // });
+            
+            
+          
 
-            // if(appointmentsWithSameDoc && appointmentsWithSameDoc.length > 3){
-
-            //   console.log("you can't......")
-              
-            // }
+            
 
             var tempDate = new Date(metadata.start).toISOString().split("T")[0];
 

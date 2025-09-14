@@ -5,6 +5,8 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useSelector } from "react-redux";
 import { IUserData } from "../../interfaces/user";
 
+
+
 interface AppointmentSlot {
   id: string;
   start: Date;
