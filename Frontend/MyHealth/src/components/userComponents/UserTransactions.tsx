@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import { getTransactions } from "../../api/user/userApi"; 
 import { Table, Select, DatePicker, Button, Pagination } from "antd";
@@ -18,7 +16,7 @@ interface Transaction {
   transactionId?: string;
   userId?: string;
   doctorId?: string;
-  invoice?:string;
+  invoice?: string;
   date: string;
   createdAt: string;
   updatedAt: string;
@@ -43,7 +41,7 @@ const UserTransactions = () => {
   const fetchTransactions = async (page: number) => {
     setLoading(true);
     try {
-      const response = await getTransactions(user._id,page, limit, {
+      const response = await getTransactions(user._id, page, limit, {
         method: filters.method,
         paymentFor: filters.paymentFor,
         startDate: filters.dateRange ? filters.dateRange[0].toISOString() : undefined,
@@ -72,129 +70,152 @@ const UserTransactions = () => {
       title: "From",
       dataIndex: "from",
       key: "from",
-      render: (text: string) => text.charAt(0).toUpperCase() + text.slice(1),
+      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
     },
     {
       title: "To",
       dataIndex: "to",
       key: "to",
-      render: (text: string) => text.charAt(0).toUpperCase() + text.slice(1),
+      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
     },
     {
       title: "Method",
       dataIndex: "method",
       key: "method",
-      render: (text: string) => text.charAt(0).toUpperCase() + text.slice(1),
+      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
     },
     {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
-      render: (amount: number) => `Rs ${amount}`,
+      render: (amount: number) => <span className="text-sm sm:text-base">Rs {amount}</span>,
     },
     {
       title: "Purpose",
       dataIndex: "paymentFor",
       key: "paymentFor",
-      render: (text: string) => text.charAt(0).toUpperCase() + text.slice(1),
+      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
     },
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
-      render: (date: string) => moment(date).format("MMM DD, YYYY h:mm A"),
+      render: (date: string) => (
+        <span className="text-sm sm:text-base whitespace-nowrap">
+          {moment(date).format("MMM DD, YYYY h:mm A")}
+        </span>
+      ),
     },
     {
       title: "Transaction ID",
       dataIndex: "transactionId",
       key: "transactionId",
-      render:(text: string, record: Transaction) => {
-    if (record.invoice) {
-      return (
-        <a href={record.invoice} target="_blank" rel="noopener noreferrer">
-          {text}
-        </a>
-      );
-    }
-    return text || "N/A";
-  },
+      render: (text: string, record: Transaction) => (
+        <span className="text-sm sm:text-base truncate max-w-[100px] sm:max-w-[150px] block">
+          {record.invoice ? (
+            <a
+              href={record.invoice}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:text-blue-700 underline transition-all"
+            >
+              {text}
+            </a>
+          ) : (
+            text || "N/A"
+          )}
+        </span>
+      ),
     },
   ];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Admin Transactions</h2>
-      
-      {/* Filters */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <Select
-            placeholder="Filter by Method"
-            style={{ width: 200 }}
-            onChange={(value) => handleFilterChange("method", value)}
-            allowClear
-          >
-            <Option value="stripe">Stripe</Option>
-            <Option value="wallet">Wallet</Option>
-          </Select>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">
+          Transactions
+        </h2>
+
+        {/* Filters */}
+        <div className="mb-6 sm:mb-8 bg-white rounded-xl shadow-md border border-gray-200 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <FilterOutlined className="text-gray-600 text-base sm:text-lg" />
+              <Select
+                placeholder="Filter by Method"
+                className="w-full sm:w-48 md:w-56"
+                onChange={(value) => handleFilterChange("method", value)}
+                allowClear
+                size="large"
+              >
+                <Option value="stripe">Stripe</Option>
+                <Option value="wallet">Wallet</Option>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <FilterOutlined className="text-gray-600 text-base sm:text-lg" />
+              <Select
+                placeholder="Filter by Purpose"
+                className="w-full sm:w-48 md:w-56"
+                onChange={(value) => handleFilterChange("paymentFor", value)}
+                allowClear
+                size="large"
+              >
+                <Option value="appointment">Appointment</Option>
+                <Option value="analysis">Analysis</Option>
+                <Option value="refund">Refund</Option>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <FilterOutlined className="text-gray-600 text-base sm:text-lg" />
+              <RangePicker
+                onChange={(dates) => {
+                  if (dates && dates[0] && dates[1]) {
+                    handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                  } else {
+                    handleFilterChange("dateRange", null);
+                  }
+                }}
+                format="YYYY-MM-DD"
+                className="w-full sm:w-64"
+                size="large"
+              />
+            </div>
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={() => fetchTransactions(currentPage)}
+              size="large"
+              className="w-full sm:w-auto px-4 sm:px-6 bg-blue-600 hover:bg-blue-700 border-none rounded-lg shadow-md hover:shadow-lg transition-all text-sm sm:text-base"
+            >
+              Apply Filters
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <Select
-            placeholder="Filter by Purpose"
-            style={{ width: 200 }}
-            onChange={(value) => handleFilterChange("paymentFor", value)}
-            allowClear
-          >
-           
-            <Option value="appointment">Appointment</Option>
-            <Option value="analysis">Analysis</Option>
-            <Option value="refund">Refund</Option>
-           
-          </Select>
-        </div>
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <RangePicker
-            onChange={(dates) => {
-              if (dates && dates[0] && dates[1]) {
-                handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
-              } else {
-                handleFilterChange("dateRange", null);
-              }
-            }}
-            format="YYYY-MM-DD"
+
+        {/* Table */}
+        <div className="overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200">
+          <Table
+            dataSource={transactions}
+            columns={columns}
+            rowKey="_id"
+            loading={loading}
+            pagination={false}
+            className="min-w-[700px] sm:min-w-[800px]"
           />
         </div>
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          onClick={() => fetchTransactions(currentPage)}
-        >
-          Apply Filters
-        </Button>
-      </div>
 
-      {/* Table */}
-      <Table
-        dataSource={transactions}
-        columns={columns}
-        rowKey="_id"
-        loading={loading}
-        pagination={false}
-        className="bg-white rounded-lg shadow-sm"
-      />
-
-      {/* Pagination */}
-      <div className="mt-6 flex justify-end">
-        <Pagination
-          current={currentPage}
-          total={totalPages * limit}
-          pageSize={limit}
-          onChange={(page) => setCurrentPage(page)}
-          showSizeChanger={false}
-        />
+        {/* Pagination */}
+        <div className="mt-6 sm:mt-8 flex justify-end">
+          <Pagination
+            current={currentPage}
+            total={totalPages * limit}
+            pageSize={limit}
+            onChange={(page) => setCurrentPage(page)}
+            showSizeChanger={false}
+            className="flex items-center gap-2"
+          />
+        </div>
       </div>
     </div>
   );

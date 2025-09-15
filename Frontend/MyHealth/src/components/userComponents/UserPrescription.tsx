@@ -32,6 +32,7 @@ interface Prescription {
     category: string;
     registerNo: string;
   };
+  notes?: string;
 }
 
 const UserPrescriptionDetails = () => {
@@ -40,8 +41,6 @@ const UserPrescriptionDetails = () => {
   const [prescription, setPrescription] = useState<Prescription | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-
-  // const logoUrl = "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png";
 
   const fetchPrescription = async () => {
     try {
@@ -96,13 +95,13 @@ const UserPrescriptionDetails = () => {
     } catch (e) {
       console.log("Logo not loaded");
     }
-    
+
     // Clinic name and details
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(41, 128, 185);
     doc.text("MyHealth App", pageWidth - margin, y + 5, { align: "right" });
-    
+
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100);
@@ -112,12 +111,11 @@ const UserPrescriptionDetails = () => {
     y += 35;
 
     // Prescription header
-  
     doc.setTextColor(100, 100, 100);
     doc.setFontSize(14);
-    doc.setFont("helvetica",);
+    doc.setFont("helvetica", "bold");
     doc.text("PRESCRIPTION", margin + 15, y);
-    
+
     // Date and Prescription ID
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
@@ -178,6 +176,19 @@ const UserPrescriptionDetails = () => {
     doc.text(diagnosisLines, margin, y);
     y += diagnosisLines.length * 5 + 10;
 
+    // General Notes
+    if (prescription.notes) {
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("GENERAL NOTES:", margin, y);
+      y += 8;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const notesLines = doc.splitTextToSize(prescription.notes, pageWidth - 2 * margin);
+      doc.text(notesLines, margin, y);
+      y += notesLines.length * 5 + 10;
+    }
+
     // Medications Header
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -214,12 +225,12 @@ const UserPrescriptionDetails = () => {
 
       doc.setFontSize(9);
       doc.text(`${index + 1}.`, margin + 3, y + 5);
-      
+
       // Medication name (bold)
       doc.setFont("helvetica", "bold");
       const medNameLines = doc.splitTextToSize(med.name, 55);
       doc.text(medNameLines, margin + 20, y + 5);
-      
+
       doc.setFont("helvetica", "normal");
       doc.text(med.dosage, margin + 80, y + 5);
       doc.text(med.frequency, margin + 115, y + 5);
@@ -250,12 +261,12 @@ const UserPrescriptionDetails = () => {
     doc.setDrawColor(41, 128, 185);
     doc.setLineWidth(0.5);
     doc.line(margin, y, pageWidth - margin, y);
-    
+
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
     doc.text("This is a digitally generated prescription. Please consult your physician before making any changes.", margin, y + 8);
     doc.text(`Generated on: ${moment().format("DD/MM/YYYY HH:mm")}`, margin, y + 15);
-    
+
     // Doctor signature placeholder
     doc.setFont("helvetica", "italic");
     doc.text("Dr. " + prescription.doctor.fullName, pageWidth - margin, y + 8, { align: "right" });
@@ -267,24 +278,24 @@ const UserPrescriptionDetails = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-white min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
-      <div className="border-b border-blue-100 sticky top-0 z-10 backdrop-blur-md bg-white/90 shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 py-4">
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <button
-              className="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-full transition-all duration-200 flex items-center gap-2"
               onClick={() => navigate(-1)}
+              className="flex items-center gap-2 p-2 sm:p-3 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               <ArrowLeft size={20} />
-              <span className="font-medium">Back</span>
+              <span className="text-sm sm:text-base font-medium hidden sm:inline">Back</span>
             </button>
             <Button
               type="primary"
               icon={<Download size={18} />}
               onClick={downloadPDF}
               disabled={!prescription}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 border-none shadow-lg h-10 px-6 font-medium"
+              className="flex items-center gap-2 h-10 sm:h-12 px-4 sm:px-6 text-sm sm:text-base font-medium bg-blue-600 hover:bg-blue-700 border-none rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
               Download Prescription
             </Button>
@@ -293,152 +304,169 @@ const UserPrescriptionDetails = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {errorMessage && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 flex items-center gap-3">
+          <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 flex items-center gap-3 text-sm sm:text-base">
             <FileText className="text-red-500" size={20} />
             {errorMessage}
           </div>
         )}
-        
+
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading prescription...</p>
+          <div className="text-center py-12 sm:py-16">
+            <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 text-sm sm:text-base">Loading prescription...</p>
           </div>
         ) : !prescription ? (
-          <div className="text-center py-12">
-            <FileText className="mx-auto text-gray-400 mb-4" size={48} />
-            <p className="text-gray-500 text-lg">No prescription found.</p>
+          <div className="text-center py-12 sm:py-16">
+            <FileText className="mx-auto text-gray-400 mb-4" size={40} />
+            <p className="text-gray-500 text-base sm:text-lg">No prescription found.</p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-blue-100">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
             {/* Medical Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <img src={appLogoblue} alt="MyHealth App" className=" h-16 bg-white p-2 rounded-lg shadow-lg" />
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <img
+                    src={appLogoblue}
+                    alt="MyHealth App"
+                    className="h-12 sm:h-14 lg:h-16 object-contain bg-white p-2 rounded-lg shadow-md"
+                  />
                   <div>
-                    <h1 className="text-2xl font-bold">MyHealth App</h1>
-                    <p className="text-blue-100">Digital Healthcare Solutions</p>
-                    <p className="text-blue-200 text-sm">Registration: MH-2025-DIGITAL</p>
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">MyHealth App</h1>
+                    <p className="text-blue-100 text-sm sm:text-base">Digital Healthcare Solutions</p>
+                    <p className="text-blue-200 text-xs sm:text-sm">Registration: MH-2025-DIGITAL</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-4xl font-bold mb-2">℞</div>
-                  <p className="text-blue-100">Prescription</p>
-                  <p className="text-blue-200 text-sm">Rx No: {prescription._id.slice(-8).toUpperCase()}</p>
+                  <div className="text-3xl sm:text-4xl font-bold mb-2">℞</div>
+                  <p className="text-blue-100 text-sm sm:text-base">Prescription</p>
+                  <p className="text-blue-200 text-xs sm:text-sm">Rx No: {prescription._id.slice(-8).toUpperCase()}</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-8 space-y-8">
+            <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
               {/* Date and Basic Info */}
-              <div className="flex justify-between items-center border-b border-gray-200 pb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
                 <div className="flex items-center gap-2 text-gray-600">
-                  <Calendar size={20} />
-                  <span className="font-medium">Date:</span>
-                  <span>{moment(prescription.createdAt).format("MMMM DD, YYYY")}</span>
+                  <Calendar size={18}  />
+                  <span className="font-medium text-sm sm:text-base">Date:</span>
+                  <span className="text-sm sm:text-base">{moment(prescription.createdAt).format("MMMM DD, YYYY")}</span>
                 </div>
-                <div className="text-gray-500 text-sm">
+                <div className="text-gray-500 text-xs sm:text-sm">
                   Generated at {moment(prescription.createdAt).format("HH:mm")}
                 </div>
               </div>
 
               {/* Patient Information */}
-              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+              <div className="bg-blue-50 rounded-xl p-4 sm:p-6 border border-blue-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <User className="text-blue-600" size={24} />
-                  <h3 className="text-xl font-semibold text-blue-900">Patient Information</h3>
+                  <User className="text-blue-600" size={20} />
+                  <h3 className="text-lg sm:text-xl font-semibold text-blue-900">Patient Information</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Full Name</p>
-                    <p className="font-semibold text-gray-900 text-lg">{prescription.user.fullName}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Full Name</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">{prescription.user.fullName}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Age</p>
-                    <p className="font-semibold text-gray-900">{calculateAge(prescription.user.dob)} years</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Age</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{calculateAge(prescription.user.dob)} years</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Date of Birth</p>
-                    <p className="font-semibold text-gray-900">{moment(prescription.user.dob).format("MMMM DD, YYYY")}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Date of Birth</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{moment(prescription.user.dob).format("MMMM DD, YYYY")}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Patient ID</p>
-                    <p className="font-semibold text-gray-900 font-mono">{prescription.userId.slice(-8).toUpperCase()}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Patient ID</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base font-mono">{prescription.userId.slice(-8).toUpperCase()}</p>
                   </div>
                 </div>
               </div>
 
               {/* Doctor Information */}
-              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+              <div className="bg-green-50 rounded-xl p-4 sm:p-6 border border-green-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-green-600 text-white p-2 rounded-full">
-                    <User size={20} />
+                    <User size={18}  />
                   </div>
-                  <h3 className="text-xl font-semibold text-green-900">Prescribing Physician</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-green-900">Prescribing Physician</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Doctor Name</p>
-                    <p className="font-semibold text-gray-900 text-lg">Dr. {prescription.doctor.fullName}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Doctor Name</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">Dr. {prescription.doctor.fullName}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Qualification</p>
-                    <p className="font-semibold text-gray-900">{prescription.doctor.graduation}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Qualification</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{prescription.doctor.graduation}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Specialty</p>
-                    <p className="font-semibold text-gray-900">{prescription.doctor.category}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Specialty</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{prescription.doctor.category}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Registration Number</p>
-                    <p className="font-semibold text-gray-900 font-mono">{prescription.doctor.registerNo}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Registration Number</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base font-mono">{prescription.doctor.registerNo}</p>
                   </div>
                 </div>
               </div>
 
               {/* Medical Condition/Diagnosis */}
-              <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
+              <div className="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <FileText className="text-amber-600" size={24} />
-                  <h3 className="text-xl font-semibold text-amber-900">Diagnosis</h3>
+                  <FileText className="text-amber-600" size={20} />
+                  <h3 className="text-lg sm:text-xl font-semibold text-amber-900">Diagnosis</h3>
                 </div>
-                <p className="text-gray-800 leading-relaxed text-lg bg-white p-4 rounded-lg border border-amber-100">
+                <p className="text-gray-800 text-sm sm:text-base leading-relaxed bg-white p-3 sm:p-4 rounded-lg border border-amber-100">
                   {prescription.medicalCondition}
                 </p>
               </div>
 
-              {/* Medications */}
-              <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
-                <div className="flex items-center gap-3 mb-6">
-                  <Pill className="text-purple-600" size={24} />
-                  <h3 className="text-xl font-semibold text-purple-900">Medications Prescribed</h3>
+              {/* General Notes */}
+              {prescription.notes && (
+                <div className="bg-red-50 rounded-xl p-4 sm:p-6 border border-red-200 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <FileText className="text-red-600" size={20}  />
+                    <h3 className="text-lg sm:text-xl font-semibold text-red-900">General Notes</h3>
+                  </div>
+                  <p className="text-gray-800 text-sm sm:text-base leading-relaxed bg-white p-3 sm:p-4 rounded-lg border border-red-100">
+                    {prescription.notes}
+                  </p>
                 </div>
-                <div className="space-y-4">
+              )}
+
+              {/* Medications */}
+              <div className="bg-purple-50 rounded-xl p-4 sm:p-6 border border-purple-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-4 sm:mb-6">
+                  <Pill className="text-purple-600" size={20}  />
+                  <h3 className="text-lg sm:text-xl font-semibold text-purple-900">Medications Prescribed</h3>
+                </div>
+                <div className="space-y-4 sm:space-y-6">
                   {prescription.medications.map((med, index) => (
                     <div key={index} className="bg-white rounded-lg border border-purple-100 shadow-sm overflow-hidden">
-                      <div className="bg-purple-600 text-white px-6 py-3">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-lg">{index + 1}. {med.name}</h4>
-                          <span className="bg-purple-500 px-3 py-1 rounded-full text-sm font-medium">{med.dosage}</span>
+                      <div className="bg-purple-600 text-white px-4 sm:px-6 py-3">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                          <h4 className="font-semibold text-base sm:text-lg truncate">{index + 1}. {med.name}</h4>
+                          <span className="bg-purple-500 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{med.dosage}</span>
                         </div>
                       </div>
-                      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600 mb-1">Frequency</p>
-                          <p className="font-semibold text-gray-900 mb-3">{med.frequency}</p>
-                          <p className="text-sm text-gray-600 mb-1">Duration</p>
-                          <p className="font-semibold text-gray-900">{med.duration}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 mb-1">Frequency</p>
+                          <p className="font-semibold text-gray-900 text-sm sm:text-base">{med.frequency}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 mb-1 mt-3">Duration</p>
+                          <p className="font-semibold text-gray-900 text-sm sm:text-base">{med.duration}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600 mb-1">Instructions</p>
-                          <p className="text-gray-800 mb-3 bg-gray-50 p-3 rounded text-sm leading-relaxed">{med.instructions}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 mb-1">Instructions</p>
+                          <p className="text-gray-800 text-sm sm:text-base bg-gray-50 p-2 sm:p-3 rounded leading-relaxed">{med.instructions}</p>
                           {med.notes && (
                             <>
-                              <p className="text-sm text-gray-600 mb-1">Additional Notes</p>
-                              <p className="text-red-700 bg-red-50 p-3 rounded text-sm leading-relaxed border border-red-200">{med.notes}</p>
+                              <p className="text-xs sm:text-sm text-gray-600 mb-1 mt-3">Additional Notes</p>
+                              <p className="text-red-700 text-sm sm:text-base bg-red-50 p-2 sm:p-3 rounded leading-relaxed border border-red-200">{med.notes}</p>
                             </>
                           )}
                         </div>
@@ -449,11 +477,11 @@ const UserPrescriptionDetails = () => {
               </div>
 
               {/* Footer */}
-              <div className="border-t border-gray-200 pt-6 text-center text-gray-500">
-                <p className="text-sm mb-2">This is a digitally generated prescription. Please consult your physician before making any changes.</p>
-                <p className="text-xs">Generated on {moment().format("MMMM DD, YYYY [at] HH:mm")}</p>
+              <div className="border-t border-gray-200 pt-4 sm:pt-6 text-center text-gray-500">
+                <p className="text-xs sm:text-sm mb-2">This is a digitally generated prescription. Please consult your physician before making any changes.</p>
+                <p className="text-xs sm:text-sm">Generated on {moment().format("MMMM DD, YYYY [at] HH:mm")}</p>
                 <div className="mt-4 text-right">
-                  <p className="text-gray-700 font-medium">Dr. {prescription.doctor.fullName}</p>
+                  <p className="text-gray-700 text-sm sm:text-base font-medium">Dr. {prescription.doctor.fullName}</p>
                   <p className="text-xs text-gray-500 italic">Digital Signature</p>
                 </div>
               </div>
