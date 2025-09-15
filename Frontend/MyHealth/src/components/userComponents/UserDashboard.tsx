@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { Eye, Calendar, Clock, User, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Pill, FileText, ArrowRight, Calendar as CalendarIcon, Stethoscope } from 'lucide-react';
+import { Eye, Calendar as CalendarIcon, Clock, User, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Pill, FileText, ArrowRight, Stethoscope } from 'lucide-react';
 import { getDashboardContent, getLatestPrescription } from '../../api/user/userApi';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { message } from 'antd';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import { IUserData } from '../../interfaces/user';
 
 interface Blog {
@@ -62,6 +64,7 @@ const UserDashboard = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [latestPrescription, setLatestPrescription] = useState<Prescription | null>(null);
+  const [calendarValue, setCalendarValue] = useState<Date | null>(new Date());
 
   const fetchDashboardContent = async () => {
     setLoading(true);
@@ -381,44 +384,32 @@ const UserDashboard = () => {
 
           {/* Calendar Widget */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 h-48 sm:h-64 lg:h-96 overflow-hidden">
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 ">
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center">
-                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  <CalendarIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <h2 className="text-lg sm:text-xl font-bold text-gray-800">Calendar</h2>
               </div>
-              <div className="space-y-3 sm:space-y-4">
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-gray-800">
-                    {new Date().getDate()}
-                  </div>
-                  <div className="text-xs sm:text-sm text-gray-500">
-                    {new Date().toLocaleDateString('en-US', {
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                  </div>
-                </div>
-                <div className="grid grid-cols-7 gap-1 text-xs">
-                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
-                    <div key={idx} className="text-center font-semibold text-gray-400 p-1 sm:p-2">
-                      {day}
-                    </div>
-                  ))}
-                  {Array.from({ length: 28 }, (_, i) => (
-                    <div
-                      key={i}
-                      className={`text-center p-1 sm:p-2 rounded-lg text-xs cursor-pointer transition-colors ${
-                        i + 1 === new Date().getDate()
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold'
-                          : 'hover:bg-blue-50 text-gray-600'
-                      }`}
-                    >
-                      {i + 1}
-                    </div>
-                  ))}
-                </div>
+              <div className="flex justify-center w-full h-full">
+                <Calendar
+                  value={calendarValue}
+                  onChange={(value) => {
+                    if (value instanceof Date) {
+                      setCalendarValue(value);
+                    } else if (Array.isArray(value) && value.length > 0 && value[0] instanceof Date) {
+                      setCalendarValue(value[0]);
+                    } else {
+                      setCalendarValue(null);
+                    }
+                  }}
+                  className="w-full border-none text-sm sm:text-base"
+                  tileClassName={({ date, view }) =>
+                    view === 'month' && date.toDateString() === new Date().toDateString()
+                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-lg'
+                      : 'hover:bg-blue-50 text-gray-600 rounded-lg'
+                  }
+                />
               </div>
             </div>
           </div>

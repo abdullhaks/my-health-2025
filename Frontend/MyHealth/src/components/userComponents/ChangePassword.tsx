@@ -29,8 +29,6 @@ interface ChangePasswordModalProps {
   onSave: (passwordData: PasswordData) => void;
 }
 
-
-
 type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 
 const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalProps) => {
@@ -111,22 +109,21 @@ const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md relative animate-fadeIn">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Change Password</h2>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 sm:p-6 md:p-8 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg md:max-w-xl relative transition-all duration-300 ease-in-out">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Change Password</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="Close"
+            className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Close modal"
           >
-            <FiX size={24} />
+            <FiX size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="space-y-4">
-
+        <div className="p-4 sm:p-6 md:p-8">
+          <div className="space-y-5 sm:space-y-6">
             {/* Current Password */}
             <PasswordInput
               id="currentPassword"
@@ -134,7 +131,8 @@ const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalPro
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleChange}
-              error={touched.currentPassword ? errors.currentPassword :""}
+              error={touched.currentPassword ? errors.currentPassword : ""}
+              className="text-sm sm:text-base"
             />
 
             {/* New Password */}
@@ -144,7 +142,8 @@ const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalPro
               name="newPassword"
               value={formData.newPassword}
               onChange={handleChange}
-              error={touched.newPassword ? errors.newPassword:""}
+              error={touched.newPassword ? errors.newPassword : ""}
+              className="text-sm sm:text-base"
             />
 
             {/* Confirm Password */}
@@ -155,28 +154,27 @@ const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalPro
               value={formData.confirmPassword}
               onChange={handleChange}
               error={touched.confirmPassword ? errors.confirmPassword : ""}
-              
-
+              className="text-sm sm:text-base"
             />
-
           </div>
 
-          <div className="mt-6 flex justify-end space-x-3">
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-95"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={handleSubmit}
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-95"
             >
               Change Password
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

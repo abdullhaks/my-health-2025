@@ -3,16 +3,12 @@ import { FiX } from "react-icons/fi";
 import GeoapifyAutocomplete from "../../sharedComponents/GeoapifyAutocomplete";
 import { userProfileData as ProfileData } from "../../interfaces/user";
 
-
-
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (profileData: ProfileData) => void;
   initialData: ProfileData;
 }
-
-
 
 const EditProfileModal = ({ isOpen, onClose, onSave, initialData }: EditProfileModalProps) => {
   const [formData, setFormData] = useState<ProfileData>(initialData);
@@ -40,9 +36,9 @@ const EditProfileModal = ({ isOpen, onClose, onSave, initialData }: EditProfileM
           error = "Invalid phone number format";
         break;
       case "medicalTags":
-      if (value.length>40)
-        error = "character limit exceeded";
-      break;
+        if (value.length > 40)
+          error = "Character limit exceeded";
+        break;
     }
 
     setErrors(prev => ({
@@ -74,90 +70,105 @@ const EditProfileModal = ({ isOpen, onClose, onSave, initialData }: EditProfileM
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-h-[80vh] overflow-hidden overflow-y-scroll max-w-md relative animate-fadeIn">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Edit Profile</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
-            <FiX size={24} />
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 sm:p-6 md:p-8 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg md:max-w-xl max-h-[90vh] overflow-y-auto relative transition-all duration-300 ease-in-out">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Edit Profile</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label="Close modal"
+          >
+            <FiX size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="space-y-4">
+        <div className="p-4 sm:p-6 md:p-8">
+          <div className="space-y-5 sm:space-y-6">
             {/* Full Name */}
             <div>
-              <label htmlFor="fullName">Full Name</label>
+              <label htmlFor="fullName" className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5">
+                Full Name
+              </label>
               <input
                 type="text"
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${errors.fullName ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${errors.fullName ? "border-red-500" : "border-gray-300"}`}
               />
-              {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
+              {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
             </div>
 
+            {/* Medical Tags */}
             <div>
-              <label htmlFor="medicalTags">medical tags</label>
+              <label htmlFor="medicalTags" className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5">
+                Medical Tags
+              </label>
               <input
                 type="text"
                 name="medicalTags"
                 value={formData.medicalTags}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${errors.medicalTags ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${errors.medicalTags ? "border-red-500" : "border-gray-300"}`}
               />
-              {errors.medicalTags && <p className="text-sm text-red-600">{errors.medicalTags}</p>}
+              {errors.medicalTags && <p className="mt-1 text-sm text-red-600">{errors.medicalTags}</p>}
             </div>
 
             {/* Location */}
             <div>
-              <label htmlFor="location">Location</label>
+              <label htmlFor="location" className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5">
+                Location
+              </label>
               <GeoapifyAutocomplete
                 value={formData.location?.text || ""}
                 onChange={(val) => setFormData(prev => ({ ...prev, location: val }))}
                 setError={(error) => setErrors(prev => ({ ...prev, locationText: error }))}
-                className={errors.locationText ? "border-red-500" : "border-gray-300"}
+                className={`w-full text-sm sm:text-base rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${errors.locationText ? "border-red-500" : "border-gray-300"}`}
               />
-              {errors.locationText && <p className="text-sm text-red-600">{errors.locationText}</p>}
+              {errors.locationText && <p className="mt-1 text-sm text-red-600">{errors.locationText}</p>}
             </div>
 
             {/* Date of Birth */}
             <div>
-              <label htmlFor="dob">Date of Birth</label>
+              <label htmlFor="dob" className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5">
+                Date of Birth
+              </label>
               <input
                 type="date"
                 name="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${errors.dob ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${errors.dob ? "border-red-500" : "border-gray-300"}`}
               />
             </div>
 
             {/* Phone Number */}
-
             <div>
-              <label htmlFor="phone">Phone Number</label>
+              <label htmlFor="phone" className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="e.g. +91 9876543210"
-                className={`w-full px-3 py-2 border rounded-md ${errors.phone ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${errors.phone ? "border-red-500" : "border-gray-300"}`}
               />
-              {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
+              {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
             </div>
-
 
             {/* Gender */}
             <div>
-              <label htmlFor="gender">Gender</label>
+              <label htmlFor="gender" className="block text-sm sm:text-base font-medium text-gray-700 mb-1.5">
+                Gender
+              </label>
               <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${errors.gender ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${errors.gender ? "border-red-500" : "border-gray-300"}`}
               >
                 <option value="">Select gender</option>
                 <option value="male">Male</option>
@@ -165,15 +176,25 @@ const EditProfileModal = ({ isOpen, onClose, onSave, initialData }: EditProfileM
                 <option value="other">Other</option>
               </select>
             </div>
-
-             
           </div>
 
-          <div className="mt-6 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="btn border-gray-300 bg-white text-gray-700">Cancel</button>
-            <button type="submit" className="p-1 rounded-sm btn bg-blue-600 text-white cursor-pointer hover:bg-blue-800">Save Changes</button>
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-95"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 active:scale-95"
+            >
+              Save Changes
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ const Doctors = () => {
   const [sortBy, setSortBy] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 3 ; 
+  const limit = 3;
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,11 +27,10 @@ const Doctors = () => {
     try {
       setLoading(true);
       const res = await fetchingDoctors({ searchTerm, location, category, sortBy, page, limit });
-
-      console.log("doctors response is :",res);
+      console.log("doctors response is :", res);
       setDoctors(res.doctors);
       setTotalPages(res.totalPages);
-      setPage(res.page)
+      setPage(res.page);
     } catch (error) {
       console.error('Error fetching doctors:', error);
     } finally {
@@ -50,26 +49,31 @@ const Doctors = () => {
   };
 
   return (
-    <div className="p-4 grid grid-cols-1 lg:grid-cols-4 gap-4">
-      <div className="lg:col-span-3 space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800">Doctors and Centers</h2>
-        <div className="flex flex-col md:flex-row gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+        {/* Header */}
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 text-center sm:text-left">
+          Doctors and Centers
+        </h2>
+
+        {/* Search and Filter Inputs */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <input
             type="text"
             placeholder="Find doctors and take an appointment"
-            className="w-full px-4 py-2 border rounded"
+            className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <input
             type="text"
             placeholder="Location"
-            className="w-full px-4 py-2 border rounded"
+            className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
           <select
-            className="w-full px-4 py-2 border rounded"
+            className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
@@ -106,7 +110,7 @@ const Doctors = () => {
             <option value="Other">Other</option>
           </select>
           <select
-            className="w-full px-4 py-2 border rounded"
+            className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
@@ -115,48 +119,62 @@ const Doctors = () => {
             <option value="alphabet">Name</option>
           </select>
         </div>
-        <div className="space-y-4">
+
+        {/* Doctors List */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {loading ? (
-            <p>Loading doctors...</p>
+            <div className="col-span-full flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500"></div>
+            </div>
           ) : doctors.length === 0 ? (
-            <p>No doctors found.</p>
+            <div className="col-span-full text-center py-12 text-gray-500">
+              <p className="text-base sm:text-lg">No doctors found.</p>
+            </div>
           ) : (
             doctors.map((doc: IDoctor) => (
               <div
                 key={doc._id}
-                className="flex items-center gap-4 p-4 bg-white rounded shadow cursor-pointer hover:bg-gray-50 transition"
+                className="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 cursor-pointer p-4 sm:p-6"
                 onClick={() => handleDoctorClick(doc)}
               >
-                <img
-                  src={doc.profile || 'https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png'}
-                  alt="Doctor"
-                  className="w-16 h-16 rounded-full object-cover"
-                />
-                <div>
-                  <h3 className="text-lg font-semibold">Dr. {doc.fullName}</h3>
-                  <p className="text-sm text-gray-600">
-                    {doc.category} specialist | {doc.experience} years experience
-                  </p>
-                  <span className="inline-block mt-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
-                    {doc.category}
-                  </span>
+                <div className="flex items-center gap-4 sm:gap-6">
+                  <img
+                    src={doc.profile || 'https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png'}
+                    alt="Doctor"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover flex-shrink-0"
+                  />
+                  <div className="flex-1 space-y-2">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">
+                      Dr. {doc.fullName}
+                    </h3>
+                    <p className="text-sm sm:text-base text-gray-600 line-clamp-2">
+                      {doc.category} specialist | {doc.experience} years experience
+                    </p>
+                    <span className="inline-block px-3 py-1 text-xs sm:text-sm rounded-full bg-blue-100 text-blue-700 font-medium">
+                      {doc.category}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))
           )}
         </div>
+
+        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center mt-4 gap-2">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8">
             <button
-              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-200 rounded-xl sm:rounded-2xl hover:bg-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm sm:text-base font-medium text-gray-800 transition-colors min-w-[80px] sm:min-w-[100px]"
               disabled={page === 1}
               onClick={() => handlePageChange(page - 1)}
             >
               Prev
             </button>
-            <span className="px-4">{page} / {totalPages}</span>
+            <span className="text-sm sm:text-base font-medium text-gray-800">
+              {page} / {totalPages}
+            </span>
             <button
-              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-200 rounded-xl sm:rounded-2xl hover:bg-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm sm:text-base font-medium text-gray-800 transition-colors min-w-[80px] sm:min-w-[100px]"
               disabled={page === totalPages}
               onClick={() => handlePageChange(page + 1)}
             >
@@ -164,9 +182,16 @@ const Doctors = () => {
             </button>
           </div>
         )}
-      </div>
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Nearby Doctors</h3>
+
+        {/* Nearby Doctors Section */}
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">
+            Nearby Doctors
+          </h3>
+          <p className="text-sm sm:text-base text-gray-500">
+            Find doctors near your location (coming soon).
+          </p>
+        </div>
       </div>
     </div>
   );
