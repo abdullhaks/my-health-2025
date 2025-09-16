@@ -80,7 +80,7 @@ const DoctorAdds = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const limit = 1;
+  const limit = 3;
 
   const fetchAdds = useCallback(async () => {
     setLoading(true);

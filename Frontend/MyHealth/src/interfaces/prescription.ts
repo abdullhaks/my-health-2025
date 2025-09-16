@@ -2,6 +2,7 @@ interface medication { name: string; dosage: string; frequency: string; duration
 
 export interface prescriptionData {
     
+      _id:string,
       appointmentId: string,
       userId: string,
       doctorId: string,

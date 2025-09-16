@@ -100,31 +100,6 @@ const EditDoctorProfileModal = ({ isOpen, onClose, onSave, initialData }: EditDo
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  // const handleAddSpecialization = () => {
-  //   if (!specializationInput.trim() || !certificateInput.trim()) {
-  //     setErrors((prev) => ({
-  //       ...prev,
-  //       specializationInput: !specializationInput.trim() ? "Specialization title is required" : undefined,
-  //       certificateInput: !certificateInput.trim() ? "Certificate is required" : undefined,
-  //     }));
-  //     return;
-  //   }
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     specializations: [...(prev.specializations || []), { title: specializationInput, certificate: certificateInput }],
-  //   }));
-  //   setSpecializationInput("");
-  //   setCertificateInput("");
-  //   setErrors((prev) => ({ ...prev, specializationInput: undefined, certificateInput: undefined }));
-  // };
-
-  // const handleRemoveSpecialization = (index: number) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     specializations: prev.specializations?.filter((_, i) => i !== index) || [],
-  //   }));
-  // };
-
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string | undefined } = {};
 
@@ -184,10 +159,6 @@ const EditDoctorProfileModal = ({ isOpen, onClose, onSave, initialData }: EditDo
       newErrors.experience = "Experience cannot exceed 50 years";
     }
 
-    // if (formData.specializations?.length === 0) {
-    //   newErrors.specializations = "At least one specialization is required";
-    // }
-
     if (formData.bankAccNo && !/^[0-9]{9,18}$/.test(formData.bankAccNo)) {
       newErrors.bankAccNo = "Bank account number must be 9-18 digits";
     }
@@ -220,223 +191,254 @@ const EditDoctorProfileModal = ({ isOpen, onClose, onSave, initialData }: EditDo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto relative animate-fadeIn max-h-[90vh] flex flex-col">
-        <div className="sticky top-0 bg-white z-10 p-6 border-b flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-800">Edit Doctor Profile</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer">
-            <FiX size={24} />
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 sm:p-6 overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md sm:max-w-lg md:max-w-xl max-h-[90vh] flex flex-col relative overflow-hidden transition-transform duration-300">
+        {/* Header */}
+        <div className="sticky top-0 bg-white z-10 p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Edit Doctor Profile</h2>
+          <button
+            onClick={onClose}
+            className="p-2 sm:p-3 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-200 transition-all duration-200 min-w-[44px] min-h-[44px]"
+            aria-label="Close"
+          >
+            <FiX className="text-lg sm:text-xl" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6">
           <div className="space-y-4">
-            <div>
-              <label htmlFor="fullName">Full Name</label>
+            {/* Full Name */}
+            <div className="space-y-2">
+              <label htmlFor="fullName" className="block text-sm sm:text-base font-medium text-gray-700">
+                Full Name
+              </label>
               <input
                 type="text"
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${errors.fullName ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.fullName ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.fullName && <p className="text-sm text-red-600">{errors.fullName}</p>}
+              {errors.fullName && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.fullName}</p>}
             </div>
 
-            <div>
-              <label htmlFor="location">Location</label>
+            {/* Location */}
+            <div className="space-y-2">
+              <label htmlFor="location" className="block text-sm sm:text-base font-medium text-gray-700">
+                Location
+              </label>
               <GeoapifyAutocomplete
                 value={formData.location?.text || ""}
                 onChange={(val: ILocation) => setFormData((prev) => ({ ...prev, location: val }))}
                 setError={(error) => setErrors((prev) => ({ ...prev, location: error }))}
-                className={errors.location ? "border-red-500" : "border-gray-300"}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.location ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.location && <p className="text-sm text-red-600">{errors.location}</p>}
+              {errors.location && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.location}</p>}
             </div>
 
-            <div>
-              <label htmlFor="dob">Date of Birth</label>
+            {/* Date of Birth */}
+            <div className="space-y-2">
+              <label htmlFor="dob" className="block text-sm sm:text-base font-medium text-gray-700">
+                Date of Birth
+              </label>
               <input
                 type="date"
                 name="dob"
                 value={formData.dob}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${errors.dob ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.dob ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.dob && <p className="text-sm text-red-600">{errors.dob}</p>}
+              {errors.dob && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.dob}</p>}
             </div>
 
-            <div>
-              <label htmlFor="phone">Phone Number</label>
+            {/* Phone Number */}
+            <div className="space-y-2">
+              <label htmlFor="phone" className="block text-sm sm:text-base font-medium text-gray-700">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="e.g. +91 9876543210"
-                className={`w-full px-3 py-2 border rounded-md ${errors.phone ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.phone ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
+              {errors.phone && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.phone}</p>}
             </div>
 
-            <div>
-              <label htmlFor="gender">Gender</label>
+            {/* Gender */}
+            <div className="space-y-2">
+              <label htmlFor="gender" className="block text-sm sm:text-base font-medium text-gray-700">
+                Gender
+              </label>
               <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md ${errors.gender ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.gender ? "border-red-500" : "border-gray-300"
+                }`}
               >
                 <option value="">Select gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
-              {errors.gender && <p className="text-sm text-red-600">{errors.gender}</p>}
+              {errors.gender && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.gender}</p>}
             </div>
 
-            <div>
-              <label htmlFor="graduation">Graduation</label>
+            {/* Graduation */}
+            <div className="space-y-2">
+              <label htmlFor="graduation" className="block text-sm sm:text-base font-medium text-gray-700">
+                Graduation
+              </label>
               <input
                 type="text"
                 name="graduation"
                 value={formData.graduation}
                 onChange={handleChange}
                 placeholder="e.g. MBBS, MD"
-                className={`w-full px-3 py-2 border rounded-md ${errors.graduation ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.graduation ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.graduation && <p className="text-sm text-red-600">{errors.graduation}</p>}
+              {errors.graduation && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.graduation}</p>}
             </div>
 
-            <div>
-              <label htmlFor="category">Category</label>
+            {/* Category */}
+            <div className="space-y-2">
+              <label htmlFor="category" className="block text-sm sm:text-base font-medium text-gray-700">
+                Category
+              </label>
               <input
                 type="text"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
                 placeholder="e.g. Cardiologist, Pediatrician"
-                className={`w-full px-3 py-2 border rounded-md ${errors.category ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.category ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.category && <p className="text-sm text-red-600">{errors.category}</p>}
+              {errors.category && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.category}</p>}
             </div>
 
-            <div>
-              <label htmlFor="registerNo">Medical Registration Number</label>
+            {/* Medical Registration Number */}
+            <div className="space-y-2">
+              <label htmlFor="registerNo" className="block text-sm sm:text-base font-medium text-gray-700">
+                Medical Registration Number
+              </label>
               <input
                 type="text"
                 name="registerNo"
                 value={formData.registerNo}
                 onChange={handleChange}
                 placeholder="e.g. MCI123456"
-                className={`w-full px-3 py-2 border rounded-md ${errors.registerNo ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.registerNo ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.registerNo && <p className="text-sm text-red-600">{errors.registerNo}</p>}
+              {errors.registerNo && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.registerNo}</p>}
             </div>
 
-            <div>
-              <label htmlFor="experience">Years of Experience</label>
+            {/* Years of Experience */}
+            <div className="space-y-2">
+              <label htmlFor="experience" className="block text-sm sm:text-base font-medium text-gray-700">
+                Years of Experience
+              </label>
               <input
                 type="number"
                 name="experience"
                 value={formData.experience ?? ""}
                 onChange={handleChange}
                 min="0"
-                className={`w-full px-3 py-2 border rounded-md ${errors.experience ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.experience ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.experience && <p className="text-sm text-red-600">{errors.experience}</p>}
+              {errors.experience && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.experience}</p>}
             </div>
 
-{/* 
-            <div>
-              <label>Specializations</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={specializationInput}
-                  onChange={(e) => setSpecializationInput(e.target.value)}
-                  placeholder="Specialization title"
-                  className={`w-full px-3 py-2 border rounded-md ${errors.specializationInput ? "border-red-500" : "border-gray-300"}`}
-                />
-                <input
-                  type="text"
-                  value={certificateInput}
-                  onChange={(e) => setCertificateInput(e.target.value)}
-                  placeholder="Certificate"
-                  className={`w-full px-3 py-2 border rounded-md ${errors.certificateInput ? "border-red-500" : "border-gray-300"}`}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddSpecialization}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                >
-                  Add
-                </button>
-              </div>
-              {errors.specializationInput && <p className="text-sm text-red-600">{errors.specializationInput}</p>}
-              {errors.certificateInput && <p className="text-sm text-red-600">{errors.certificateInput}</p>}
-              {errors.specializations && <p className="text-sm text-red-600">{errors.specializations}</p>}
-              <ul className="mt-2">
-                {formData.specializations?.map((spec, index) => (
-                  <li key={index} className="flex justify-between items-center">
-                    <span>{spec.title} (Certificate: {spec.certificate})</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSpecialization(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div> */}
-
-            <div>
-              <label htmlFor="bankAccNo">Bank Account Number</label>
+            {/* Bank Account Number */}
+            <div className="space-y-2">
+              <label htmlFor="bankAccNo" className="block text-sm sm:text-base font-medium text-gray-700">
+                Bank Account Number
+              </label>
               <input
                 type="text"
                 name="bankAccNo"
                 value={formData.bankAccNo || ""}
                 onChange={handleChange}
                 placeholder="Your bank account number"
-                className={`w-full px-3 py-2 border rounded-md ${errors.bankAccNo ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.bankAccNo ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.bankAccNo && <p className="text-sm text-red-600">{errors.bankAccNo}</p>}
+              {errors.bankAccNo && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.bankAccNo}</p>}
             </div>
 
-            <div>
-              <label htmlFor="bankAccHolderName">Account Holder Name</label>
+            {/* Account Holder Name */}
+            <div className="space-y-2">
+              <label htmlFor="bankAccHolderName" className="block text-sm sm:text-base font-medium text-gray-700">
+                Account Holder Name
+              </label>
               <input
                 type="text"
                 name="bankAccHolderName"
                 value={formData.bankAccHolderName || ""}
                 onChange={handleChange}
                 placeholder="Account holder name"
-                className={`w-full px-3 py-2 border rounded-md ${errors.bankAccHolderName ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.bankAccHolderName ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.bankAccHolderName && <p className="text-sm text-red-600">{errors.bankAccHolderName}</p>}
+              {errors.bankAccHolderName && (
+                <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.bankAccHolderName}</p>
+              )}
             </div>
 
-            <div>
-              <label htmlFor="bankIfscCode">IFSC Code</label>
+            {/* IFSC Code */}
+            <div className="space-y-2">
+              <label htmlFor="bankIfscCode" className="block text-sm sm:text-base font-medium text-gray-700">
+                IFSC Code
+              </label>
               <input
                 type="text"
                 name="bankIfscCode"
                 value={formData.bankIfscCode || ""}
                 onChange={handleChange}
                 placeholder="e.g. SBIN0001234"
-                className={`w-full px-3 py-2 border rounded-md ${errors.bankIfscCode ? "border-red-500" : "border-gray-300"}`}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+                  errors.bankIfscCode ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {errors.bankIfscCode && <p className="text-sm text-red-600">{errors.bankIfscCode}</p>}
+              {errors.bankIfscCode && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.bankIfscCode}</p>}
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="btn border-gray-300 bg-white text-gray-700">
+          {/* Form Actions */}
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-lg shadow-sm text-sm sm:text-base font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 min-h-[44px]"
+            >
               Cancel
             </button>
-            <button type="submit" className="p-1 rounded-sm btn bg-blue-600 text-white cursor-pointer hover:bg-blue-800">
+            <button
+              type="submit"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 min-h-[44px]"
+            >
               Save Changes
             </button>
           </div>

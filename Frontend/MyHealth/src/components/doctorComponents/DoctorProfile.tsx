@@ -116,65 +116,78 @@ const DoctorProfile = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="p-6 border-b border-gray-200 flex flex-col md:flex-row gap-6">
-          <div className="relative w-32 h-32">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
+      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+        {/* Header Section */}
+        <div className="p-4 sm:p-6 md:p-8 border-b border-gray-200 flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 mx-auto md:mx-0 flex-shrink-0">
             <img
               src={
                 previewImage ||
                 doctor.profile ||
                 "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
               }
-              className="w-full h-full object-cover rounded-full border-4 border-blue-200"
+              className="w-full h-full object-cover rounded-full border-4 border-blue-100 shadow-sm"
               alt="Doctor Profile"
             />
-            <label className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow cursor-pointer hover:bg-gray-100">
-              <FiCamera />
+            <label className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md cursor-pointer hover:bg-gray-100 transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center">
+              <FiCamera className="text-lg sm:text-xl text-gray-600" />
               <input type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
             </label>
           </div>
 
-          <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <h2 className="text-2xl font-bold text-gray-800">Dr. {profileData.fullName}</h2>
+          <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+                Dr. {profileData.fullName}
+              </h2>
               {profileData.premiumMembership && (
-                <span className="rounded-full bg-yellow-100 text-yellow-700 text-sm px-3 py-1 font-medium mt-2 md:mt-0">
+                <span className="mt-2 sm:mt-0 rounded-full bg-yellow-100 text-yellow-700 text-xs sm:text-sm font-medium px-3 py-1">
                   Premium Doctor ⭐
                 </span>
               )}
             </div>
-
-            <div className="mt-2 space-y-1 text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <span>Refer ID: www.myhealth.com/id:{profileData._id}</span>
-                <FiCopy className="cursor-pointer text-blue-500" onClick={handleCopyReferID} />
+            <div className="mt-3 space-y-2 text-sm sm:text-base text-gray-600">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <span className="truncate max-w-[200px] sm:max-w-[300px]">
+                  Refer ID: www.myhealth.com/id:{profileData._id}
+                </span>
+                <FiCopy
+                  className="cursor-pointer text-blue-500 hover:text-blue-600 transition-all duration-200"
+                  onClick={handleCopyReferID}
+                />
               </div>
-              <div className="flex items-center gap-2">
-                <span>MH-ID: MH-DR-{profileData._id.slice(0, 6).toUpperCase()}</span>
-                <FiCopy className="cursor-pointer text-blue-500" onClick={handleCopyMHID} />
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <span className="truncate max-w-[200px] sm:max-w-[300px]">
+                  MH-ID: MH-DR-{profileData._id.slice(0, 6).toUpperCase()}
+                </span>
+                <FiCopy
+                  className="cursor-pointer text-blue-500 hover:text-blue-600 transition-all duration-200"
+                  onClick={handleCopyMHID}
+                />
               </div>
             </div>
           </div>
 
-          <div className="self-start mt-4 md:mt-0">
+          <div className="self-center md:self-start mt-4 md:mt-0">
             <button
               onClick={() => setIsEditModalOpen(true)}
-              className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 cursor-pointer"
+              className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-lg text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-100 transition-all duration-200 min-h-[44px]"
             >
-              <FiEdit />
+              <FiEdit className="text-lg" />
               Edit
             </button>
           </div>
         </div>
 
+        {/* Image Save/Cancel Buttons */}
         {selectedImage && (
-          <div className="px-6 pt-2 pb-4">
-            <div className="flex gap-2">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50">
+            <div className="flex justify-center sm:justify-start gap-3">
               <button
                 onClick={handleSaveImage}
                 disabled={isUploading}
-                className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 text-sm"
+                className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 transition-all duration-200 min-h-[44px]"
               >
                 {isUploading ? "Saving..." : "Save"}
               </button>
@@ -183,7 +196,7 @@ const DoctorProfile = () => {
                   setSelectedImage(null);
                   setPreviewImage(null);
                 }}
-                className="bg-gray-300 text-gray-800 px-4 py-1 rounded hover:bg-gray-400 text-sm"
+                className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-all duration-200 min-h-[44px]"
               >
                 Cancel
               </button>
@@ -191,93 +204,87 @@ const DoctorProfile = () => {
           </div>
         )}
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-t">
-          <div>
-            <p className="text-sm text-gray-500">Email</p>
-            <p>{profileData.email || "Not provided"}</p>
+        {/* Profile Details Grid */}
+        <div className="p-4 sm:p-6 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 border-t border-gray-200">
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Email</p>
+            <p className="text-sm sm:text-base truncate">{profileData.email || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Phone</p>
-            <p>{profileData.phone || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Phone</p>
+            <p className="text-sm sm:text-base truncate">{profileData.phone || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">DOB</p>
-            <p>{profileData.dob || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">DOB</p>
+            <p className="text-sm sm:text-base">{profileData.dob || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Gender</p>
-            <p>{profileData.gender || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Gender</p>
+            <p className="text-sm sm:text-base">{profileData.gender || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Location</p>
-            <p>{profileData.location?.text || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Location</p>
+            <p className="text-sm sm:text-base truncate">{profileData.location?.text || "Not provided"}</p>
           </div>
-          {/* <div>
-            <p className="text-sm text-gray-500">Specializations</p>
-            <p>
-              {profileData.specializations?.length
-                ? profileData.specializations.map(spec => spec.title).join(", ")
-                : "Not provided"}
-            </p>
-          </div> */}
-          <div>
-            <p className="text-sm text-gray-500">Category</p>
-            <p>{profileData.category || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Category</p>
+            <p className="text-sm sm:text-base">{profileData.category || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Graduation</p>
-            <p>{profileData.graduation || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Graduation</p>
+            <p className="text-sm sm:text-base">{profileData.graduation || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Experience</p>
-            <p>{profileData.experience ? `${profileData.experience} years` : "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Experience</p>
+            <p className="text-sm sm:text-base">{profileData.experience ? `${profileData.experience} years` : "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Medical Reg. No</p>
-            <p>{profileData.registerNo || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Medical Reg. No</p>
+            <p className="text-sm sm:text-base truncate">{profileData.registerNo || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Bank Account No</p>
-            <p>{profileData.bankAccNo || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Bank Account No</p>
+            <p className="text-sm sm:text-base truncate">{profileData.bankAccNo || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Account Holder Name</p>
-            <p>{profileData.bankAccHolderName || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Account Holder Name</p>
+            <p className="text-sm sm:text-base truncate">{profileData.bankAccHolderName || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">IFSC Code</p>
-            <p>{profileData.bankIfscCode || "Not provided"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">IFSC Code</p>
+            <p className="text-sm sm:text-base truncate">{profileData.bankIfscCode || "Not provided"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Verification Status</p>
-            <p>{profileData.isVerified ? "Verified" : "Not Verified"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Verification Status</p>
+            <p className="text-sm sm:text-base">{profileData.isVerified ? "Verified" : "Not Verified"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Admin Verification</p>
-            <p>{profileData.adminVerified ? "Approved" : "Pending"}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Admin Verification</p>
+            <p className="text-sm sm:text-base">{profileData.adminVerified ? "Approved" : "Pending"}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Report Analysis Fees</p>
-            <p>₹{profileData.reportAnalysisFees || 50}</p>
+          <div className="space-y-1">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Report Analysis Fees</p>
+            <p className="text-sm sm:text-base">₹{profileData.reportAnalysisFees || 50}</p>
           </div>
         </div>
 
-        <div className="p-6 border-t flex justify-between items-center">
-          <div>
-            <p className="text-sm">Change Password</p>
+        {/* Actions Section */}
+        <div className="p-4 sm:p-6 md:p-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6">
+          <div className="flex flex-col items-center sm:items-start">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Change Password</p>
             <button
               onClick={() => setIsChangePasswordModalOpen(true)}
-              className="text-blue-500 border border-blue-500 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-700 hover:text-white"
+              className="mt-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium text-blue-600 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 min-h-[44px]"
             >
               Change
             </button>
           </div>
-          <div>
-            <p className="text-sm">Earnings</p>
-            <p className="text-gray-700 font-semibold">{profileData.walletBalance || 0} ₹</p>
+          <div className="flex flex-col items-center sm:items-end">
+            <p className="text-xs sm:text-sm font-medium text-gray-500">Earnings</p>
+            <p className="text-sm sm:text-base font-semibold text-gray-900">{profileData.walletBalance || 0} ₹</p>
             <button
               onClick={handlePayout}
-              className="text-blue-500 border border-blue-500 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-700 hover:text-white"
+              className="mt-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium text-blue-600 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 min-h-[44px]"
             >
               Payout
             </button>
@@ -316,7 +323,6 @@ const DoctorProfile = () => {
         isOpen={isPayoutModalOpen}
         onClose={() => setIsPayoutModalOpen(false)}
         onSave={(bankDetails) => {
-          // Convert BankDetails to payoutDetails type
           handlePayoutRequest({
             bankAccNo: bankDetails.bankAccNo,
             bankAccHolderName: bankDetails.bankAccHolderName,

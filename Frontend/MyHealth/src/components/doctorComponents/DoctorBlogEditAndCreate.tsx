@@ -85,8 +85,8 @@ const DoctorBlogEditAndCreate = () => {
       newErrors.content = 'Content is required';
     } else if (formData.content.length < 50) {
       newErrors.content = 'Content must be at least 50 characters long';
-    }else if (formData.content.length > 2000) {
-      newErrors.content = 'Title must be less than 2000 characters';
+    } else if (formData.content.length > 2000) {
+      newErrors.content = 'Content must be less than 2000 characters';
     }
     
     if (!formData.thumbnail && !thumbnailFile) {
@@ -99,7 +99,6 @@ const DoctorBlogEditAndCreate = () => {
       newErrors.tags = 'Maximum 10 tags allowed';
     }
 
-    // Validate file sizes (max 5MB) and types
     const validateFile = (file: File | null, fieldName: string) => {
       if (file) {
         if (file.size > 5 * 1024 * 1024) {
@@ -156,22 +155,18 @@ const DoctorBlogEditAndCreate = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       setErrors(prev => ({ ...prev, [type]: 'Please select a valid image file' }));
       return;
     }
 
-    // Validate file size
     if (file.size > 5 * 1024 * 1024) {
       setErrors(prev => ({ ...prev, [type]: 'File size must be less than 5MB' }));
       return;
     }
 
-    // Create preview URL
     const previewUrl = URL.createObjectURL(file);
 
-    // Update state based on type
     const updates: {newthumbnail?:string;newimg1?:string;newimg2?:string;newimg3?:string} = {};
     if (type === 'thumbnail') {
       setThumbnailFile(file);
@@ -194,7 +189,6 @@ const DoctorBlogEditAndCreate = () => {
   }, [errors]);
 
   const cancelImage = useCallback((type: 'thumbnail' | 'img1' | 'img2' | 'img3') => {
-    // Revoke the object URL to free memory
     const currentPreview = type === 'thumbnail' ? formData.newthumbnail : 
                           type === 'img1' ? formData.newimg1 :
                           type === 'img2' ? formData.newimg2 : formData.newimg3;
@@ -250,7 +244,6 @@ const DoctorBlogEditAndCreate = () => {
       let newImg2Url = '';
       let newImg3Url = '';
 
-      // Upload files sequentially with progress feedback
       if (thumbnailFile) {
         hideLoading();
         message.loading("Uploading thumbnail...");
@@ -278,25 +271,22 @@ const DoctorBlogEditAndCreate = () => {
       hideLoading();
       message.loading("Saving blog...");
 
-       const blogPayload = {
-      title: formData.title.trim(),
-      content: formData.content.trim(),
-      author: blog?.author || Doctor?.fullName || 'Unknown Author',
-      authorId:Doctor?._id,
-      thumbnail: newThumbUrl || formData.thumbnail,
-      img1: newImg1Url || formData.img1,
-      img2: newImg2Url || formData.img2,
-      img3: newImg3Url || formData.img3,
-      tags: formData.tags, // already an array
-    };
-
+      const blogPayload = {
+        title: formData.title.trim(),
+        content: formData.content.trim(),
+        author: blog?.author || Doctor?.fullName || 'Unknown Author',
+        authorId: Doctor?._id,
+        thumbnail: newThumbUrl || formData.thumbnail,
+        img1: newImg1Url || formData.img1,
+        img2: newImg2Url || formData.img2,
+        img3: newImg3Url || formData.img3,
+        tags: formData.tags,
+      };
 
       if (blog) {
         await updateBlog(blog._id, blogPayload);
         message.success('Blog updated successfully!');
       } else {
-
-        console.log("create blog........",blogPayload);
         await createBlog(blogPayload);
         message.success('Blog created successfully!');
       }
@@ -314,7 +304,6 @@ const DoctorBlogEditAndCreate = () => {
   }, [formData, thumbnailFile, img1File, img2File, img3File, blog, navigate, validateForm, Doctor]);
 
   const onCancel = useCallback(() => {
-
     [formData.newthumbnail, formData.newimg1, formData.newimg2, formData.newimg3].forEach(url => {
       if (url && url.startsWith('blob:')) {
         URL.revokeObjectURL(url);
@@ -341,7 +330,7 @@ const DoctorBlogEditAndCreate = () => {
     required?: boolean
   }) => (
     <div className="group">
-      <label className=" text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+      <label className="block text-sm sm:text-base font-semibold text-gray-800 mb-2 sm:mb-3  items-center gap-2">
         <FaImage className="text-blue-500" />
         {label}
         {required && <span className="text-red-500">*</span>}
@@ -360,9 +349,9 @@ const DoctorBlogEditAndCreate = () => {
         {!(newImage || currentImage) ? (
           <label
             htmlFor={`${type}-upload`}
-            className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 bg-gray-50"
+            className="flex flex-col items-center justify-center w-full h-40 sm:h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 bg-gray-50"
           >
-            <FaUpload className="text-gray-400 text-3xl mb-2" />
+            <FaUpload className="text-gray-400 text-2xl sm:text-3xl mb-2" />
             <span className="text-gray-600 text-sm font-medium">Click to upload {label.toLowerCase()}</span>
             <span className="text-gray-400 text-xs mt-1">PNG, JPG up to 5MB</span>
           </label>
@@ -371,21 +360,21 @@ const DoctorBlogEditAndCreate = () => {
             <img
               src={newImage || currentImage}
               alt={`${label} Preview`}
-              className="w-full h-48 object-cover"
+              className="w-full h-40 sm:h-48 object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center opacity-0 hover:opacity-100">
-              <div className="flex gap-2">
+            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <div className="flex gap-2 sm:gap-3">
                 <label
                   htmlFor={`${type}-upload`}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer transition-colors"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer transition-colors duration-200 text-sm"
                 >
                   <FaUpload /> Change
                 </label>
                 {file && (
                   <button
                     onClick={() => cancelImage(type)}
-                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200 text-sm"
                     disabled={loading}
                   >
                     <FaTimes /> Cancel
@@ -395,7 +384,7 @@ const DoctorBlogEditAndCreate = () => {
             </div>
             {uploadProgress[type] && (
               <div className="absolute inset-0 bg-blue-500 bg-opacity-75 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-6 sm:h-8 w-6 sm:w-8 border-b-2 border-white"></div>
               </div>
             )}
           </div>
@@ -403,7 +392,7 @@ const DoctorBlogEditAndCreate = () => {
       </div>
       
       {error && (
-        <div className="mt-2 text-red-500 text-sm flex items-center gap-1">
+        <div className="mt-2 text-red-500 text-xs sm:text-sm flex items-center gap-1">
           <FaTimes className="text-xs" />
           {error}
         </div>
@@ -412,42 +401,42 @@ const DoctorBlogEditAndCreate = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-6">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center">
+        <div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
                 {blog ? 'Edit Blog Post' : 'Create New Blog Post'}
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-sm sm:text-base">
                 {blog ? 'Update your existing blog post' : 'Share your knowledge with the world'}
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <button
                 onClick={onCancel}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 disabled={loading}
               >
-                <FaTimes /> Cancel
+                <FaTimes size={16} /> Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50"
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 disabled={loading}
               >
-                <FaSave /> {loading ? 'Saving...' : 'Save Blog'}
+                <FaSave size={16} /> {loading ? 'Saving...' : 'Save Blog'}
               </button>
             </div>
           </div>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+        <div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
           {errors.form && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 flex items-center gap-2">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4 text-red-700 text-sm sm:text-base flex items-center gap-2">
               <FaTimes className="text-red-500" />
               {errors.form}
             </div>
@@ -455,21 +444,21 @@ const DoctorBlogEditAndCreate = () => {
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-3">
+            <label className="block text-sm sm:text-base font-semibold text-gray-800 mb-2 sm:mb-3">
               Blog Title <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
-              className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base ${
                 errors.title ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
               }`}
               placeholder="Enter an engaging title for your blog post..."
               disabled={loading}
             />
             {errors.title && (
-              <div className="mt-2 text-red-500 text-sm flex items-center gap-1">
+              <div className="mt-2 text-red-500 text-xs sm:text-sm flex items-center gap-1">
                 <FaTimes className="text-xs" />
                 {errors.title}
               </div>
@@ -489,14 +478,14 @@ const DoctorBlogEditAndCreate = () => {
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-semibold text-gray-800 mb-3">
+            <label className="block text-sm sm:text-base font-semibold text-gray-800 mb-2 sm:mb-3">
               Blog Content <span className="text-red-500">*</span>
             </label>
             <textarea
               value={formData.content}
               onChange={(e) => handleInputChange('content', e.target.value)}
-              rows={10}
-              className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 resize-none ${
+              rows={8}
+              className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 resize-none text-sm sm:text-base ${
                 errors.content ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
               }`}
               placeholder="Write your blog content here. Share your expertise, insights, and valuable information..."
@@ -504,20 +493,20 @@ const DoctorBlogEditAndCreate = () => {
             />
             <div className="flex justify-between items-center mt-2">
               {errors.content ? (
-                <div className="text-red-500 text-sm flex items-center gap-1">
+                <div className="text-red-500 text-xs sm:text-sm flex items-center gap-1">
                   <FaTimes className="text-xs" />
                   {errors.content}
                 </div>
               ) : (
-                <div className="text-gray-500 text-sm">
-                  {formData.content.length} characters
+                <div className="text-gray-500 text-xs sm:text-sm">
+                  {formData.content.length}/2000 characters
                 </div>
               )}
             </div>
           </div>
 
           {/* Additional Images */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <ImageUploadSection
               type="img1"
               label="Content Image 1"
@@ -546,44 +535,44 @@ const DoctorBlogEditAndCreate = () => {
 
           {/* Tags */}
           <div>
-            <label className=" text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <label className="block text-sm sm:text-base font-semibold text-gray-800 mb-2 sm:mb-3  items-center gap-2">
               <FaTag className="text-blue-500" />
               Tags <span className="text-red-500">*</span>
               <span className="text-gray-500 font-normal">({formData.tags.length}/10)</span>
             </label>
             
-            <div className="flex gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-3 sm:mb-4">
               <input
                 type="text"
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyPress={handleTagKeyPress}
-                className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-gray-300 transition-all duration-200"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-gray-300 transition-all duration-200 text-sm sm:text-base"
                 placeholder="Enter a tag and press Enter..."
                 disabled={loading || formData.tags.length >= 10}
               />
               <button
                 onClick={addTag}
                 disabled={formData.tags.length >= 10 || loading || !newTag.trim()}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg"
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                <FaTag /> Add
+                <FaTag size={16} /> Add
               </button>
             </div>
 
             {errors.tags && (
-              <div className="mb-4 text-red-500 text-sm flex items-center gap-1">
+              <div className="mb-3 sm:mb-4 text-red-500 text-xs sm:text-sm flex items-center gap-1">
                 <FaTimes className="text-xs" />
                 {errors.tags}
               </div>
             )}
 
             {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 {formData.tags.map((tag: string, index: number) => (
                   <span
                     key={index}
-                    className="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 px-4 py-2 rounded-full flex items-center gap-2 hover:from-blue-200 hover:to-indigo-200 transition-all duration-200 shadow-sm"
+                    className="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-2 hover:from-blue-200 hover:to-indigo-200 transition-all duration-200 shadow-sm text-sm"
                   >
                     #{tag}
                     <button

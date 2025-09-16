@@ -57,8 +57,7 @@ const UserChat = () => {
   const [activeAppointment, setActiveAppointment] = useState<boolean>(false);
   const [isConversationListVisible, setIsConversationListVisible] = useState(true);
 
-const apiUrl = import.meta.env.VITE_API_URL as string;
-  
+  const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
@@ -506,7 +505,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         </div>
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-gray-500 text-sm">Loading conversations...</div>
+            <div className="p-4 sm:p-5 text-gray-500 text-sm sm:text-base">Loading conversations...</div>
           ) : (
             <ul className="divide-y divide-gray-200">
               {conversations.map((c) =>
@@ -557,7 +556,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
               />
               <div className="flex-1">
                 <p className="text-sm sm:text-base font-medium text-gray-900">{currentChat.members[0].name}</p>
-                {typingUser && <p className="text-xs text-green-600">{typingUser}</p>}
+                {typingUser && <p className="text-xs sm:text-sm text-green-600">{typingUser}</p>}
               </div>
             </div>
 
@@ -579,7 +578,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                     <div key={msg._id}>
                       {needsDateHeader(msg, messages[index - 1]) && (
                         <div className="text-center my-4 sm:my-6">
-                          <span className="inline-block bg-gray-200 text-gray-700 text-xs sm:text-sm font-medium px-3 py-1.5 rounded-full">
+                          <span className="inline-block bg-gray-200 text-gray-700 text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full">
                             {formatDateHeader(msg.timestamp)}
                           </span>
                         </div>
@@ -619,7 +618,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                             <p className="text-sm sm:text-base break-words">{msg.content}</p>
                           )}
                           <div className="flex items-center justify-end mt-1 sm:mt-2 gap-1 sm:gap-2">
-                            <span className="text-xs text-gray-300">{formatMessageTime(msg.timestamp)}</span>
+                            <span className="text-xs sm:text-sm text-gray-300">{formatMessageTime(msg.timestamp)}</span>
                             {msg.senderId === userId && (
                               <span className="flex items-center">
                                 {msg.status === "read" ? (
@@ -654,48 +653,62 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 />
                 <label
                   htmlFor="docMessageInput"
-                  className="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 transition-all cursor-pointer"
+                  className="p-2 sm:p-3 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 transition-all cursor-pointer"
                 >
                   <IoDocumentAttachOutline className="text-xl sm:text-2xl" />
                 </label>
 
-                {docMessage && (
-                  <div className="flex items-center bg-gray-100 rounded-lg px-2 sm:px-3 py-1.5">
-                    <IoDocumentAttachOutline className="text-gray-500 text-sm sm:text-base" />
-                    <span className="text-xs sm:text-sm text-gray-700 ml-1 sm:ml-2 truncate max-w-[150px] sm:max-w-[200px]">
-                      {docMessage.name}
-                    </span>
+                {docMessage ? (
+                  <div className="flex items-center flex-1 gap-2 sm:gap-3">
+                    <div className="flex items-center bg-gray-100 rounded-lg px-2 sm:px-3 py-1.5 flex-1">
+                      <IoDocumentAttachOutline className="text-gray-500 text-sm sm:text-base" />
+                      <span className="text-xs sm:text-sm text-gray-700 ml-1 sm:ml-2 truncate max-w-[150px] sm:max-w-[200px]">
+                        {docMessage.name}
+                      </span>
+                      <button
+                        onClick={handleCancelFile}
+                        className="ml-1 sm:ml-2 text-red-500 hover:text-red-700"
+                      >
+                        <FiX size={16} />
+                      </button>
+                    </div>
                     <button
-                      onClick={handleCancelFile}
-                      className="ml-1 sm:ml-2 text-red-500 hover:text-red-700"
+                      onClick={handleSendMessage}
+                      className={`p-2 sm:p-3 rounded-full ${
+                        loading ? "text-gray-400" : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                      } transition-all disabled:opacity-50 min-w-[44px] min-h-[44px]`}
+                      disabled={loading}
                     >
-                      <FiX size={16} />
+                      <FiSend className="text-xl sm:text-2xl" />
                     </button>
                   </div>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => {
+                        setNewMessage(e.target.value);
+                        handleTyping();
+                      }}
+                      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                      placeholder="Type a message..."
+                      className="flex-1 p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                      disabled={loading}
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      className={`p-2 sm:p-3 rounded-full ${
+                        loading || !newMessage.trim()
+                          ? "text-gray-400"
+                          : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                      } transition-all disabled:opacity-50 min-w-[44px] min-h-[44px]`}
+                      disabled={loading || !newMessage.trim()}
+                    >
+                      <FiSend className="text-xl sm:text-2xl" />
+                    </button>
+                  </>
                 )}
-
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => {
-                    setNewMessage(e.target.value);
-                    handleTyping();
-                  }}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                  placeholder="Type a message..."
-                  className="flex-1 p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                  disabled={!!docMessage || loading}
-                />
-
-                <button
-                  onClick={handleSendMessage}
-                  className={`p-2 sm:p-3 rounded-full ${
-                    loading ? "text-gray-400" : "text-green-600 hover:text-green-700 hover:bg-green-50"
-                  } transition-all disabled:opacity-50`}
-                  disabled={loading}
-                >
-                  <FiSend className="text-xl sm:text-2xl" />
-                </button>
               </div>
             ) : (
               <div className="bg-white border-t border-gray-200 p-4 sm:p-5 sticky bottom-0 z-10">

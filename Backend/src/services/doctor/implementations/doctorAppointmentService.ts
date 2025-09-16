@@ -3,9 +3,15 @@ import IDoctorAppointmentService from "../interfaces/IDoctorAppointmentService";
 import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import IAppointmentsRepository from "../../../repositories/interfaces/IAppointmentsRepository";
 import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
+import { IPrescription } from "../../../dto/prescriptionDto";
 import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRepository";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
+import IPrescriptionRepository from "../../../repositories/interfaces/IPrescriptionRepositiory";
+
+interface IAppointmentWithPrescription extends IAppointment{
+prescriptions?:IPrescription
+}
 
 @injectable()
 export default class DoctorAppointmentService implements IDoctorAppointmentService {
@@ -15,7 +21,9 @@ export default class DoctorAppointmentService implements IDoctorAppointmentServi
       @inject("IAppointmentsRepository") private _appointmentsRepository:IAppointmentsRepository,
       @inject ("IUserRepository") private _userRepository : IUserRepository,
       @inject("IAnalyticsRepository")private _analyticsRepository: IAnalyticsRepository,
-      @inject("ITransactionRepository") private _transactionRepository: ITransactionRepository
+      @inject("ITransactionRepository") private _transactionRepository: ITransactionRepository,
+      @inject("IPrescriptionRepository") private _prescriptionRepository: IPrescriptionRepository,
+
 
     ){   }
 
@@ -24,7 +32,7 @@ async getDoctorAppointments(
     page: number,
     limit: number,
     filters: { appointmentStatus?: string; startDate?: string; endDate?: string }
-  ): Promise<{appointments:IAppointmentDTO[] | null,totalPages:number}> {
+  ): Promise<{appointments:IAppointmentWithPrescription[] | null,totalPages:number}> {
     console.log("Doctor ID from service...", doctorId);
 
     const query: any = { doctorId };
@@ -74,7 +82,8 @@ async getDoctorAppointments(
 
     if(appointments){
       const profile = new Map();
-      const updatedAppointments = await Promise.all(
+
+      let updatedAppointments = await Promise.all(
         appointments.map(async (item: any) => {
           if (profile.has(item.userId)) {
             item.profile = profile.get(item.userId);
@@ -92,21 +101,46 @@ async getDoctorAppointments(
             }
             return item;
           }
-        })
-      );
 
-      if(updatedAppointments){
+        }) );
+
+      const prescriptions = new Map();
+
+       let nwUpdatedAppointments = await Promise.all(
+        updatedAppointments.map(async (item: any) => {
+          if (prescriptions.has(item.userId)) {
+            item.prescriptions = prescriptions.get(item.userId);
+            return item;
+          } else {
+            const prescrs = await this._prescriptionRepository.findAll({ userId: item.userId });
+            if (prescrs) {
+                prescriptions.set(item.userId, prescrs);
+                item.prescriptions = prescrs;
+            }else{
+                item.prescriptions = []
+            }
+            return item;
+          }
+
+        }));
+
+      if(nwUpdatedAppointments){
         appointments=updatedAppointments
       }
 
+    
+    const typedAppointments: IAppointmentWithPrescription[] = updatedAppointments.map((item: any) => item as IAppointmentWithPrescription);
+    return { appointments: typedAppointments, totalPages };
+
+
     }
 
-    return {appointments,totalPages};
+    return { appointments: null, totalPages };
   };
 
 
 
-    async cancelAppointment(
+  async cancelAppointment(
       appointmentId: string
     ): Promise<{
       status: boolean;

@@ -42,10 +42,12 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const notificationRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
   const limit = 10;
   const [notificationSet, setNotificationSet] = useState(1);
@@ -85,7 +87,6 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
   };
 
 const apiUrl = import.meta.env.VITE_API_URL as string;
-
 
   const getAccessToken = async () => {
     try {
@@ -183,6 +184,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     const handleClickOutside = (event: MouseEvent) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setShowNotificationDropdown(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfileDropdown(false);
       }
     };
 
@@ -554,8 +558,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
               </div>
 
               {/* User Profile */}
-              <div className="relative group">
-                <button className="flex items-center focus:outline-none">
+              <div className="relative" ref={profileRef}>
+                <button
+                  className="flex items-center focus:outline-none cursor-pointer"
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                >
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-blue-600">
                     <img
                       src={user.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
@@ -564,21 +571,34 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                     />
                   </div>
                 </button>
-                <div className="absolute right-0 mt-0.5 w-40 md:w-48 bg-gray-200 rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
-                  <Link to="/user/profile" className="block px-4 py-2 text-xs md:text-sm text-gray-700 hover:bg-blue-50">
-                    Your Profile
-                  </Link>
-                  <Link to="/user/settings" className="block px-4 py-2 text-xs md:text-sm text-gray-700 hover:bg-blue-50">
-                    Settings
-                  </Link>
-                  <div className="border-t border-gray-100"></div>
-                  <button
-                    onClick={() => setShowConfirm(true)}
-                    className="block w-full text-left px-4 py-2 text-xs md:text-sm text-red-600 hover:bg-red-50"
-                  >
-                    Sign out
-                  </button>
-                </div>
+                {showProfileDropdown && (
+                  <div className="absolute right-0 mt-0.5 w-40 md:w-48 bg-gray-200 rounded-md shadow-lg py-1 z-50">
+                    <Link
+                      to="/user/profile"
+                      className="block px-4 py-2 text-xs md:text-sm text-gray-700 hover:bg-blue-50"
+                      onClick={() => setShowProfileDropdown(false)}
+                    >
+                      Your Profile
+                    </Link>
+                    <Link
+                      to="/user/settings"
+                      className="block px-4 py-2 text-xs md:text-sm text-gray-700 hover:bg-blue-50"
+                      onClick={() => setShowProfileDropdown(false)}
+                    >
+                      Settings
+                    </Link>
+                    <div className="border-t border-gray-100"></div>
+                    <button
+                      onClick={() => {
+                        setShowConfirm(true);
+                        setShowProfileDropdown(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-xs md:text-sm text-red-600 hover:bg-red-50"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -10,6 +10,7 @@ import axios from "axios";
 import doodle from "../../assets/bg_print.png";
 import { IDoctorData } from "../../interfaces/doctor";
 import { ApiError } from "../../interfaces/error";
+import { ArrowLeft } from "lucide-react";
 
 interface Message {
   _id: string;
@@ -52,9 +53,9 @@ const DoctorChat = () => {
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [docMessage, setDocMessage] = useState<File | null>(null);
+  const [isConversationListVisible, setIsConversationListVisible] = useState(true);
 
-const apiUrl = import.meta.env.VITE_API_URL as string;
-
+  const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
@@ -63,7 +64,6 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         {},
         { withCredentials: true }
       );
-      console.log("Token response:", response.data);
       return response.data.accessToken;
     } catch (error) {
       console.error("Failed to fetch access token:", error);
@@ -84,8 +84,6 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
       if (!token) {
         token = await getAccessToken();
       }
-
-      console.log("Token in frontend:", token);
 
       const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
         transports: ["websocket"],
@@ -134,7 +132,6 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
       setLoading(true);
       try {
         const res = await getDoctorConversations(doctorId, "User");
-        console.log("Fetched conversations:", res);
         setConversations(res);
       } catch (err) {
         console.error("Failed to fetch conversations:", err);
@@ -252,11 +249,13 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
   const handleSendMessage = async () => {
     if (!currentChat || (!newMessage.trim() && !docMessage)) return;
 
-    let messageData: {senderId: string,
-          conversationId: string,
-          type:string,
-          content: string,
-          fileName?: string,};
+    let messageData: {
+      senderId: string,
+      conversationId: string,
+      type: string,
+      content: string,
+      fileName?: string,
+    };
 
     let tempMessage: Message;
 
@@ -330,17 +329,16 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     }
 
     try {
-      console.log("doctorId and selected user:", doctorId, selectedUser);
       const response = await axios.post(
         "https://api.abdullhakalamban.online/api/doctor/conversation",
         { userIds: [doctorId, selectedUser] },
         { withCredentials: true }
       );
       const newConversation = response.data;
-      console.log("New conversation:", newConversation);
       setConversations((prev) => [...prev, newConversation]);
       setCurrentChat(newConversation);
       setSelectedUser("");
+      setIsConversationListVisible(false);
     } catch (error) {
       console.error("Failed to create conversation:", error);
       message.error("Failed to create conversation. Please try again.");
@@ -404,23 +402,28 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
   };
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] bg-gray-100">
+    <div className="flex h-screen bg-gray-50 md:h-[calc(100vh-4rem)]">
       {/* Conversation Sidebar */}
-      <div className="w-full md:w-1/3 lg:w-1/4 bg-white border-r border-gray-200 flex flex-col">
+      <div
+        className={`w-full md:w-80 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 md:transition-none ${
+          isConversationListVisible ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        } md:flex fixed md:static top-0 left-0 h-full z-20`}
+      >
         {/* Search and New Chat Section */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 sm:p-5 border-b border-gray-200">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Conversations</h2>
           <input
             type="text"
             placeholder="Search patients..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2.5 text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+            className="w-full p-2.5 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
           />
-          <div className="mt-4">
+          <div className="mt-4 sm:mt-5">
             <select
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
-              className="w-full p-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full p-2.5 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
             >
               <option value="">Select a user to start a conversation</option>
               {users.map((user) => (
@@ -431,7 +434,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
             </select>
             <button
               onClick={handleCreateConversation}
-              className="mt-2 w-full py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+              className="mt-2 sm:mt-3 w-full py-2.5 sm:py-3 bg-green-600 text-white text-sm sm:text-base font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
               disabled={loading}
             >
               {loading ? "Starting..." : "Start Conversation"}
@@ -441,31 +444,31 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         {/* Conversation List */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-gray-500 text-sm">Loading conversations...</div>
+            <div className="p-4 sm:p-5 text-gray-500 text-sm sm:text-base">Loading conversations...</div>
           ) : (
             <ul className="divide-y divide-gray-200">
               {conversations.map((c) =>
-                c.members.map((m) => {
-                  const { name, avatar } = m;
-                  return (
-                    <li
-                      key={c._id}
-                      className={`p-4 flex items-center space-x-3 cursor-pointer hover:bg-gray-100 transition-colors ${
-                        currentChat?._id === c._id ? "bg-green-50" : ""
-                      }`}
-                      onClick={() => setCurrentChat(c)}
-                    >
-                      <img
-                        src={avatar}
-                        alt={name}
-                        className="w-10 h-10 rounded-full object-cover border border-gray-200"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
-                      </div>
-                    </li>
-                  );
-                })
+                c.members.map((m) => (
+                  <li
+                    key={c._id}
+                    className={`p-4 sm:p-5 flex items-center gap-3 sm:gap-4 cursor-pointer hover:bg-gray-100 transition-colors ${
+                      currentChat?._id === c._id ? "bg-green-50" : ""
+                    }`}
+                    onClick={() => {
+                      setCurrentChat(c);
+                      setIsConversationListVisible(false);
+                    }}
+                  >
+                    <img
+                      src={m.avatar}
+                      alt={m.name}
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm sm:text-base font-medium text-gray-900 truncate">{m.name}</p>
+                    </div>
+                  </li>
+                ))
               )}
             </ul>
           )}
@@ -473,48 +476,58 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
       </div>
 
       {/* Chat Window */}
-      <div className="flex-1 flex flex-col bg-gray-50">
+      <div
+        className={`flex-1 flex flex-col transition-transform duration-300 md:transition-none ${
+          isConversationListVisible && currentChat ? "-translate-x-full md:translate-x-0" : "translate-x-0"
+        } md:flex fixed md:static top-0 left-0 w-full h-full z-10 bg-gray-50`}
+      >
         {currentChat ? (
           <>
             {/* Chat Header */}
-            <div className="bg-white border-b border-gray-200 p-4 flex items-center space-x-3 sticky top-0 z-5 shadow-sm">
+            <div className="bg-white border-b border-gray-200 p-4 sm:p-5 flex items-center gap-3 sm:gap-4 sticky top-0 z-10 shadow-sm">
+              <button
+                className="md:hidden p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-all"
+                onClick={() => setIsConversationListVisible(true)}
+              >
+                <ArrowLeft size={20} />
+              </button>
               <img
                 src={currentChat.members[0].avatar || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
                 alt={currentChat.members[0].name}
-                className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200"
               />
-              <div>
-                <p className="text-sm font-medium text-gray-900">{currentChat.members[0].name}</p>
-                {typingUser && <p className="text-xs text-green-600">{typingUser}</p>}
+              <div className="flex-1">
+                <p className="text-sm sm:text-base font-medium text-gray-900">{currentChat.members[0].name}</p>
+                {typingUser && <p className="text-xs sm:text-sm text-green-600">{typingUser}</p>}
               </div>
             </div>
 
             {/* Message Container */}
             <div
-              className="flex-1 overflow-y-auto p-4"
+              className="flex-1 overflow-y-auto p-4 sm:p-6"
               style={{
                 backgroundImage: `url(${doodle})`,
-                backgroundSize: "400px",
+                backgroundSize: "300px sm:400px",
                 backgroundRepeat: "repeat",
                 backgroundColor: "rgba(245, 245, 245, 0.9)",
               }}
             >
               {loading ? (
-                <div className="text-center text-gray-500 text-sm">Loading messages...</div>
+                <div className="text-center text-gray-500 text-sm sm:text-base">Loading messages...</div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3 sm:space-y-4">
                   {messages.map((msg, index) => (
                     <div key={msg._id}>
                       {needsDateHeader(msg, messages[index - 1]) && (
-                        <div className="text-center my-4">
-                          <span className="inline-block bg-gray-200 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">
+                        <div className="text-center my-4 sm:my-6">
+                          <span className="inline-block bg-gray-200 text-gray-700 text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full">
                             {formatDateHeader(msg.timestamp)}
                           </span>
                         </div>
                       )}
                       <div className={`flex ${msg.senderId === doctorId ? "justify-end" : "justify-start"}`}>
                         <div
-                          className={`relative max-w-xs p-3 rounded-lg shadow-sm ${
+                          className={`relative max-w-[70%] sm:max-w-[60%] p-3 sm:p-4 rounded-lg shadow-md ${
                             msg.senderId === doctorId ? "bg-green-500 text-white" : "bg-white text-gray-900"
                           }`}
                         >
@@ -526,22 +539,22 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                             } border-b-8 border-b-transparent`}
                           />
                           {msg.type === "file" ? (
-                            <div className="flex items-center space-x-2">
-                              <IoDocumentAttachOutline className="text-lg" />
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <IoDocumentAttachOutline className="text-lg sm:text-xl" />
                               <a
                                 href={msg.content}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-sm underline"
+                                className="text-sm sm:text-base underline truncate max-w-[200px] sm:max-w-[300px]"
                               >
                                 {msg.fileName || "Document"}
                               </a>
                             </div>
                           ) : (
-                            <p className="text-sm">{msg.content}</p>
+                            <p className="text-sm sm:text-base break-words">{msg.content}</p>
                           )}
-                          <div className="flex items-center justify-end mt-1 space-x-1">
-                            <span className="text-xs text-gray-300">{formatMessageTime(msg.timestamp)}</span>
+                          <div className="flex items-center justify-end mt-1 sm:mt-2 gap-1 sm:gap-2">
+                            <span className="text-xs sm:text-sm text-gray-300">{formatMessageTime(msg.timestamp)}</span>
                             {msg.senderId === doctorId && (
                               <span className="flex items-center">
                                 {msg.status === "read" ? (
@@ -564,7 +577,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
             </div>
 
             {/* Input Section */}
-            <div className="bg-white border-t border-gray-200 p-4 flex items-center space-x-3 sticky bottom-0 z-5">
+            <div className="bg-white border-t border-gray-200 p-4 sm:p-5 flex items-center gap-2 sm:gap-3 sticky bottom-0 z-10">
               <input
                 id="docMessageInput"
                 type="file"
@@ -573,43 +586,68 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 ref={fileInputRef}
                 onChange={handleFileChange}
               />
-              <label htmlFor="docMessageInput" className="cursor-pointer">
-                <IoDocumentAttachOutline className="text-xl text-gray-500 hover:text-gray-700" />
+              <label
+                htmlFor="docMessageInput"
+                className="p-2 sm:p-3 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 transition-all cursor-pointer"
+              >
+                <IoDocumentAttachOutline className="text-xl sm:text-2xl" />
               </label>
 
-              {docMessage && (
-                <div className="flex items-center bg-gray-100 rounded-lg px-2 py-1">
-                  <IoDocumentAttachOutline className="text-gray-500" />
-                  <span className="text-sm text-gray-700 ml-1">{docMessage.name}</span>
-                  <button onClick={handleCancelFile} className="ml-2 text-red-500 hover:text-red-700">
-                    <FiX size={16} />
+              {docMessage ? (
+                <div className="flex items-center flex-1 gap-2 sm:gap-3">
+                  <div className="flex items-center bg-gray-100 rounded-lg px-2 sm:px-3 py-1.5 flex-1">
+                    <IoDocumentAttachOutline className="text-gray-500 text-sm sm:text-base" />
+                    <span className="text-xs sm:text-sm text-gray-700 ml-1 sm:ml-2 truncate max-w-[150px] sm:max-w-[200px]">
+                      {docMessage.name}
+                    </span>
+                    <button
+                      onClick={handleCancelFile}
+                      className="ml-1 sm:ml-2 text-red-500 hover:text-red-700"
+                    >
+                      <FiX size={16} />
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleSendMessage}
+                    className={`p-2 sm:p-3 rounded-full ${
+                      loading ? "text-gray-400" : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                    } transition-all disabled:opacity-50 min-w-[44px] min-h-[44px]`}
+                    disabled={loading}
+                  >
+                    <FiSend className="text-xl sm:text-2xl" />
                   </button>
                 </div>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      handleTyping();
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                    placeholder="Type a message..."
+                    className="flex-1 p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                    disabled={loading}
+                  />
+                  <button
+                    onClick={handleSendMessage}
+                    className={`p-2 sm:p-3 rounded-full ${
+                      loading || !newMessage.trim()
+                        ? "text-gray-400"
+                        : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                    } transition-all disabled:opacity-50 min-w-[44px] min-h-[44px]`}
+                    disabled={loading || !newMessage.trim()}
+                  >
+                    <FiSend className="text-xl sm:text-2xl" />
+                  </button>
+                </>
               )}
-
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => {
-                  setNewMessage(e.target.value);
-                  handleTyping();
-                }}
-                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder="Type a message..."
-                className="flex-1 p-2.5 text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
-                disabled={!!docMessage}
-              />
-              <button
-                onClick={handleSendMessage}
-                className={`text-xl ${loading ? "text-gray-400" : "text-green-600 hover:text-green-700"} transition-colors`}
-                disabled={loading}
-              >
-                <FiSend />
-              </button>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500 bg-gray-50">
+          <div className="flex-1 flex items-center justify-center text-gray-500 bg-gray-50 text-sm sm:text-base">
             Select or start a conversation to begin chatting
           </div>
         )}

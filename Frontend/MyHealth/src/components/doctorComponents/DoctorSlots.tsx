@@ -17,7 +17,6 @@ import "react-calendar/dist/Calendar.css";
 import { useSelector } from "react-redux";
 import { message, Popconfirm } from "antd";
 import { io, Socket } from "socket.io-client";
-
 import {
   getSessions,
   addSession,
@@ -32,15 +31,8 @@ import {
   makeDayAvailable,
 } from "../../api/doctor/doctorApi";
 import axios from "axios";
-import {sessionData as Session}  from "../../interfaces/session"
+import { sessionData as Session } from "../../interfaces/session";
 import { IDoctorData } from "../../interfaces/doctor";
-
-
-// interface Appointment {
-//   _id: string;
-//   slotId: string;
-//   status: "booked" | "cancelled" | "completed" | "pending" | "confirmed";
-// }
 
 interface AppointmentSlot {
   id: string;
@@ -105,13 +97,13 @@ const DoctorSlots = () => {
   const minDate = new Date();
 
   const notify = async (cancels: {
-        appointmentId: string;
-        userId: string;
-        doctorName: string;
-        date: string;
-        start: Date;
-        end: Date;
-      }[]) => {
+    appointmentId: string;
+    userId: string;
+    doctorName: string;
+    date: string;
+    start: Date;
+    end: Date;
+  }[]) => {
     if (!cancels.length) {
       return;
     }
@@ -145,12 +137,13 @@ const DoctorSlots = () => {
       }
     );
   };
-const apiUrl = import.meta.env.VITE_API_URL as string;
+
+  const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-          `${apiUrl}/doctor/refreshToken`,
+        `${apiUrl}/doctor/refreshToken`,
         {},
         { withCredentials: true }
       );
@@ -277,7 +270,6 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
       const allDaySessions = sessions.filter((s) => s.dayOfWeek === dayOfWeek);
       const unavailableIds = unAvailableSessions
         .filter((us) => {
-          // Assuming us.day is an ISO string; normalize to local date string for comparison
           const usDate = new Date(us.day);
           const usYyyy = usDate.getFullYear();
           const usMm = String(usDate.getMonth() + 1).padStart(2, "0");
@@ -503,8 +495,8 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
           session._id || ''
         );
         message.success("Session made available for this date");
-      };
-      const getUpdatedUnAvailableSessions = await getUnavailableSessions(doctorId)
+      }
+      const getUpdatedUnAvailableSessions = await getUnavailableSessions(doctorId);
       setUnAvailableSessions(getUpdatedUnAvailableSessions);
     } catch (error) {
       console.error("Error performing session action:", error);
@@ -563,26 +555,26 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <div className="mb-6 sm:mb-8 text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
             Doctor Slot Management
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600 mt-2">
             Manage your consultation sessions and appointments
           </p>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="xl:col-span-2">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+          <div className="md:col-span-2">
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">
                     Weekly Sessions
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-sm text-gray-600 mt-1">
                     Configure your consultation schedule
                   </p>
                 </div>
@@ -591,28 +583,28 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                     setIsAdding(true);
                     setValidationError("");
                   }}
-                  className="group flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 w-full sm:w-auto justify-center"
+                  className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md w-full sm:w-auto min-h-[44px] justify-center"
                 >
-                  <FaPlus className="group-hover:rotate-90 transition-transform duration-300" />
+                  <FaPlus className="text-sm" />
                   Add Session
                 </button>
               </div>
 
               {isLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {isAdding && (
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200 shadow-sm">
-                      <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <div className="bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                         <FaPlus className="text-blue-600" />
                         New Session
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
                             Day
                           </label>
                           <select
@@ -623,7 +615,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 dayOfWeek: Number(e.target.value),
                               })
                             }
-                            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                           >
                             {weekdays.map((day) => (
                               <option key={day.value} value={day.value}>
@@ -633,7 +625,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
                             Start Time
                           </label>
                           <input
@@ -645,11 +637,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 startTime: e.target.value,
                               })
                             }
-                            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
                             End Time
                           </label>
                           <input
@@ -661,11 +653,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 endTime: e.target.value,
                               })
                             }
-                            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
                             Duration (mins)
                           </label>
                           <select
@@ -676,7 +668,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 duration: Number(e.target.value),
                               })
                             }
-                            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                           >
                             <option value={10}>10</option>
                             <option value={15}>15</option>
@@ -687,7 +679,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
                             Fee (₹)
                           </label>
                           <input
@@ -699,28 +691,28 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 fee: Number(e.target.value),
                               })
                             }
-                            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                           />
                         </div>
                       </div>
                       {validationError && (
-                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                           {validationError}
                         </div>
                       )}
-                      <div className="flex justify-end gap-3 mt-6">
+                      <div className="flex flex-col sm:flex-row justify-end gap-3 mt-4 sm:mt-6">
                         <button
                           onClick={() => setIsAdding(false)}
-                          className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
+                          className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 min-h-[44px] w-full sm:w-auto"
                         >
-                          <FaTimes />
+                          <FaTimes className="text-sm" />
                           Cancel
                         </button>
                         <button
                           onClick={handleAddSession}
-                          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md"
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md min-h-[44px] w-full sm:w-auto"
                         >
-                          <FaSave />
+                          <FaSave className="text-sm" />
                           Save Session
                         </button>
                       </div>
@@ -730,23 +722,19 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                   {sessions.map((session) => (
                     <div
                       key={session._id}
-                      className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
+                      className="bg-white rounded-lg p-4 sm:p-6 shadow-md hover:shadow-lg transition-all duration-200 border border-gray-100"
                     >
                       {editingSession?._id === session._id ? (
                         <>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Day
                               </label>
                               <select
-                                value={
-                                  editingSession ? editingSession.dayOfWeek : ""
-                                }
-                                onChange={(e) =>
-                                  handleEditChange("dayOfWeek", e.target.value)
-                                }
-                                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                value={editingSession ? editingSession.dayOfWeek : ""}
+                                onChange={(e) => handleEditChange("dayOfWeek", e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               >
                                 {weekdays.map((day) => (
                                   <option key={day.value} value={day.value}>
@@ -756,47 +744,35 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Start Time
                               </label>
                               <input
                                 type="time"
-                                value={
-                                  editingSession ? editingSession.startTime : ""
-                                }
-                                onChange={(e) =>
-                                  handleEditChange("startTime", e.target.value)
-                                }
-                                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                value={editingSession ? editingSession.startTime : ""}
+                                onChange={(e) => handleEditChange("startTime", e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
                                 End Time
                               </label>
                               <input
                                 type="time"
-                                value={
-                                  editingSession ? editingSession.endTime : ""
-                                }
-                                onChange={(e) =>
-                                  handleEditChange("endTime", e.target.value)
-                                }
-                                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                value={editingSession ? editingSession.endTime : ""}
+                                onChange={(e) => handleEditChange("endTime", e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Duration (mins)
                               </label>
                               <select
-                                value={
-                                  editingSession ? editingSession.duration : ""
-                                }
-                                onChange={(e) =>
-                                  handleEditChange("duration", e.target.value)
-                                }
-                                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                value={editingSession ? editingSession.duration : ""}
+                                onChange={(e) => handleEditChange("duration", e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               >
                                 <option value={10}>10</option>
                                 <option value={15}>15</option>
@@ -807,37 +783,35 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                               </select>
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Fee (₹)
                               </label>
                               <input
                                 type="number"
                                 value={editingSession ? editingSession.fee : ""}
-                                onChange={(e) =>
-                                  handleEditChange("fee", e.target.value)
-                                }
-                                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                onChange={(e) => handleEditChange("fee", e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               />
                             </div>
                           </div>
                           {validationError && (
-                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                               {validationError}
                             </div>
                           )}
-                          <div className="flex justify-end gap-3">
+                          <div className="flex flex-col sm:flex-row justify-end gap-3">
                             <button
                               onClick={cancelEdit}
-                              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
+                              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200 min-h-[44px] w-full sm:w-auto"
                             >
-                              <FaTimes />
+                              <FaTimes className="text-sm" />
                               Cancel
                             </button>
                             <button
                               onClick={saveEdit}
-                              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md"
+                              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md min-h-[44px] w-full sm:w-auto"
                             >
-                              <FaSave />
+                              <FaSave className="text-sm" />
                               Save Changes
                             </button>
                           </div>
@@ -846,49 +820,45 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                         <>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
                             <div className="space-y-1">
-                              <label className="text-sm font-medium text-gray-500">
+                              <label className="block text-xs font-medium text-gray-500">
                                 Day
                               </label>
-                              <p className="text-gray-800 font-medium">
-                                {
-                                  weekdays.find(
-                                    (d) => d.value === session.dayOfWeek
-                                  )?.name
-                                }
+                              <p className="text-sm text-gray-800 font-medium">
+                                {weekdays.find((d) => d.value === session.dayOfWeek)?.name}
                               </p>
                             </div>
                             <div className="space-y-1">
-                              <label className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                              <label className="block text-xs font-medium text-gray-500  items-center gap-1">
                                 <FaClock className="text-xs" />
                                 Start Time
                               </label>
-                              <p className="text-gray-800 font-medium">
+                              <p className="text-sm text-gray-800 font-medium">
                                 {formatTime12Hour(session.startTime)}
                               </p>
                             </div>
                             <div className="space-y-1">
-                              <label className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                              <label className="block text-xs font-medium text-gray-500  items-center gap-1">
                                 <FaClock className="text-xs" />
                                 End Time
                               </label>
-                              <p className="text-gray-800 font-medium">
+                              <p className="text-sm text-gray-800 font-medium">
                                 {formatTime12Hour(session.endTime)}
                               </p>
                             </div>
                             <div className="space-y-1">
-                              <label className="text-sm font-medium text-gray-500">
+                              <label className="block text-xs font-medium text-gray-500">
                                 Duration
                               </label>
-                              <p className="text-gray-800 font-medium">
+                              <p className="text-sm text-gray-800 font-medium">
                                 {session.duration} mins
                               </p>
                             </div>
                             <div className="space-y-1">
-                              <label className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                              <label className="block text-xs font-medium text-gray-500  items-center gap-1">
                                 <FaRupeeSign className="text-xs" />
                                 Fee
                               </label>
-                              <p className="text-gray-800 font-medium">
+                              <p className="text-sm text-gray-800 font-medium">
                                 ₹{session.fee}
                               </p>
                             </div>
@@ -896,10 +866,10 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => startEditing(session)}
-                              className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                              className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200 min-h-[44px] min-w-[44px]"
                               title="Edit Session"
                             >
-                              <FaEdit />
+                              <FaEdit className="text-base" />
                             </button>
                             <Popconfirm
                               title="Remove Session"
@@ -909,10 +879,10 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                               cancelText="No"
                             >
                               <button
-                                className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200 min-h-[44px] min-w-[44px]"
                                 title="Delete Session"
                               >
-                                <FaTrash />
+                                <FaTrash className="text-base" />
                               </button>
                             </Popconfirm>
                           </div>
@@ -922,13 +892,13 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                   ))}
                   {sessions.length === 0 && !isAdding && (
                     <div className="text-center py-12">
-                      <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
-                        <FaCalendarAlt className="text-3xl text-blue-600" />
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                        <FaCalendarAlt className="text-2xl text-blue-600" />
                       </div>
                       <h3 className="text-lg font-semibold text-gray-800 mb-2">
                         No sessions configured
                       </h3>
-                      <p className="text-gray-600">
+                      <p className="text-sm text-gray-600">
                         Add your first consultation session to get started
                       </p>
                     </div>
@@ -938,9 +908,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <FaCalendarAlt className="text-blue-600" />
                 Appointment Calendar
               </h2>
@@ -959,21 +929,21 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 minDate={minDate}
                 tileClassName={({ date }) =>
                   sessions.some((s) => s.dayOfWeek === date.getDay())
-                    ? "bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 text-blue-800 font-medium"
+                    ? "bg-blue-50 border-blue-200 text-blue-800 font-medium"
                     : ""
                 }
-                className="w-full rounded-lg"
+                className="w-full rounded-lg border-none"
               />
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
-              <div className="flex flex-col gap-4 mb-6">
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+              <div className="flex flex-col gap-4 mb-4 sm:mb-6">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    <FaClock className="text-purple-600" />
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
+                    <FaClock className="text-blue-600" />
                     Daily Schedule
                   </h3>
-                  <p className="text-gray-600 mt-1">
+                  <p className="text-sm text-gray-600 mt-1">
                     {selectedDate.toLocaleDateString("en-US", {
                       weekday: "long",
                       year: "numeric",
@@ -986,17 +956,17 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                   {isDayUnavailable ? (
                     <button
                       onClick={() => handleDayAction("available", selectedDate)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-md text-sm"
+                      className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md min-h-[44px] w-full sm:w-auto"
                     >
-                      <FaCheckCircle className="text-xs" />
+                      <FaCheckCircle className="text-sm" />
                       Open Day
                     </button>
                   ) : (
                     <button
                       onClick={() => handleDayAction("unavailable", selectedDate)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 shadow-md text-sm cursor-pointer"
+                      className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all duration-200 shadow-md min-h-[44px] w-full sm:w-auto"
                     >
-                      <FaBan className="text-xs" />
+                      <FaBan className="text-sm" />
                       Block Day
                     </button>
                   )}
@@ -1005,49 +975,49 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-3 border-purple-500 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
                 </div>
               ) : isDayUnavailable ? (
                 <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
                     <FaBan className="text-2xl text-gray-500" />
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-sm text-gray-600">
                     This day is marked as unavailable. Click "Open Day" to make it available.
                   </p>
                 </div>
               ) : availableDaySessionSlots.length === 0 && unavailableDaySessions.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
                     <FaClock className="text-2xl text-gray-500" />
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-sm text-gray-600">
                     No sessions configured for this day
                   </p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {availableDaySessionSlots.map((ss, index) => (
                     <div
                       key={index}
-                      className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 border border-gray-200"
+                      className="bg-gray-50 rounded-lg p-4 border border-gray-200"
                     >
                       <div className="flex flex-col gap-3 mb-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-gray-800">
-                            Session-{index + 1}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                          <h4 className="text-base font-semibold text-gray-800">
+                            Session {index + 1}
                           </h4>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 mt-2 sm:mt-0">
                             <button
                               onClick={() => handleSessionAction(ss, selectedDate, "unavailable")}
-                              className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-all duration-200 text-xs font-medium"
+                              className="flex items-center gap-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-all duration-200 text-sm min-h-[44px]"
                             >
-                              <FaBan className="text-xs" />
+                              <FaBan className="text-sm" />
                               Block Session
                             </button>
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                        <div className="flex flex-wrap gap-2 sm:gap-4 text-sm text-gray-600">
                           <span className="flex items-center gap-1">
                             <FaClock className="text-xs" />
                             {formatTime12Hour(ss.session.startTime)} -{" "}
@@ -1074,19 +1044,15 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                             case "available":
                             case "booked":
                               statusConfig = {
-                                bgClass:
-                                  "bg-gradient-to-r from-green-50 to-emerald-50",
+                                bgClass: "bg-green-50",
                                 textClass: "text-green-800",
                                 borderClass: "border-green-200",
-                                icon: (
-                                  <FaCheckCircle className="text-green-600" />
-                                ),
+                                icon: <FaCheckCircle className="text-green-600" />,
                               };
                               break;
                             case "unavailable":
                               statusConfig = {
-                                bgClass:
-                                  "bg-gradient-to-r from-gray-50 to-gray-100",
+                                bgClass: "bg-gray-50",
                                 textClass: "text-gray-700",
                                 borderClass: "border-gray-300",
                                 icon: <FaBan className="text-gray-500" />,
@@ -1094,24 +1060,18 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                               break;
                             case "completed":
                               statusConfig = {
-                                bgClass:
-                                  "bg-gradient-to-r from-purple-50 to-violet-50",
+                                bgClass: "bg-purple-50",
                                 textClass: "text-purple-800",
                                 borderClass: "border-purple-200",
-                                icon: (
-                                  <FaCheckCircle className="text-purple-600" />
-                                ),
+                                icon: <FaCheckCircle className="text-purple-600" />,
                               };
                               break;
                             case "cancelled":
                               statusConfig = {
-                                bgClass:
-                                  "bg-gradient-to-r from-red-50 to-pink-50",
+                                bgClass: "bg-red-50",
                                 textClass: "text-red-800",
                                 borderClass: "border-red-200",
-                                icon: (
-                                  <FaTimesCircle className="text-red-600" />
-                                ),
+                                icon: <FaTimesCircle className="text-red-600" />,
                               };
                               break;
                             default:
@@ -1126,17 +1086,13 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                           return (
                             <div
                               key={slot.id}
-                              className={`border ${statusConfig.borderClass} ${
-                                statusConfig.bgClass
-                              } p-3 rounded-lg transition-all duration-200 hover:shadow-md ${
-                                slot.status === "cancelled" ? "opacity-75" : ""
-                              }`}
+                              className={`border ${statusConfig.borderClass} ${statusConfig.bgClass} p-3 rounded-lg transition-all duration-200 hover:shadow-md ${slot.status === "cancelled" ? "opacity-75" : ""}`}
                             >
                               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div className="flex items-center gap-3">
                                   {statusConfig.icon}
                                   <div>
-                                    <div className="font-medium text-gray-800">
+                                    <div className="font-medium text-gray-800 text-sm sm:text-base">
                                       {formatSlotTime12Hour(slot.start)} -{" "}
                                       {formatSlotTime12Hour(slot.end)}
                                     </div>
@@ -1152,7 +1108,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium bg-white/80 ${statusConfig.textClass} border ${statusConfig.borderClass}`}
+                                    className={`px-2 py-1 rounded-full text-xs font-medium bg-white ${statusConfig.textClass} border ${statusConfig.borderClass}`}
                                   >
                                     {formatStatus(slot.status)}
                                   </span>
@@ -1174,11 +1130,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                         {unavailableDaySessions.map((session, index) => (
                           <div
                             key={session._id}
-                            className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-4 border border-gray-200"
+                            className="bg-gray-50 rounded-lg p-4 border border-gray-200"
                           >
-                            <div className="flex justify-between items-start mb-3">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
                               <div>
-                                <h5 className="font-semibold text-gray-800">
+                                <h5 className="text-base font-semibold text-gray-800">
                                   Session {index + 1}
                                 </h5>
                                 <p className="text-sm text-red-600 font-medium">
@@ -1186,16 +1142,14 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 </p>
                               </div>
                               <button
-                                onClick={() =>
-                                  handleSessionAction(session, selectedDate, "available")
-                                }
-                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-200 shadow-md text-sm"
+                                onClick={() => handleSessionAction(session, selectedDate, "available")}
+                                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md text-sm min-h-[44px] mt-2 sm:mt-0 w-full sm:w-auto"
                               >
-                                <FaCheckCircle className="text-xs" />
+                                <FaCheckCircle className="text-sm" />
                                 Open Session
                               </button>
                             </div>
-                            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <div className="flex flex-wrap gap-2 sm:gap-4 text-sm text-gray-600">
                               <span className="flex items-center gap-1">
                                 <FaClock className="text-xs" />
                                 {formatTime12Hour(session.startTime)} -{" "}

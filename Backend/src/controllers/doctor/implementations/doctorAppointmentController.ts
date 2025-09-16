@@ -10,6 +10,8 @@ interface AppointmentFilter {
   endDate?: string;
 }
 
+
+
 @injectable()
 export default class DoctorAppointmentController implements IDoctorAppointmentCtrl {
 

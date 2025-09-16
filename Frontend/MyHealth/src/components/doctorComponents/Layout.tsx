@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
-  FaHome,FaCalendarCheck, FaComments,
-  FaSignOutAlt, FaBars, FaTimes, FaChevronLeft, FaChevronRight,
-  FaSearch, FaBell, FaCalendarAlt, FaUser, FaBlog, FaCreditCard,
-  FaPlus, FaUsers, FaInfoCircle
+  FaHome, FaCalendarCheck, FaComments, FaSignOutAlt, FaBars, FaTimes,
+  FaChevronLeft, FaChevronRight, FaSearch, FaBell, FaCalendarAlt, FaUser,
+  FaBlog, FaCreditCard, FaPlus, FaUsers, FaInfoCircle,
+  FaCog
 } from "react-icons/fa";
 import { GrAnnounce } from "react-icons/gr";
 import { BiSolidAnalyse } from "react-icons/bi";
 import { GiRoyalLove } from "react-icons/gi";
 import applogoBlue from "../../assets/applogoblue.png";
+import appIconSm from "../../assets/app-icon-sm.png";
 import ConfirmModal from "../../sharedComponents/ConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutDoctor } from "../../redux/slices/doctorSlices";
@@ -17,12 +18,12 @@ import { RootState } from "../../redux/store/store";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
 import { message } from "antd";
-import { getNotifications } from "../../api/doctor/doctorApi"; // Adjusted import for doctor-specific API
+import { getNotifications } from "../../api/doctor/doctorApi";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { MdAttachMoney } from "react-icons/md";
 
 interface Notification {
-  _id:string;
+  _id: string;
   date: Date;
   message: string;
   isRead: boolean;
@@ -44,53 +45,50 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [/*showSubscription*/, setShowSubscription] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const notificationRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  // const limit = 10;
+  /*const limit = 10;*/
   const [notificationSet, setNotificationSet] = useState(1);
 
   const doctor = useSelector((state: RootState) => state.doctor.doctor);
   const isPremium = doctor?.premiumMembership;
 
-
-
-  
-    const fetchNotifications = async () => {
-      if (!doctor?._id) return;
-      try {
-        const response = await getNotifications(doctor._id);
-        console.log("noti resp is .......",response);
-
-        if(response){
+  const fetchNotifications = async () => {
+    if (!doctor?._id) return;
+    try {
+      const response = await getNotifications(doctor._id);
+      if (response && response.notifications) {
         setNotifications((prev) => {
-              const existingIds = new Set(prev.map((n) => n._id));
-              const newNotifications = response
-                .map((n: Notification) => ({
-                  ...n,
-                  date: new Date(n.createdAt),
-                  createdAt: new Date(n.createdAt),
-                }))
-                .filter((n: Notification) => !existingIds.has(n._id));
-              return [...newNotifications, ...prev].sort(
-                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-              );
-            });
+          const existingIds = new Set(prev.map((n) => n._id));
+          const newNotifications = response.notifications
+            .map((n: Notification) => ({
+              ...n,
+              date: new Date(n.createdAt),
+              createdAt: new Date(n.createdAt),
+            }))
+            .filter((n: Notification) => !existingIds.has(n._id));
+          return [...newNotifications, ...prev].sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        });
 
-        const unreadCount = response.filter((n: Notification) => !n.isRead).length;
+        const unreadCount = response.notifications.filter((n: Notification) => !n.isRead).length;
         setNotificationCount(unreadCount);
-          }
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error);
-        message.error("Failed to load notifications.");
+      } else {
+        setNotificationCount(0);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+      message.error("Failed to load notifications.");
+    }
+  };
 
-const apiUrl = import.meta.env.VITE_API_URL as string;
-    
+  const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
@@ -143,47 +141,29 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
           } catch {
             message.error("Failed to reconnect. Please log in again.");
           }
-        } else {
-          message.error("Failed to connect to notification server: " + err.message);
         }
       });
 
-      socket.on("notification", (/*notification: Notification*/) => {
-
+      socket.on("notification", () => {
         fetchNotifications();
-        // setNotifications((prev) => {
-        //   // Prevent duplicate notifications by checking _id
-        //   if (prev.some((n) => n._id === notification._id)) {
-        //     return prev;
-        //   }
-        //   const newNotification = {
-        //     ...notification,
-        //     date: new Date(notification.createdAt),
-        //     createdAt: new Date(notification.createdAt),
-        //   };
-        //   return [newNotification, ...prev];
-        // });
-
-
-        // if (!notification.isRead) {
-        //   setNotificationCount((prev) => prev + 1);
-        // }
-
       });
 
       socket.on("error", ({ message }) => {
         console.error("Socket error:", message);
         message.error(message);
       });
-
-      return () => {
-        socket.disconnect();
-      };
     };
 
     setupSocket();
+
     return () => {
-      socketRef.current?.disconnect();
+      if (socketRef.current) {
+        socketRef.current.off("connect");
+        socketRef.current.off("connect_error");
+        socketRef.current.off("notification");
+        socketRef.current.off("error");
+        socketRef.current.disconnect();
+      }
     };
   }, [doctor?._id]);
 
@@ -191,7 +171,6 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setCollapsed(true);
-      } else {
         setMobileOpen(false);
       }
     };
@@ -207,6 +186,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     const handleClickOutside = (event: MouseEvent) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
         setShowNotificationDropdown(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfileDropdown(false);
       }
     };
 
@@ -230,9 +212,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
   };
 
   const handleMobileLinkClick = () => {
-    if (window.innerWidth < 768 && mobileOpen) {
-      setMobileOpen(false);
-    }
+    setMobileOpen(false);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,7 +221,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Searching:", searchInput);
+    console.log("Searching for:", searchInput);
   };
 
   const getNotificationIcon = (type: string) => {
@@ -288,7 +268,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
       try {
         await axios.put(
-          `https://api.abdullhakalamban.online/api/doctor/notifications/${notification._id}/read`,
+          `${apiUrl}/doctor/notifications/${notification._id}/read`,
           {},
           { withCredentials: true }
         );
@@ -306,13 +286,10 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
   };
 
   const markAllAsRead = async () => {
-    if(!doctor||!doctor._id){
-         
-          return;
-        }
+    if (!doctor?._id) return;
     try {
       await axios.put(
-        `https://api.abdullhakalamban.online/api/doctor/notifications/read-all`,
+        `${apiUrl}/doctor/notifications/read-all`,
         { userId: doctor._id },
         { withCredentials: true }
       );
@@ -336,51 +313,49 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const menuItems = [
     { name: "Dashboard", path: "/doctor/dashboard", icon: <FaHome /> },
-    { name: "Appointments", path: "/doctor/appointments", icon: <FaCalendarAlt />,premium: true },
+    { name: "Appointments", path: "/doctor/appointments", icon: <FaCalendarAlt />, premium: true },
     { name: "Report Analysis", path: "/doctor/report-analysis", icon: <BiSolidAnalyse />, premium: true },
-    // { name: "Patients", path: "/doctor/patients", icon: <FaUserFriends /> },
     { name: "Consultation Slots", path: "/doctor/slots", icon: <FaCalendarCheck />, premium: true },
     { name: "Chat", path: "/doctor/chat", icon: <FaComments />, premium: true },
     { name: "My Blogs", path: "/doctor/blogs", icon: <FaBlog /> },
-    { name: "My Adds", path: "/doctor/adds", icon: <GrAnnounce />,premium: true },
+    { name: "My Ads", path: "/doctor/adds", icon: <GrAnnounce />, premium: true },
     { name: "Revenue", path: "/doctor/revenue", icon: <FaMoneyBillTransfer /> },
     { name: "Payouts", path: "/doctor/payout", icon: <MdAttachMoney /> },
     { name: "My Profile", path: "/doctor/profile", icon: <FaUser /> },
-    
-    
   ];
 
-  const renderMenuItems = () => {
-    return menuItems.map((item, index) => {
+  const secondaryMenuItems = [
+    { name: "Settings", path: "/doctor/settings", icon: <FaCog /> },
+  ];
+
+  const renderMenuItems = (items: { name: string; path: string; icon: React.ReactNode; premium?: boolean }[]) => {
+    return items.map((item, index) => {
       const isActive = location.pathname === item.path;
       const isPremiumOnly = item.premium && !isPremium;
+
       return (
         <Link
           to={isPremiumOnly ? "/doctor/plans" : item.path}
           key={index}
-          onClick={() => {
-            if (isPremiumOnly) {
-              setShowSubscription(true);
-            }
-            handleMobileLinkClick();
-          }}
-          className={`flex items-center px-4 py-3 mb-2 rounded-lg transition-all duration-200 relative ${
+          className={`flex items-center px-3 py-3 mb-2 rounded-lg transition-all duration-200 ${
             isActive
               ? "bg-gradient-to-r from-purple-700 to-pink-500 text-white shadow-md"
               : isPremiumOnly
               ? "text-gray-400 cursor-pointer hover:bg-purple-50"
               : "text-gray-700 hover:bg-purple-50"
           }`}
+          onClick={() => {
+            if (isPremiumOnly) {
+              navigate("/doctor/plans");
+            }
+            handleMobileLinkClick();
+          }}
         >
-          <span className={`text-xl ${isActive ? "text-white" : "text-purple-700"}`}>
-            {isPremiumOnly ? <GiRoyalLove className="text-yellow-500" /> : item.icon}
+          <span className={`text-lg md:text-xl ${isActive ? "text-white" : isPremiumOnly ? "text-yellow-500" : "text-purple-700"}`}>
+            {isPremiumOnly ? <GiRoyalLove /> : item.icon}
           </span>
           {!collapsed && (
-            <span
-              className={`ml-3 font-medium whitespace-nowrap ${
-                isPremiumOnly ? "text-gray-400" : ""
-              }`}
-            >
+            <span className={`ml-3 text-sm md:text-base font-medium whitespace-nowrap ${isPremiumOnly ? "text-gray-400" : ""}`}>
               {item.name}
             </span>
           )}
@@ -394,126 +369,161 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      {/* Mobile Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-30 z-20"
+          className="fixed inset-0 bg-black/20 z-30 md:hidden"
           onClick={() => setMobileOpen(false)}
-        ></div>
+        />
       )}
 
-      <button
-        className="fixed top-2 left-1 z-30 p-1 rounded-md bg-purple-700 text-white md:hidden shadow-lg"
-        onClick={toggleSidebar}
-        aria-label="Toggle menu"
-      >
-        {mobileOpen ? <FaTimes /> : <FaBars />}
-      </button>
-
+      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full bg-white z-20 shadow-xl transition-all duration-300 ${
+        className={`fixed top-0 left-0 h-full z-40 shadow-xl transition-all duration-300 ${
           collapsed ? "w-20" : "w-56"
-        } ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+        } ${mobileOpen ? "translate-x-0 bg-white" : "-translate-x-full md:translate-x-0 md:bg-white"}`}
       >
-        <div className="flex items-center justify-between px-2 py-2 border-b border-gray-100">
-          <div className={collapsed ? "mx-auto" : "flex items-center"}>
-            <img src={applogoBlue} alt="Doctor Logo" className="h-10 w-auto object-contain" />
-            {!collapsed && <h1 className="ml-2 font-semibold text-gray-800">Doctor</h1>}
+        {/* Header with Logo and Close Button */}
+        <div className="flex items-center justify-between px-3 py-3 border-b border-gray-100">
+          <div className={`${collapsed ? "mx-auto" : "flex items-center"}`}>
+            <img
+              src={window.innerWidth < 768 ? appIconSm : applogoBlue}
+              alt="MyHealth"
+              className="h-8 w-auto object-contain md:h-10"
+            />
+            {!collapsed && <h1 className="ml-2 text-base font-semibold text-gray-800">Doctor</h1>}
           </div>
+          {/* Mobile close button */}
+          <button
+            className="md:hidden p-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+          >
+            <FaTimes className="w-4 h-4" />
+          </button>
         </div>
 
+        {/* Menu Content */}
         <div className="h-[calc(100%-64px)] overflow-y-auto py-4 px-3">
-          <div className="space-y-6">
-            <div className="space-y-1">{renderMenuItems()}</div>
-            <div className="border-t border-gray-200 my-2"></div>
-            <div
-              className="px-1 cursor-pointer"
-              onClick={() => {
-                handleMobileLinkClick();
-                setShowConfirm(true);
-              }}
-            >
-              <p className="flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600">
-                <span className="text-xl text-red-500">
+          <div className="space-y-4">
+            {/* Main Menu */}
+            <div className="space-y-1">{renderMenuItems(menuItems)}</div>
+
+            {/* Secondary Menu */}
+            <div>
+              {!collapsed && (
+                <h3 className="px-3 mb-2 text-xs uppercase font-semibold text-gray-500">More</h3>
+              )}
+              <div className="space-y-1">{renderMenuItems(secondaryMenuItems)}</div>
+            </div>
+
+            {/* Logout */}
+            <div className="border-t border-gray-200 pt-4">
+              <button
+                onClick={() => {
+                  handleMobileLinkClick();
+                  setShowConfirm(true);
+                }}
+                className="w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 text-gray-700 hover:bg-red-50 hover:text-red-600"
+              >
+                <span className="text-lg md:text-xl text-red-500">
                   <FaSignOutAlt />
                 </span>
-                {!collapsed && <span className="ml-3 font-medium">Logout</span>}
-              </p>
+                {!collapsed && <span className="ml-3 text-sm md:text-base font-medium">Logout</span>}
+              </button>
             </div>
           </div>
         </div>
 
+        {/* Desktop collapse button */}
         <button
           onClick={toggleSidebar}
-          className="absolute bottom-4 -right-3 hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-white text-purple-700 border border-purple-300 hover:bg-purple-50 transition-colors shadow-md"
+          className="absolute bottom-4 -right-3 hidden md:flex items-center justify-center w-6 h-6 rounded-full bg-white text-purple-700 border border-purple-200 hover:bg-purple-50 transition-colors shadow-md"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <FaChevronRight size={14} /> : <FaChevronLeft size={14} />}
+          {collapsed ? <FaChevronRight size={10} /> : <FaChevronLeft size={10} />}
         </button>
       </aside>
 
+      {/* Main Content */}
       <div
         className={`flex flex-col flex-1 min-h-screen transition-all duration-300 ${
           collapsed ? "md:ml-20" : "md:ml-56"
         }`}
       >
-        <header className="fixed top-0 right-0 left-0 z-10 h-16 bg-white shadow-md">
-          <div className="flex items-center justify-between h-full px-4">
-            <div className="flex-1 max-w-xl mx-auto px-4">
+        {/* Header */}
+        <header className="sticky top-0 z-20 h-14 md:h-16 bg-white shadow-md">
+          <div className="flex items-center justify-between h-full px-3 md:px-6">
+            {/* Mobile menu button */}
+            <button
+              className="md:hidden p-2 rounded-md text-purple-700 hover:bg-purple-50"
+              onClick={toggleSidebar}
+              aria-label="Toggle menu"
+            >
+              <FaBars className="w-5 h-5" />
+            </button>
+
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md mx-auto px-2 md:px-4">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <input
                   type="text"
                   value={searchInput}
                   onChange={handleSearchChange}
                   placeholder="Search patients, appointments..."
-                  className="w-full py-2 pl-10 pr-4 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
+                  className="w-full py-2 pl-8 pr-4 text-sm rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
                 />
                 <button
                   type="submit"
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-700"
+                  className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-purple-700"
                 >
-                  <FaSearch />
+                  <FaSearch className="w-3.5 h-3.5" />
                 </button>
               </form>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* Right Section */}
+            <div className="flex items-center space-x-2 md:space-x-4">
+              {/* Notifications */}
               <div className="relative" ref={notificationRef}>
                 <button
                   className="p-2 rounded-full hover:bg-purple-50 text-purple-700 transition-colors"
                   onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
                 >
-                  <FaBell />
+                  <FaBell className="w-4 h-4 md:w-5 md:h-5" />
                   {notificationCount > 0 && (
-                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center">
                       {notificationCount > 9 ? "9+" : notificationCount}
                     </span>
                   )}
                 </button>
 
+                {/* Notification Dropdown */}
                 {showNotificationDropdown && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-300 z-50">
-                    <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                      <h3 className="text-lg font-semibold text-gray-800">Notifications</h3>
+                  <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white rounded-lg shadow-xl border border-gray-300 z-50">
+                    <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-100">
+                      <h3 className="text-base md:text-lg font-semibold text-gray-800">Notifications</h3>
                       {notificationCount > 0 && (
                         <button
                           onClick={markAllAsRead}
-                          className="text-sm text-purple-600 hover:text-purple-800 font-medium"
+                          className="text-xs md:text-sm text-purple-600 hover:text-purple-800 font-medium"
                         >
                           Mark all read
                         </button>
                       )}
                     </div>
 
-                    <div className="max-h-96 overflow-y-auto">
+                    <div className="max-h-80 md:max-h-96 overflow-y-auto">
                       {notifications.length === 0 ? (
                         <div className="p-6 text-center text-gray-500">
-                          <FaBell className="mx-auto mb-2 text-2xl" />
-                          <p>No notifications yet</p>
+                          <FaBell className="mx-auto mb-2 text-xl md:text-2xl" />
+                          <p className="text-sm md:text-base">No notifications yet</p>
                         </div>
                       ) : (
                         notifications.map((notification) => (
                           <div
                             key={notification._id}
-                            className={`p-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors ${
+                            className={`p-3 md:p-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors ${
                               !notification.isRead ? "bg-purple-50" : ""
                             }`}
                             onClick={() => handleNotificationClick(notification)}
@@ -523,7 +533,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                 {getNotificationIcon(notification.type)}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className={`text-sm ${!notification.isRead ? "font-semibold text-gray-900" : "text-gray-700"}`}>
+                                <p className={`text-xs md:text-sm ${!notification.isRead ? "font-semibold text-gray-900" : "text-gray-700"}`}>
                                   {notification.message}
                                 </p>
                                 {notification.mention && (
@@ -532,7 +542,7 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                                   </p>
                                 )}
                                 <p className="text-xs text-gray-500 mt-1">
-                                  {formatTimeAgo(new Date(notification.createdAt))}
+                                  {formatTimeAgo(notification.createdAt)}
                                 </p>
                               </div>
                               {!notification.isRead && (
@@ -547,24 +557,24 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                     </div>
 
                     {notifications.length > 0 && (
-                      <div className="p-3 border-t border-gray-100 flex justify-between">
+                      <div className="p-3 border-t border-gray-100 flex justify-between text-xs md:text-sm">
                         <button
                           onClick={handlePrevPage}
-                          className="text-sm text-purple-600 hover:text-purple-800 font-medium disabled:text-gray-400"
+                          className="text-purple-600 hover:text-purple-800 font-medium disabled:text-gray-400"
                           disabled={notificationSet === 1}
                         >
                           Previous
                         </button>
                         <Link
                           to="/doctor/notifications"
-                          className="text-sm text-purple-600 hover:text-purple-800 font-medium"
+                          className="text-purple-600 hover:text-purple-800 font-medium"
                           onClick={() => setShowNotificationDropdown(false)}
                         >
-                          View all notifications
+                          View all
                         </Link>
                         <button
                           onClick={handleNextPage}
-                          className="text-sm text-purple-600 hover:text-purple-800 font-medium"
+                          className="text-purple-600 hover:text-purple-800 font-medium"
                         >
                           Next
                         </button>
@@ -574,41 +584,60 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 )}
               </div>
 
-              <div className="relative group">
-                <button className="flex items-center focus:outline-none">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-purple-600">
+              {/* User Profile */}
+              <div className="relative" ref={profileRef}>
+                <button
+                  className="flex items-center focus:outline-none cursor-pointer"
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                >
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-purple-600">
                     <img
-                      src={doctor?.profile?doctor.profile : "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
-                      alt="Doctor Profile"
+                      src={doctor?.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+                      alt="Doctor profile"
                       className="w-full h-full object-cover"
                     />
                   </div>
                 </button>
-                <div className="absolute right-0 mt-0.5 w-48 bg-gray-200 rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
-                  <Link to="/doctor/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
-                    Profile
-                  </Link>
-                  <Link to="/doctor/settings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
-                    Settings
-                  </Link>
-                  <div className="border-t border-gray-100"></div>
-                  <p
-                    onClick={() => setShowConfirm(true)}
-                    className="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
-                  >
-                    Sign out
-                  </p>
-                </div>
+                {showProfileDropdown && (
+                  <div className="absolute right-0 mt-0.5 w-40 md:w-48 bg-gray-200 rounded-md shadow-lg py-1 z-50">
+                    <Link
+                      to="/doctor/profile"
+                      className="block px-4 py-2 text-xs md:text-sm text-gray-700 hover:bg-purple-50"
+                      onClick={() => setShowProfileDropdown(false)}
+                    >
+                      Your Profile
+                    </Link>
+                    <Link
+                      to="/doctor/settings"
+                      className="block px-4 py-2 text-xs md:text-sm text-gray-700 hover:bg-purple-50"
+                      onClick={() => setShowProfileDropdown(false)}
+                    >
+                      Settings
+                    </Link>
+                    <div className="border-t border-gray-100"></div>
+                    <button
+                      onClick={() => {
+                        setShowConfirm(true);
+                        setShowProfileDropdown(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-xs md:text-sm text-red-600 hover:bg-red-50"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 pt-20 pb-8 overflow-x-hidden overflow-y-auto">
+        {/* Main Content Area */}
+        <main className="flex-1 pt-4 pb-6 md:pt-6 md:pb-8 overflow-x-hidden overflow-y-auto">
           {children}
         </main>
       </div>
 
+      {/* Confirm Modal */}
       {showConfirm && (
         <ConfirmModal
           message="Are you sure you want to log out?"
@@ -616,10 +645,6 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
           onCancel={() => setShowConfirm(false)}
         />
       )}
-
-      {/* {showSubscription && (
-        <SubscriptionModal onClose={() => setShowSubscription(false)} />
-      )} */}
     </div>
   );
 };

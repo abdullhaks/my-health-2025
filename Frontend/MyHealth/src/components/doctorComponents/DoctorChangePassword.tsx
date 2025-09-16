@@ -114,21 +114,21 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md relative animate-fadeIn">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Change Password</h2>
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 sm:p-6">
+      <div className="bg-white rounded-2xl shadow-lg w-full max-w-md sm:max-w-lg relative animate-fadeIn">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Change Password</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-all duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             aria-label="Close"
           >
-            <FiX size={24} />
+            <FiX size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="space-y-4">
+        <div className="p-4 sm:p-6 lg:p-8">
+          <div className="space-y-4 sm:space-y-6">
             <PasswordInput
               id="currentPassword"
               label="Current Password"
@@ -136,6 +136,8 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
               value={formData.currentPassword}
               onChange={handleChange}
               error={touched.currentPassword ? errors.currentPassword : ""}
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base"
+              
             />
 
             <PasswordInput
@@ -145,6 +147,8 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
               value={formData.newPassword}
               onChange={handleChange}
               error={touched.newPassword ? errors.newPassword : ""}
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base"
+             
             />
 
             <PasswordInput
@@ -154,25 +158,28 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
               value={formData.confirmPassword}
               onChange={handleChange}
               error={touched.confirmPassword ? errors.confirmPassword : ""}
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base"
+             
             />
           </div>
 
-          <div className="mt-6 flex justify-end space-x-3">
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 border-2 border-gray-300 rounded-xl text-sm sm:text-base font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm hover:shadow-md focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+              onClick={handleSubmit}
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-xl text-sm sm:text-base font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Change Password
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
