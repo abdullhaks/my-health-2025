@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { getPayouts } from "../../api/admin/adminApi";
+import { getPayouts, updatePayout } from "../../api/admin/adminApi";
 import { Table, Select, DatePicker, Button, Pagination, Tag, Modal, Form, Input, DatePicker as SingleDatePicker, InputNumber, Popconfirm, message } from "antd";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import moment from "moment";
-// Assuming updatePayout is added to adminApi
-import { updatePayout } from "../../api/admin/adminApi";
 
 interface Transaction {
   _id: string;
@@ -73,7 +71,7 @@ const AdminPayouts = () => {
 
   const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
   const handlePay = (record: Transaction) => {
@@ -81,14 +79,14 @@ const AdminPayouts = () => {
     setVisible(true);
   };
 
-  const onFinishPay = async (values: { paid:number; transactionId: string; invoiceLink: string; on: { toISOString: () => string; }; }) => {
+  const onFinishPay = async (values: { paid: number; transactionId: string; invoiceLink: string; on: { toISOString: () => string; }; }) => {
     if (!selected) return;
     try {
       const updateData = {
         status: 'paid',
         paid: values.paid,
         transactionId: values.transactionId,
-        invoiceLink: values.invoiceLink||"",
+        invoiceLink: values.invoiceLink || "",
         on: values.on.toISOString(),
       };
       await updatePayout(selected._id, updateData);
@@ -106,12 +104,12 @@ const AdminPayouts = () => {
         on: new Date().toISOString(),
       };
       const rewt = await updatePayout(record._id, updateData);
-      console.log("rsrew. isslfjsd",rewt);
+      console.log("rsrew. isslfjsd", rewt);
       setVisible(false);
       fetchTransactions(currentPage);
     } catch (err) {
       console.error("Error rejecting payout:", err);
-      message.error("payment updation failed")
+      message.error("payment updation failed");
     }
   };
 
@@ -120,40 +118,59 @@ const AdminPayouts = () => {
       title: "Date",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date: string) => moment(date).format("MMM DD, YYYY h:mm A"),
+      render: (date: string) => (
+        <span className="text-sm sm:text-base text-gray-700">
+          {moment(date).format("MMM DD, YYYY h:mm A")}
+        </span>
+      ),
     },
     {
       title: "Acc.No",
       dataIndex: "bankAccNo",
       key: "bankAccNo",
+      render: (text: string) => (
+        <span className="text-sm sm:text-base text-gray-700 truncate">{text}</span>
+      ),
     },
     {
       title: "Name",
       dataIndex: "bankAccHolderName",
       key: "bankAccHolderName",
+      render: (text: string) => (
+        <span className="text-sm sm:text-base text-gray-700 truncate">{text}</span>
+      ),
     },
     {
       title: "IFSC",
       dataIndex: "bankIfscCode",
       key: "bankIfscCode",
+      render: (text: string) => (
+        <span className="text-sm sm:text-base text-gray-700 truncate">{text}</span>
+      ),
     },
     {
       title: "Total",
       dataIndex: "totalAmount",
       key: "totalAmount",
-      render: (amount: number) => `Rs ${amount}`,
+      render: (amount: number) => (
+        <span className="text-sm sm:text-base text-gray-700">Rs {amount}</span>
+      ),
     },
     {
       title: "Paid",
       dataIndex: "paid",
       key: "paid",
-      render: (amount: number) => `Rs ${amount}`,
+      render: (amount: number) => (
+        <span className="text-sm sm:text-base text-gray-700">Rs {amount}</span>
+      ),
     },
     {
       title: "Serv Amnt",
       dataIndex: "serviceAmount",
       key: "serviceAmount",
-      render: (amount: number) => `Rs ${amount}`,
+      render: (amount: number) => (
+        <span className="text-sm sm:text-base text-gray-700">Rs {amount}</span>
+      ),
     },
     {
       title: "Status",
@@ -163,108 +180,138 @@ const AdminPayouts = () => {
         let color = 'blue';
         if (text === 'paid') color = 'green';
         if (text === 'rejected') color = 'red';
-        return <Tag color={color}>{text.toUpperCase()}</Tag>;
+        return (
+          <Tag
+            color={color}
+            className="text-xs sm:text-sm font-medium truncate"
+          >
+            {text.toUpperCase()}
+          </Tag>
+        );
       },
     },
     {
       title: "Action Date",
       dataIndex: "on",
       key: "on",
-      render: (date: string, record: Transaction) =>
-        record.status !== 'requested' && date ? moment(date).format("MMM DD, YYYY h:mm A") : '-',
+      render: (date: string, record: Transaction) => (
+        <span className="text-sm sm:text-base text-gray-700">
+          {record.status !== 'requested' && date
+            ? moment(date).format("MMM DD, YYYY h:mm A")
+            : '-'}
+        </span>
+      ),
     },
     {
       title: "Trans Id",
       dataIndex: "transactionId",
       key: "transactionId",
-      render: (text: string, record: Transaction) => {
-        if (record.invoiceLink) {
-          return (
-            <a href={record.invoiceLink} target="_blank" rel="noopener noreferrer">
-              {text || 'View'}
-            </a>
-          );
-        }
-        return text || 'N/A';
-      },
+      render: (text: string, record: Transaction) => (
+        record.invoiceLink ? (
+          <a
+            href={record.invoiceLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 text-sm sm:text-base underline transition-colors"
+          >
+            {text || 'View'}
+          </a>
+        ) : (
+          <span className="text-sm sm:text-base text-gray-700">{text || 'N/A'}</span>
+        )
+      ),
     },
     {
       title: "Actions",
       key: "actions",
-      render: (record: Transaction) => {
-        if (record.status === 'requested') {
-          return (
-            <div className="flex gap-2">
-              <Button type="primary" onClick={() => handlePay(record)}>
-                Pay
-              </Button>
-              <Popconfirm
-                title="Are you sure you want to reject this payout?"
-                onConfirm={() => handleReject(record)}
-                okText="Yes"
-                cancelText="No"
+      render: (record: Transaction) => (
+        record.status === 'requested' ? (
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Button
+              type="primary"
+              onClick={() => handlePay(record)}
+              className="w-full sm:w-auto h-10 px-4 text-sm sm:text-base font-medium"
+            >
+              Pay
+            </Button>
+            <Popconfirm
+              title="Are you sure you want to reject this payout?"
+              onConfirm={() => handleReject(record)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                danger
+                className="w-full sm:w-auto h-10 px-4 text-sm sm:text-base font-medium"
               >
-                <Button danger>Reject</Button>
-              </Popconfirm>
-            </div>
-          );
-        }
-        return null;
-      },
+                Reject
+              </Button>
+            </Popconfirm>
+          </div>
+        ) : null
+      ),
     },
   ];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Admin Transactions</h2>
-      
+    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8 py-6">
+      <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">
+        Admin Payouts
+      </h2>
+
       {/* Filters */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <Select
-            placeholder="Filter by Status"
-            style={{ width: 200 }}
-            value={filters.status}
-            onChange={(value) => handleFilterChange("status", value)}
-            allowClear
+      <div className="mb-6 bg-white p-4 sm:p-6 rounded-xl shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-wrap">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <FilterOutlined className="text-gray-600 text-base" />
+            <Select
+              placeholder="Filter by Status"
+              className="w-full sm:w-48"
+              value={filters.status}
+              onChange={(value) => handleFilterChange("status", value)}
+              allowClear
+            >
+              <Option value="requested">Requested</Option>
+              <Option value="paid">Paid</Option>
+              <Option value="rejected">Rejected</Option>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <FilterOutlined className="text-gray-600 text-base" />
+            <RangePicker
+              onChange={(dates) => {
+                if (dates && dates[0] && dates[1]) {
+                  handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                } else {
+                  handleFilterChange("dateRange", null);
+                }
+              }}
+              format="YYYY-MM-DD"
+              className="w-full sm:w-auto"
+            />
+          </div>
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
+            onClick={() => fetchTransactions(currentPage)}
+            className="w-full sm:w-auto h-10 px-4 text-sm sm:text-base font-medium"
           >
-            <Option value="requested">Requested</Option>
-            <Option value="paid">Paid</Option>
-            <Option value="rejected">Rejected</Option>
-          </Select>
+            Apply Filters
+          </Button>
         </div>
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <RangePicker
-            onChange={(dates) => {
-              if (dates && dates[0] && dates[1]) {
-                handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
-              } else {
-                handleFilterChange("dateRange", null);
-              }
-            }}
-            format="YYYY-MM-DD"
-          />
-        </div>
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          onClick={() => fetchTransactions(currentPage)}
-        >
-          Apply Filters
-        </Button>
       </div>
 
       {/* Table */}
-      <Table
-        dataSource={transactions}
-        columns={columns}
-        rowKey="_id"
-        loading={loading}
-        pagination={false}
-        className="bg-white rounded-lg shadow-sm"
-      />
+      <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+        <Table
+          dataSource={transactions}
+          columns={columns}
+          rowKey="_id"
+          loading={loading}
+          pagination={false}
+          className="min-w-[800px]"
+        />
+      </div>
 
       {/* Pagination */}
       <div className="mt-6 flex justify-end">
@@ -274,28 +321,32 @@ const AdminPayouts = () => {
           pageSize={limit}
           onChange={(page) => setCurrentPage(page)}
           showSizeChanger={false}
+          responsive
         />
       </div>
 
       {/* Pay Modal */}
       <Modal
         title="Update Payout Details"
-        visible={visible}
+        open={visible}
         onCancel={() => setVisible(false)}
         onOk={form.submit}
+        okText="Submit"
+        cancelText="Cancel"
+        width={window.innerWidth < 640 ? '90%' : 520}
       >
-        <Form form={form} onFinish={onFinishPay} layout="vertical">
-          <Form.Item name="paid" label="Paid Amount" rules={[{ required: true }]}>
-            <InputNumber min={0} style={{ width: '100%' }} />
+        <Form form={form} onFinish={onFinishPay} layout="vertical" className="space-y-4">
+          <Form.Item name="paid" label="Paid Amount" rules={[{ required: true, message: "Please enter the paid amount" }]}>
+            <InputNumber min={0} className="w-full" />
           </Form.Item>
-          <Form.Item name="transactionId" label="Transaction ID" rules={[{ required: true }]}>
-            <Input />
+          <Form.Item name="transactionId" label="Transaction ID" rules={[{ required: true, message: "Please enter the transaction ID" }]}>
+            <Input className="w-full" />
           </Form.Item>
           <Form.Item name="invoiceLink" label="Invoice Link">
-            <Input />
+            <Input className="w-full" />
           </Form.Item>
-          <Form.Item name="on" label="Action Date" rules={[{ required: true }]}>
-            <SingleDatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{ width: '100%' }} />
+          <Form.Item name="on" label="Action Date" rules={[{ required: true, message: "Please select the action date" }]}>
+            <SingleDatePicker showTime format="YYYY-MM-DD HH:mm:ss" className="w-full" />
           </Form.Item>
         </Form>
       </Modal>

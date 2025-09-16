@@ -33,11 +33,10 @@ const AdminAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(2);
+  const [limit] = useState(10);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     status: "",
- 
     dateRange: null as [moment.Moment, moment.Moment] | null,
   });
 
@@ -49,6 +48,8 @@ const AdminAppointments = () => {
         startDate: filters.dateRange ? filters.dateRange[0].toISOString() : undefined,
         endDate: filters.dateRange ? filters.dateRange[1].toISOString() : undefined,
       });
+
+      console.log("appo resp is ",response);
       setAppointments(response.appointments);
       setTotalPages(response.totalPages);
     } catch (err) {
@@ -72,48 +73,57 @@ const AdminAppointments = () => {
       title: "Patient",
       dataIndex: "userName",
       key: "userName",
-      render: ( record: Appointment) => `${record.userName}`,
+      render: (userName: string) => (
+        <span className="text-sm sm:text-base text-gray-700 truncate">{userName}</span>
+      ),
     },
     {
       title: "Doctor",
       dataIndex: "doctorName",
       key: "doctorName",
-      render: ( record: Appointment) => `Dr.${record.doctorName}`,
+      render: (doctorName: string) => (
+        <span className="text-sm sm:text-base text-gray-700 truncate">Dr. {doctorName}</span>
+      ),
     },
-
     {
       title: "Date & Time",
       dataIndex: "date",
       key: "date",
-      render: ( record: Appointment) =>
-        `${moment(record.date).format("MMM DD, YYYY")} ${moment(record.start).format("h:mm A")}`,
+      render: (date: string,record:Appointment) => (
+        <span className="text-sm sm:text-base text-gray-700">
+          {moment(date).format("MMM DD, YYYY")} {moment(record.start).format("h:mm A")}
+        </span>
+      ),
     },
-
     {
       title: "Duration",
       dataIndex: "duration",
       key: "duration",
-      render: (duration: number) => `${duration} mins`,
+      render: (duration: number) => (
+        <span className="text-sm sm:text-base text-gray-700">{duration} mins</span>
+      ),
     },
-
     {
       title: "Fee",
       dataIndex: "fee",
       key: "fee",
-      render: (fee: number) => `Rs ${fee}`,
+      render: (fee: number) => (
+        <span className="text-sm sm:text-base text-gray-700">Rs {fee}</span>
+      ),
     },
-
     {
       title: "Payment Status",
       dataIndex: "paymentStatus",
       key: "paymentStatus",
       render: (status: string) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            status === "completed" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          className={`inline-flex px-2 py-1 rounded-full text-xs sm:text-sm font-medium truncate ${
+            status === "completed"
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
           }`}
         >
-          {status}
+          {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       ),
     },
@@ -123,84 +133,97 @@ const AdminAppointments = () => {
       key: "appointmentStatus",
       render: (status: string) => (
         <span
-          className={`px-2 py-1 rounded-full text-xs ${
-            status === "booked" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"
+          className={`inline-flex px-2 py-1 rounded-full text-xs sm:text-sm font-medium truncate ${
+            status === "booked"
+              ? "bg-blue-100 text-blue-800"
+              : status === "completed"
+              ? "bg-green-100 text-green-800"
+              : status === "cancelled"
+              ? "bg-red-100 text-red-800"
+              : "bg-gray-100 text-gray-800"
           }`}
         >
-          {status}
+          {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       ),
     },
   ];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Admin Appointments</h2>
-      
+    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8 py-6">
+      {/* Header */}
+      <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">
+        Admin Appointments
+      </h2>
+
       {/* Filters */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <Select
-            placeholder="Filter by Status"
-            style={{ width: 200 }}
-            onChange={(value) => handleFilterChange("status", value)}
-            allowClear
+      <div className="mb-6 bg-white p-4 sm:p-6 rounded-xl shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-wrap">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <FilterOutlined className="text-gray-600 text-base" />
+            <Select
+              placeholder="Filter by Status"
+              className="w-full sm:w-48"
+              onChange={(value) => handleFilterChange("status", value)}
+              allowClear
+            >
+              <Option value="booked">Booked</Option>
+              <Option value="completed">Completed</Option>
+              <Option value="cancelled">Cancelled</Option>
+            </Select>
+          </div>
+          {/* Doctor Category Filter - Uncomment if needed 
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <FilterOutlined className="text-gray-600 text-base" />
+            <Select
+              placeholder="Filter by Category"
+              className="w-full sm:w-48"
+              onChange={(value) => handleFilterChange("doctorCategory", value)}
+              allowClear
+            >
+              <Option value="GENERAL">General</Option>
+              <Option value="CARDIOLOGY">Cardiology</Option>
+              <Option value="PEDIATRICS">Pediatrics</Option>
+              <Option value="DERMATOLOGY">Dermatology</Option>
+            </Select>
+          </div>
+          */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <FilterOutlined className="text-gray-600 text-base" />
+            <RangePicker
+              onChange={(dates) => {
+                if (dates && dates[0] && dates[1]) {
+                  handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                } else {
+                  handleFilterChange("dateRange", null);
+                }
+              }}
+              format="YYYY-MM-DD"
+              className="w-full sm:w-auto"
+            />
+          </div>
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
+            onClick={() => fetchAppointments(currentPage)}
+            className="h-10 px-4 text-sm font-medium w-full sm:w-auto"
           >
-            <Option value="booked">Booked</Option>
-            <Option value="completed">Completed</Option>
-            <Option value="cancelled">Cancelled</Option>
-          </Select>
+            Apply Filters
+          </Button>
         </div>
-
-        {/* Doctor Category Filter - Uncomment if needed 
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <Select
-            placeholder="Filter by Category"
-            style={{ width: 200 }}
-            onChange={(value) => handleFilterChange("doctorCategory", value)}
-            allowClear
-          >
-            <Option value="GENERAL">General</Option>
-            <Option value="CARDIOLOGY">Cardiology</Option>
-            <Option value="PEDIATRICS">Pediatrics</Option>
-            <Option value="DERMATOLOGY">Dermatology</Option>
-          </Select>
-        </div>
-        */}
-
-        <div className="flex items-center gap-2">
-          <FilterOutlined className="text-gray-600" />
-          <RangePicker
-            onChange={(dates) => {
-              if (dates && dates[0] && dates[1]) {
-                handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
-              } else {
-                handleFilterChange("dateRange", null);
-              }
-            }}
-            format="YYYY-MM-DD"
-          />
-        </div>
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          onClick={() => fetchAppointments(currentPage)}
-        >
-          Apply Filters
-        </Button>
       </div>
 
       {/* Table */}
-      <Table
-        dataSource={appointments}
-        columns={columns}
-        rowKey="_id"
-        loading={loading}
-        pagination={false}
-        className="bg-white rounded-lg shadow-sm"
-      />
+      <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+        <Table
+          dataSource={appointments}
+          columns={columns}
+          rowKey="_id"
+          loading={loading}
+          pagination={false}
+          className="min-w-[800px]"
+        />
+      </div>
 
       {/* Pagination */}
       <div className="mt-6 flex justify-end">
@@ -210,6 +233,7 @@ const AdminAppointments = () => {
           pageSize={limit}
           onChange={(page) => setCurrentPage(page)}
           showSizeChanger={false}
+          responsive
         />
       </div>
     </div>

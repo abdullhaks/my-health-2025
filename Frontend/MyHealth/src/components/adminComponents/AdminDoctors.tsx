@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaLock, FaUnlock, FaSearch } from "react-icons/fa";
-import { getDoctors } from "../../api/admin/adminApi";
-import { manageDoctors } from "../../api/admin/adminApi";
+import { getDoctors, manageDoctors } from "../../api/admin/adminApi";
 import { Link } from "react-router-dom";
 import { Popconfirm } from "antd";
 
@@ -11,7 +10,7 @@ interface Doctor {
   fullName: string;
   email: string;
   isBlocked: boolean;
-  adminVerified:number
+  adminVerified: number;
 }
 
 const AdminDoctors = () => {
@@ -22,13 +21,12 @@ const AdminDoctors = () => {
   const [loading, setLoading] = useState(false);
   const [onlyPremium, setOnlyPremium] = useState(false);
 
-
   const limit = 5;
 
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const response = await getDoctors( search, page, limit ,onlyPremium);
+      const response = await getDoctors(search, page, limit, onlyPremium);
       setDoctors(response.doctors);
       setTotalPages(response.totalPages);
     } catch (error) {
@@ -41,13 +39,9 @@ const AdminDoctors = () => {
 
   const handleBlockUnblock = async (id: string, isBlocked: boolean) => {
     try {
-      
       const response = await manageDoctors(id, isBlocked);
-
-
-      if(!response){
-      toast.success(`Doctor ${isBlocked ? "unblocked" : "blocked"} failed`);
-
+      if (!response) {
+        toast.error(`Doctor ${isBlocked ? "unblocked" : "blocked"} failed`);
       }
       setDoctors((prevDoctor) =>
         prevDoctor.map((doctor) =>
@@ -55,7 +49,6 @@ const AdminDoctors = () => {
         )
       );
       toast.success(`Doctor ${isBlocked ? "unblocked" : "blocked"} successfully`);
-
     } catch (error) {
       console.error(error);
       toast.error("Action failed");
@@ -70,128 +63,117 @@ const AdminDoctors = () => {
 
   useEffect(() => {
     fetchDoctors();
-  }, [page]);
+  }, [page, onlyPremium]);
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold text-green-700 mb-4">Manage Doctors</h1>
+    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8 py-6">
+      <h1 className="text-xl sm:text-2xl font-semibold text-green-700 mb-6">
+        Manage Doctors
+      </h1>
 
-      <form onSubmit={handleSearch} className="flex items-center mb-6">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name or email"
-          className="border border-gray-300 p-2 rounded-l-md w-full max-w-md focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
-
-       
+      {/* Search and Filter */}
+      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
+        <div className="relative w-full sm:w-80">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or email"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm sm:text-base bg-white"
+          />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        </div>
         <button
           type="submit"
-          className="bg-green-600 text-white p-2 rounded-r-md hover:bg-green-700"
+          className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base font-medium flex items-center justify-center"
         >
-          <FaSearch />
+          <FaSearch className="mr-2 w-4 h-4 sm:w-5 sm:h-5" /> Search
         </button>
-
-      <label className="ml-4 flex items-center text-sm">
-      <input
-        type="checkbox"
-        checked={onlyPremium}
-        onChange={(e) => setOnlyPremium(e.target.checked)}
-        className="mr-2"
-      />
-      Show only premium doctors
-    </label>
+        <label className="flex items-center text-sm sm:text-base text-gray-700">
+          <input
+            type="checkbox"
+            checked={onlyPremium}
+            onChange={(e) => setOnlyPremium(e.target.checked)}
+            className="mr-2 h-4 w-4"
+          />
+          Show only premium doctors
+        </label>
       </form>
 
+      {/* Table */}
       {loading ? (
-        <p className="text-center text-gray-500">Loading...</p>
+        <p className="text-center text-gray-600 text-sm sm:text-base">Loading...</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-md shadow-md">
-            <thead className="bg-green-100">
+        <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+          <table className="min-w-[600px] w-full">
+            <thead className="bg-green-50">
               <tr>
-                <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Email</th>
-                <th className="py-3 px-4 text-left">Status</th>
-                <th className="py-3 px-4 text-center">Action</th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Name</th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Email</th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Status</th>
+                <th className="py-3 px-4 text-center text-sm sm:text-base font-semibold text-gray-700">Action</th>
               </tr>
             </thead>
             <tbody>
               {doctors.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-6 text-gray-400">
-                    No users found.
+                  <td colSpan={4} className="text-center py-6 text-gray-500 text-sm sm:text-base">
+                    No doctors found.
                   </td>
                 </tr>
               ) : (
                 doctors.map((doctor) => (
-                  <tr key={doctor._id} className="border-b">
-                    <td className="py-3 px-4">Dr.{doctor.fullName}</td>
-                    <td className="py-3 px-4">{doctor.email}</td>
-                    
-
-                    <td className="py-3 px-4">
-                      {doctor.adminVerified === 0 ? (
-                          <Link
-                            to={`/admin/doctor/${doctor._id}`}
-                            className="text-blue-600 underline font-semibold hover:text-blue-800"
-                          >
-                          Verify
-                          </Link>
-                    
-                      ) : doctor.adminVerified === 1 ? (
-                        <Link
-                            to={`/admin/doctor/${doctor._id}`}
-                            className="text-green-600 underline font-semibold hover:text-green-800"
-                          >
-                          Verified
-                        </Link>
-                      ) : (
-                        <Link
-                            to={`/admin/doctor/${doctor._id}`}
-                            className="text-red-600 underline font-semibold hover:text-red-800"
-                          >
-                          Rejected
-                        </Link>
-                      )}
+                  <tr key={doctor._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-4 text-sm sm:text-base text-gray-700 truncate">
+                      Dr. {doctor.fullName}
                     </td>
-
+                    <td className="py-3 px-4 text-sm sm:text-base text-gray-700 truncate">
+                      {doctor.email}
+                    </td>
+                    <td className="py-3 px-4">
+                      <Link
+                        to={`/admin/doctor/${doctor._id}`}
+                        className={`text-sm sm:text-base font-semibold underline transition-colors ${
+                          doctor.adminVerified === 0
+                            ? "text-blue-600 hover:text-blue-800"
+                            : doctor.adminVerified === 1
+                            ? "text-green-600 hover:text-green-800"
+                            : "text-red-600 hover:text-red-800"
+                        }`}
+                      >
+                        {doctor.adminVerified === 0
+                          ? "Verify"
+                          : doctor.adminVerified === 1
+                          ? "Verified"
+                          : "Rejected"}
+                      </Link>
+                    </td>
                     <td className="py-3 px-4 text-center">
-
-
                       <Popconfirm
-                            title="Manage user"
-                            description ={`Are you sure to ${doctor.isBlocked ? "unblock" : "block"}  this doctor?`}
-                            onConfirm={() => handleBlockUnblock(doctor._id, doctor.isBlocked)}
-                            // onCancel={cancel}
-                            okText="Yes"
-                            cancelText="No"
-                          >
-
-
-                          <button
-                            className={`px-4 py-1 rounded-md text-white ${
-                              doctor.isBlocked ? "bg-green-600 hover:bg-green-700" : "bg-red-500 hover:bg-red-600"
-                            }`}
-                          >
-                            {doctor.isBlocked ? (
-                              <span className="flex items-center justify-center">
-                                <FaUnlock className="mr-1" /> Unblock
-                              </span>
-                            ) : (
-                              <span className="flex items-center justify-center">
-                                <FaLock className="mr-1" /> Block
-                              </span>
-                            )}
-                          </button>
-                      
-                      
+                        title="Manage doctor"
+                        description={`Are you sure to ${doctor.isBlocked ? "unblock" : "block"} this doctor?`}
+                        onConfirm={() => handleBlockUnblock(doctor._id, doctor.isBlocked)}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <button
+                          className={`w-full sm:w-auto px-4 py-2 rounded-lg text-white text-sm sm:text-base font-medium transition-colors ${
+                            doctor.isBlocked
+                              ? "bg-green-600 hover:bg-green-700"
+                              : "bg-red-600 hover:bg-red-700"
+                          }`}
+                        >
+                          {doctor.isBlocked ? (
+                            <span className="flex items-center justify-center">
+                              <FaUnlock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Unblock
+                            </span>
+                          ) : (
+                            <span className="flex items-center justify-center">
+                              <FaLock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Block
+                            </span>
+                          )}
+                        </button>
                       </Popconfirm>
-
-
-
-
                     </td>
                   </tr>
                 ))
@@ -202,23 +184,21 @@ const AdminDoctors = () => {
       )}
 
       {/* Pagination */}
-      <div className="flex justify-center items-center mt-6 space-x-2">
+      <div className="flex justify-center items-center mt-6 space-x-3 sm:space-x-4">
         <button
           disabled={page === 1}
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm sm:text-base font-medium"
         >
           Prev
         </button>
-
-        <span className="text-gray-700">
+        <span className="text-sm sm:text-base text-gray-700">
           Page {page} of {totalPages}
         </span>
-
         <button
           disabled={page === totalPages}
           onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-          className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm sm:text-base font-medium"
         >
           Next
         </button>
