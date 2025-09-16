@@ -53,10 +53,13 @@ const DoctorChat = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [docMessage, setDocMessage] = useState<File | null>(null);
 
+const apiUrl = import.meta.env.VITE_API_URL as string;
+
+
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "https://api.abdullhakalamban.online/api/doctor/refreshToken",
+        `${apiUrl}/doctor/refreshToken`,
         {},
         { withCredentials: true }
       );

@@ -10,20 +10,11 @@ import { logoutUser } from "../redux/slices/userSlices";
 import { logoutDoctor } from "../redux/slices/doctorSlices";
 import { logoutAdmin } from "../redux/slices/adminSlices";
 
-import {
-  refreshToken as userRefreshToken,
-  logoutUser as userLogout,
-} from "../api/user/userApi";
+import {refreshToken as userRefreshToken, logoutUser as userLogout,} from "../api/user/userApi";
 
-import {
-  refreshToken as doctorRefreshToken,
-  logoutDoctor as doctorLogout,
-} from "../api/doctor/doctorApi";
+import {refreshToken as doctorRefreshToken,logoutDoctor as doctorLogout,} from "../api/doctor/doctorApi";
 
-import {
-  refreshToken as adminRefreshToken,
-  logoutAdmin as adminLogout,
-} from "../api/admin/adminApi";
+import {refreshToken as adminRefreshToken,logoutAdmin as adminLogout,} from "../api/admin/adminApi";
 
 import toast from "react-hot-toast";
 import { HttpStatusCode } from "../utils/enum";

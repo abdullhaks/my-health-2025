@@ -3,11 +3,12 @@ import axios from "axios";
 import { message } from "antd";
 
 let socket: ReturnType<typeof io> | null = null;
+const apiUrl = import.meta.env.VITE_API_URL as string;
 
 const getAccessToken = async (role: string): Promise<string> => {
   try {
     const response = await axios.post(
-      `https://api.abdullhakalamban.online/api/${role}/refreshToken`,
+      `${apiUrl}/${role}/refreshToken`,
       {},
       { withCredentials: true }
     );

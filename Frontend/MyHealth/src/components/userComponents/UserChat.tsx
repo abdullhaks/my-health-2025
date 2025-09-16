@@ -57,10 +57,13 @@ const UserChat = () => {
   const [activeAppointment, setActiveAppointment] = useState<boolean>(false);
   const [isConversationListVisible, setIsConversationListVisible] = useState(true);
 
+const apiUrl = import.meta.env.VITE_API_URL as string;
+  
+
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "https://api.abdullhakalamban.online/api/user/refreshToken",
+        `${apiUrl}/user/refreshToken`,
         {},
         { withCredentials: true }
       );

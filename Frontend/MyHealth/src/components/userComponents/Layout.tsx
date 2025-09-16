@@ -84,10 +84,13 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
     }
   };
 
+const apiUrl = import.meta.env.VITE_API_URL as string;
+
+
   const getAccessToken = async () => {
     try {
       const response = await axios.post(
-        "https://api.abdullhakalamban.online/api/user/refreshToken",
+        `${apiUrl}/user/refreshToken`,
         {},
         { withCredentials: true }
       );
