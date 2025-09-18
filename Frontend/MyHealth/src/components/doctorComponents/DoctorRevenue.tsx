@@ -12,6 +12,7 @@ interface Transaction {
   bankAccHolderName: string;
   bankIfscCode: string;
   totalAmount: number;
+  paymentFor:string;
   paid: number;
   serviceAmount: number;
   status: string;
@@ -89,8 +90,14 @@ const DoctorRevenue = () => {
     },
     {
       title: "Payment For",
-      dataIndex: "status",
+      dataIndex: "paymentFor",
       key: "paymentFor",
+      render: (text: string) => <span className="capitalize">{text}</span>,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
       render: (text: string) => <span className="capitalize">{text}</span>,
     },
     {
@@ -104,7 +111,7 @@ const DoctorRevenue = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 mb-4 sm:mb-6">
-        Admin Transactions
+        My Revenue
       </h2>
 
       {/* Filters */}

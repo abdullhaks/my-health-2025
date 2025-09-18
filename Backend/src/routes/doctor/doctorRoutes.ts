@@ -48,7 +48,7 @@ const transactionCtrl = container.get<IDoctorTransactionController>("IDoctorTran
 
 doctorRoutes.post("/login", (req, res,next) => authCtrl.doctorLogin(req, res,next));
 
-// doctorRoutes.post("/logout",(req,res)=>authCtrl.doctorLogout(req,res))
+doctorRoutes.post("/logout",(req,res)=>authCtrl.doctorLogout(req,res));
 
 doctorRoutes.post(
   "/signup",

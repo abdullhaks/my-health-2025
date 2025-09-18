@@ -112,7 +112,7 @@ const UserProfile = () => {
           {/* Profile Header */}
           <div className="p-4 sm:p-6 lg:p-8">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">
-              My Profile
+              Profile
             </h1>
 
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 lg:gap-8">

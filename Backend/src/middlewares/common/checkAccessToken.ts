@@ -15,12 +15,12 @@ export function verifyAccessTokenMidleware(
 
     let token;
     if (role === "user") {
-      const { userAccessToken } = req.cookies;
+      const { accessToken } = req.cookies;
 
       // console.log("token is..... ",userAccessToken);
 
-      token = userAccessToken;
-      if (!userAccessToken) {
+      token = accessToken;
+      if (!accessToken) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)
           .json({ msg: "Access token missing" });
@@ -30,12 +30,12 @@ export function verifyAccessTokenMidleware(
     }
 
     if (role === "admin") {
-      const { adminAccessToken } = req.cookies;
+      const { accessToken } = req.cookies;
 
-      // console.log("token is..... ",adminAccessToken);
+      // console.log("token is..... ",accessToken);
 
-      token = adminAccessToken;
-      if (!adminAccessToken) {
+      token = accessToken;
+      if (!accessToken) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)
           .json({ msg: "Access token missing" });
@@ -44,12 +44,12 @@ export function verifyAccessTokenMidleware(
     }
 
     if (role === "doctor") {
-      const { doctorAccessToken } = req.cookies;
+      const { accessToken } = req.cookies;
 
-      // console.log("token is..... ",doctorAccessToken);
+      // console.log("token is..... ",accessToken);
 
-      token = doctorAccessToken;
-      if (!doctorAccessToken) {
+      token = accessToken;
+      if (!accessToken) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)
           .json({ msg: "Access token missing" });

@@ -34,14 +34,16 @@ export default class UserAuthController implements IUserAuthCtrl {
         return;
       }
 
-      res.cookie("userRefreshToken", result.refreshToken, {
+   
+
+      res.cookie("refreshToken", result.refreshToken, {
         httpOnly: true,
         sameSite: "none", // allow cross-site
         secure: true, // only over HTTPS
         maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
-      res.cookie("userAccessToken", result.accessToken, {
+      res.cookie("accessToken", result.accessToken, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
@@ -82,13 +84,13 @@ export default class UserAuthController implements IUserAuthCtrl {
   async userLogout(req: Request, res: Response): Promise<void> {
     try {
       console.log("log out ............ ctrl....");
-      res.clearCookie("userRefreshToken", {
+      res.clearCookie("refreshToken", {
         httpOnly: true,
         sameSite: "none",
         secure: true,
       });
 
-      res.clearCookie("userAccessToken", {
+      res.clearCookie("accessToken", {
         httpOnly: true,
         sameSite: "none",
         secure: true,
@@ -259,16 +261,16 @@ export default class UserAuthController implements IUserAuthCtrl {
 
   async refreshToken(req: Request, res: Response): Promise<void> {
     try {
-      const { userRefreshToken } = req.cookies;
+      const { refreshToken } = req.cookies;
 
-      if (!userRefreshToken) {
+      if (!refreshToken) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)
           .json({ msg: "refresh token not found" });
         return;
       }
 
-      const result = await this._userService.refreshToken(userRefreshToken);
+      const result = await this._userService.refreshToken(refreshToken);
 
       console.log("result from ctrl is ...", result);
 
@@ -283,7 +285,7 @@ export default class UserAuthController implements IUserAuthCtrl {
 
       console.log("result from ctrl is afrt destructr...", accessToken);
 
-      res.cookie("userAccessToken", accessToken, {
+      res.cookie("accessToken", accessToken, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
@@ -373,6 +375,8 @@ export default class UserAuthController implements IUserAuthCtrl {
         role: "user",
       });
 
+ 
+
       res.cookie("userEmail", user.email, {
         httpOnly: true,
         secure: true,
@@ -380,14 +384,14 @@ export default class UserAuthController implements IUserAuthCtrl {
         maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
-      res.cookie("userRefreshToken", myRefreshToken, {
+      res.cookie("refreshToken", myRefreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "none",
         maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
-      res.cookie("userAccessToken", myAccessToken, {
+      res.cookie("accessToken", myAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "none",

@@ -42,14 +42,16 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
         return;
       }
 
-      res.cookie("doctorRefreshToken", result.refreshToken, {
+     
+
+      res.cookie("refreshToken", result.refreshToken, {
         httpOnly: true,
         sameSite: "none", // allow cross-site
         secure: true, // only over HTTPS
         maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
-      res.cookie("doctorAccessToken", result.accessToken, {
+      res.cookie("accessToken", result.accessToken, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
@@ -72,9 +74,32 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: MESSAGES.server.serverError });
     }
-  }
+  };
 
-  async doctorSignup(req: Request, res: Response): Promise<void> {
+    async doctorLogout(req: Request, res: Response): Promise<void> {
+      try {
+        console.log("log out ............ ctrl....");
+        res.clearCookie("refreshToken", {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+  
+        res.clearCookie("accessToken", {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+  
+        res
+          .status(HttpStatusCode.OK)
+          .json({ message: MESSAGES.server.serverError });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+  async doctorSignup(req: Request, res: Response): Promise<void> { 
     try {
       const { fullName, email, password, graduation, category, registerNo } =
         req.body;
@@ -197,16 +222,16 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
 
   async refreshToken(req: Request, res: Response): Promise<void> {
     try {
-      const { doctorRefreshToken } = req.cookies;
+      const { refreshToken } = req.cookies;
 
-      if (!doctorRefreshToken) {
+      if (!refreshToken) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)
           .json({ msg: "refresh token not found" });
       }
 
       const result = await this._doctorAuthService.refreshToken(
-        doctorRefreshToken
+        refreshToken
       );
 
       console.log("result from ctrl is ...", result);
@@ -221,7 +246,7 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
 
       console.log("result from ctrl is afrt destructr...", accessToken);
 
-      res.cookie("doctorAccessToken", accessToken, {
+      res.cookie("accessToken", accessToken, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
@@ -231,7 +256,7 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
       res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
-      res
+      res 
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: MESSAGES.server.serverError });
     }
@@ -243,8 +268,8 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
     next: NextFunction
   ): Promise<void> {
     try {
-      const doctorRefreshToken = req.cookies.doctorRefreshToken;
-      res.status(HttpStatusCode.OK).json(doctorRefreshToken);
+      const refreshToken = req.cookies.refreshToken;
+      res.status(HttpStatusCode.OK).json(refreshToken);
     } catch (error) {
       console.log(error);
       res

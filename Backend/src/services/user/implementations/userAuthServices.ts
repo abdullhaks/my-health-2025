@@ -91,20 +91,6 @@ export default class UserAuthService implements IUserAuthService {
       role: "user",
     });
 
-    // res.cookie("userRefreshToken", refreshToken, {
-    //   httpOnly: true,
-    //   sameSite: "strict",
-    //   secure: false,
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
-
-    // res.cookie("userAccessToken", accessToken, {
-    //   httpOnly: true,
-    //   sameSite: "strict",
-    //   secure: false,
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
-
     if (existingUser.profile) {
       existingUser.profile = await getSignedImageURL(existingUser.profile);
     }

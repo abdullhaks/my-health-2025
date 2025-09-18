@@ -142,19 +142,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
       role: "doctor",
     });
 
-    // res.cookie("doctorRefreshToken", refreshToken, {
-    //   httpOnly: true,
-    //   sameSite: "strict",
-    //   secure: false,
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
 
-    // res.cookie("doctorAccessToken", accessToken, {
-    //   httpOnly: true,
-    //   sameSite: "strict",
-    //   secure: false,
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
 
     const { password, ...doctorWithoutPassword } = existingDoctor.toObject();
 
