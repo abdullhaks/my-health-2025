@@ -2,7 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getUserAppointments, cancelAppointment } from "../../api/user/userApi";
 import { useNavigate } from "react-router-dom";
-import { Popconfirm, message, Select, DatePicker, Button, Pagination, Modal } from "antd";
+import {
+  Popconfirm,
+  message,
+  Select,
+  DatePicker,
+  Button,
+  Pagination,
+  Modal,
+} from "antd";
 import { updateUser } from "../../redux/slices/userSlices";
 import { io, Socket } from "socket.io-client";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
@@ -36,7 +44,14 @@ interface IAppointment {
 interface Notification {
   userId: string;
   message: string;
-  type: "appointment" | "payment" | "blog" | "add" | "newConnection" | "common" | "reportAnalysis";
+  type:
+    | "appointment"
+    | "payment"
+    | "blog"
+    | "add"
+    | "newConnection"
+    | "common"
+    | "reportAnalysis";
   isRead: boolean;
   link?: string;
   mention?: string;
@@ -62,11 +77,11 @@ const UserAppointments = () => {
     appointmentStatus: "booked",
     dateRange: null as [moment.Moment, moment.Moment] | null,
   });
-  const [selectedAppointment, setSelectedAppointment] = useState<IAppointment | null>(null);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<IAppointment | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-const apiUrl = import.meta.env.VITE_API_URL as string;
-
+  const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
@@ -96,11 +111,15 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
-        transports: ["websocket"],
-        reconnection: true,
-        auth: { token },
-      });
+      const socket = io(
+        import.meta.env.VITE_REACT_APP_SOCKET_URL ||
+          "https://api.abdullhakalamban.online",
+        {
+          transports: ["websocket"],
+          reconnection: true,
+          auth: { token },
+        }
+      );
 
       socketRef.current = socket;
 
@@ -120,7 +139,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
             message.error("Failed to reconnect. Please log in again.");
           }
         } else {
-          message.error("Failed to connect to notification server: " + err.message);
+          message.error(
+            "Failed to connect to notification server: " + err.message
+          );
         }
       });
 
@@ -146,8 +167,12 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
       setErrorMessage("");
       const response = await getUserAppointments(user._id, page, limit, {
         appointmentStatus: filters.appointmentStatus,
-        startDate: filters.dateRange ? filters.dateRange[0].toISOString().split("T")[0] : undefined,
-        endDate: filters.dateRange ? filters.dateRange[1].toISOString().split("T")[0] : undefined,
+        startDate: filters.dateRange
+          ? filters.dateRange[0].toISOString().split("T")[0]
+          : undefined,
+        endDate: filters.dateRange
+          ? filters.dateRange[1].toISOString().split("T")[0]
+          : undefined,
       });
 
       setAppointments(response.appointments || []);
@@ -155,7 +180,8 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     } catch (error) {
       console.error("Error fetching appointments:", error);
       setErrorMessage(
-        (error as ApiError).response?.data?.message || "Failed to load appointments. Please try again."
+        (error as ApiError).response?.data?.message ||
+          "Failed to load appointments. Please try again."
       );
     } finally {
       setIsFetching(false);
@@ -166,7 +192,10 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     if (user._id) fetchAppointments(currentPage);
   }, [user._id, currentPage, filters]);
 
-  const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
+  const handleFilterChange = (
+    key: string,
+    value: string | [moment.Moment, moment.Moment] | null
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -184,9 +213,14 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         let doctorId: string = "";
         let date: string = "";
 
-        const targetAppointment = appointments.find((appt) => appt._id === appointmentId);
+        const targetAppointment = appointments.find(
+          (appt) => appt._id === appointmentId
+        );
         if (targetAppointment) {
-          userName = targetAppointment.userName || response.updatedUser?.fullName || "Patient";
+          userName =
+            targetAppointment.userName ||
+            response.updatedUser?.fullName ||
+            "Patient";
           doctorId = targetAppointment.doctorId || "";
           date = targetAppointment.date || "";
         } else {
@@ -196,7 +230,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         setAppointments((prev) =>
           prev.map((appt) =>
             appt._id === appointmentId
-              ? { ...appt, appointmentStatus: "cancelled", paymentStatus: "refunded" }
+              ? {
+                  ...appt,
+                  appointmentStatus: "cancelled",
+                  paymentStatus: "refunded",
+                }
               : appt
           )
         );
@@ -204,7 +242,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         if (doctorId) {
           const notification: Notification = {
             userId: doctorId,
-            message: `Your appointment with ${userName} on ${new Date(date).toLocaleDateString("en-US", {
+            message: `Your appointment with ${userName} on ${new Date(
+              date
+            ).toLocaleDateString("en-US", {
               weekday: "short",
               year: "numeric",
               month: "short",
@@ -227,7 +267,8 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     } catch (error) {
       console.error("Error cancelling appointment:", error);
       setErrorMessage(
-        (error as ApiError).response?.data?.message || "Failed to cancel appointment. Please try again."
+        (error as ApiError).response?.data?.message ||
+          "Failed to cancel appointment. Please try again."
       );
     } finally {
       setIsCanceling(false);
@@ -258,7 +299,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
   return (
     <div className="min-h-screen bg-gray-50 py-4 px-4 sm:py-6 sm:px-6 lg:py-8 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 lg:mb-8">My Appointments</h2>
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 lg:mb-8">
+          My Appointments
+        </h2>
 
         {/* Filters */}
         <div className="mb-4 sm:mb-6 bg-white p-4 sm:p-6 rounded-2xl shadow-md flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-start sm:items-center">
@@ -268,7 +311,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
               placeholder="Filter by Status"
               className="w-full sm:w-48 md:w-56"
               value={filters.appointmentStatus}
-              onChange={(value) => handleFilterChange("appointmentStatus", value)}
+              onChange={(value) =>
+                handleFilterChange("appointmentStatus", value)
+              }
               allowClear
             >
               <Option value="booked">Booked</Option>
@@ -281,7 +326,10 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
             <RangePicker
               onChange={(dates) => {
                 if (dates && dates[0] && dates[1]) {
-                  handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                  handleFilterChange("dateRange", [
+                    moment(dates[0].toDate()),
+                    moment(dates[1].toDate()),
+                  ]);
                 } else {
                   handleFilterChange("dateRange", null);
                 }
@@ -307,9 +355,13 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         )}
 
         {isFetching ? (
-          <div className="text-center text-gray-500 py-8 text-sm sm:text-base">Loading appointments...</div>
+          <div className="text-center text-gray-500 py-8 text-sm sm:text-base">
+            Loading appointments...
+          </div>
         ) : appointments.length === 0 ? (
-          <div className="text-center text-gray-500 py-8 text-sm sm:text-base">No appointments found.</div>
+          <div className="text-center text-gray-500 py-8 text-sm sm:text-base">
+            No appointments found.
+          </div>
         ) : (
           <div className="space-y-4 sm:space-y-6">
             {appointments.map((appt) => (
@@ -320,32 +372,47 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 <div className="flex flex-col gap-4 sm:gap-6">
                   <div className="flex items-center gap-3 sm:gap-4">
                     <img
-                      src={appt.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+                      src={
+                        appt.profile ||
+                        "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                      }
                       alt="Doctor"
                       className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shadow-sm"
                     />
                     <div>
-                      <p className="text-sm sm:text-base font-medium text-gray-900">Dr. {appt.doctorName}</p>
-                      <p className="text-xs sm:text-sm text-gray-600">({appt.doctorCategory})</p>
+                      <p className="text-sm sm:text-base font-medium text-gray-900">
+                        Dr. {appt.doctorName}
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        ({appt.doctorCategory})
+                      </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
                     <div>
-                      <span className="font-medium text-gray-700">Date & Time: </span>
-                      {moment(appt.start).format("DD-MM-YYYY hh:mm A")} - {moment(appt.end).format("hh:mm A")}
+                      <span className="font-medium text-gray-700">
+                        Date & Time:{" "}
+                      </span>
+                      {moment(appt.start).format("DD-MM-YYYY hh:mm A")} -{" "}
+                      {moment(appt.end).format("hh:mm A")}
                     </div>
                     <div>
-                      <span className="font-medium text-gray-700">Duration: </span>
+                      <span className="font-medium text-gray-700">
+                        Duration:{" "}
+                      </span>
                       {appt.duration} minutes
                     </div>
                     <div>
-                      <span className="font-medium text-gray-700">Fee: </span>
-                      ₹{appt.fee}
+                      <span className="font-medium text-gray-700">Fee: </span>₹
+                      {appt.fee}
                     </div>
                     <div>
-                      <span className="font-medium text-gray-700">Status: </span>
-                      {appt.appointmentStatus.charAt(0).toUpperCase() + appt.appointmentStatus.slice(1)}
+                      <span className="font-medium text-gray-700">
+                        Status:{" "}
+                      </span>
+                      {appt.appointmentStatus.charAt(0).toUpperCase() +
+                        appt.appointmentStatus.slice(1)}
                     </div>
                   </div>
 
@@ -382,9 +449,13 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                         cancelText="No"
                       >
                         <button
-                          disabled={isCanceling || appt.appointmentStatus !== "booked"}
+                          disabled={
+                            isCanceling || appt.appointmentStatus !== "booked"
+                          }
                           className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg text-white font-medium transition-colors duration-200 shadow-sm ${
-                            isCanceling ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 active:scale-95"
+                            isCanceling
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-red-600 hover:bg-red-700 active:scale-95"
                           }`}
                         >
                           Cancel
@@ -419,7 +490,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
       {/* Appointment Details Modal */}
       <Modal
-        title={<h3 className="text-lg sm:text-xl font-semibold text-gray-900">Appointment Details</h3>}
+        title={
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+            Appointment Details
+          </h3>
+        }
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
@@ -432,25 +507,37 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
               <img
-                src={selectedAppointment.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+                src={
+                  selectedAppointment.profile ||
+                  "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                }
                 alt="Doctor"
                 className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-md"
               />
               <div className="text-center sm:text-left">
-                <h4 className="text-base sm:text-lg font-semibold text-gray-900">Dr. {selectedAppointment.doctorName}</h4>
-                <p className="text-sm sm:text-base text-gray-600">{selectedAppointment.doctorCategory}</p>
+                <h4 className="text-base sm:text-lg font-semibold text-gray-900">
+                  Dr. {selectedAppointment.doctorName}
+                </h4>
+                <p className="text-sm sm:text-base text-gray-600">
+                  {selectedAppointment.doctorCategory}
+                </p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
               <div>
                 <p className="font-medium text-gray-700">Date & Time:</p>
                 <p className="text-gray-900">
-                  {moment(selectedAppointment.start).format("DD-MM-YYYY hh:mm A")} - {moment(selectedAppointment.end).format("hh:mm A")}
+                  {moment(selectedAppointment.start).format(
+                    "DD-MM-YYYY hh:mm A"
+                  )}{" "}
+                  - {moment(selectedAppointment.end).format("hh:mm A")}
                 </p>
               </div>
               <div>
                 <p className="font-medium text-gray-700">Duration:</p>
-                <p className="text-gray-900">{selectedAppointment.duration} minutes</p>
+                <p className="text-gray-900">
+                  {selectedAppointment.duration} minutes
+                </p>
               </div>
               <div>
                 <p className="font-medium text-gray-700">Fee:</p>
@@ -458,15 +545,23 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
               </div>
               <div>
                 <p className="font-medium text-gray-700">Status:</p>
-                <p className="text-gray-900 capitalize">{selectedAppointment.appointmentStatus}</p>
+                <p className="text-gray-900 capitalize">
+                  {selectedAppointment.appointmentStatus}
+                </p>
               </div>
               <div>
                 <p className="font-medium text-gray-700">Payment Status:</p>
-                <p className="text-gray-900 capitalize">{selectedAppointment.paymentStatus}</p>
+                <p className="text-gray-900 capitalize">
+                  {selectedAppointment.paymentStatus}
+                </p>
               </div>
               <div>
                 <p className="font-medium text-gray-700">Created At:</p>
-                <p className="text-gray-900">{moment(selectedAppointment.createdAt).format("DD-MM-YYYY hh:mm A")}</p>
+                <p className="text-gray-900">
+                  {moment(selectedAppointment.createdAt).format(
+                    "DD-MM-YYYY hh:mm A"
+                  )}
+                </p>
               </div>
             </div>
           </div>

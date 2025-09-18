@@ -48,7 +48,9 @@ const AdminDoctors = () => {
           doctor._id === id ? { ...doctor, isBlocked: !isBlocked } : doctor
         )
       );
-      toast.success(`Doctor ${isBlocked ? "unblocked" : "blocked"} successfully`);
+      toast.success(
+        `Doctor ${isBlocked ? "unblocked" : "blocked"} successfully`
+      );
     } catch (error) {
       console.error(error);
       toast.error("Action failed");
@@ -72,7 +74,10 @@ const AdminDoctors = () => {
       </h1>
 
       {/* Search and Filter */}
-      <form onSubmit={handleSearch} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6">
+      <form
+        onSubmit={handleSearch}
+        className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-6"
+      >
         <div className="relative w-full sm:w-80">
           <input
             type="text"
@@ -102,28 +107,44 @@ const AdminDoctors = () => {
 
       {/* Table */}
       {loading ? (
-        <p className="text-center text-gray-600 text-sm sm:text-base">Loading...</p>
+        <p className="text-center text-gray-600 text-sm sm:text-base">
+          Loading...
+        </p>
       ) : (
         <div className="bg-white rounded-xl shadow-md overflow-x-auto">
           <table className="min-w-[600px] w-full">
             <thead className="bg-green-50">
               <tr>
-                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Name</th>
-                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Email</th>
-                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Status</th>
-                <th className="py-3 px-4 text-center text-sm sm:text-base font-semibold text-gray-700">Action</th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">
+                  Name
+                </th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">
+                  Email
+                </th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-center text-sm sm:text-base font-semibold text-gray-700">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {doctors.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-6 text-gray-500 text-sm sm:text-base">
+                  <td
+                    colSpan={4}
+                    className="text-center py-6 text-gray-500 text-sm sm:text-base"
+                  >
                     No doctors found.
                   </td>
                 </tr>
               ) : (
                 doctors.map((doctor) => (
-                  <tr key={doctor._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={doctor._id}
+                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                  >
                     <td className="py-3 px-4 text-sm sm:text-base text-gray-700 truncate">
                       Dr. {doctor.fullName}
                     </td>
@@ -151,8 +172,12 @@ const AdminDoctors = () => {
                     <td className="py-3 px-4 text-center">
                       <Popconfirm
                         title="Manage doctor"
-                        description={`Are you sure to ${doctor.isBlocked ? "unblock" : "block"} this doctor?`}
-                        onConfirm={() => handleBlockUnblock(doctor._id, doctor.isBlocked)}
+                        description={`Are you sure to ${
+                          doctor.isBlocked ? "unblock" : "block"
+                        } this doctor?`}
+                        onConfirm={() =>
+                          handleBlockUnblock(doctor._id, doctor.isBlocked)
+                        }
                         okText="Yes"
                         cancelText="No"
                       >
@@ -165,11 +190,13 @@ const AdminDoctors = () => {
                         >
                           {doctor.isBlocked ? (
                             <span className="flex items-center justify-center">
-                              <FaUnlock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Unblock
+                              <FaUnlock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                              Unblock
                             </span>
                           ) : (
                             <span className="flex items-center justify-center">
-                              <FaLock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Block
+                              <FaLock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                              Block
                             </span>
                           )}
                         </button>

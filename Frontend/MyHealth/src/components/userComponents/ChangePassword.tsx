@@ -1,27 +1,31 @@
 import { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { z } from "zod";
-import PasswordInput from '../../sharedComponents/PasswordInput'; 
+import PasswordInput from "../../sharedComponents/PasswordInput";
 import { PasswordData } from "../../interfaces/user";
 
 // Schema for change password validation
-const changePasswordSchema = z.object({
-  currentPassword: z.string()
-    .min(8, "invalid password")
-    .refine((val) => val.trim() === val, {
-      message: "No leading or trailing spaces allowed",
-    }),
-  newPassword: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/\d/, "Password must contain at least one number")
-    .regex(/[@$!%*?&#]/, "Include at least one special character"),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const changePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, "invalid password")
+      .refine((val) => val.trim() === val, {
+        message: "No leading or trailing spaces allowed",
+      }),
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/\d/, "Password must contain at least one number")
+      .regex(/[@$!%*?&#]/, "Include at least one special character"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -31,15 +35,23 @@ interface ChangePasswordModalProps {
 
 type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 
-const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalProps) => {
+const ChangePasswordModal = ({
+  isOpen,
+  onClose,
+  onSave,
+}: ChangePasswordModalProps) => {
   const [formData, setFormData] = useState<ChangePasswordData>({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof ChangePasswordData, string>>>({});
-  const [touched, setTouched] = useState<Record<keyof ChangePasswordData, boolean>>({
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ChangePasswordData, string>>
+  >({});
+  const [touched, setTouched] = useState<
+    Record<keyof ChangePasswordData, boolean>
+  >({
     currentPassword: false,
     newPassword: false,
     confirmPassword: false,
@@ -95,9 +107,9 @@ const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalPro
     onSave(formData);
     onClose();
     setFormData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     });
     setTouched({
       currentPassword: false,
@@ -112,7 +124,9 @@ const ChangePasswordModal = ({ isOpen, onClose, onSave }: ChangePasswordModalPro
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 sm:p-6 md:p-8 overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg md:max-w-xl relative transition-all duration-300 ease-in-out">
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Change Password</h2>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+            Change Password
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"

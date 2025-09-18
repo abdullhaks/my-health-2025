@@ -3,8 +3,6 @@ import { IReportAnalysisDocument } from "../entities/reportAnalysisEntities";
 
 const reportAnalysisSchema = new Schema<IReportAnalysisDocument>(
   {
-
-
     doctorId: {
       type: String,
       required: true,
@@ -21,7 +19,7 @@ const reportAnalysisSchema = new Schema<IReportAnalysisDocument>(
       required: true,
     },
     doctorName: {
-      type:String,
+      type: String,
       required: true,
     },
     doctorCategory: {
@@ -36,25 +34,27 @@ const reportAnalysisSchema = new Schema<IReportAnalysisDocument>(
       type: String,
       required: false,
     },
-    result:{
+    result: {
       type: String,
       default: "",
     },
     analysisStatus: {
       type: String,
-      enum: ["pending", "cancelled", "submited",],
+      enum: ["pending", "cancelled", "submited"],
       default: "pending",
     },
     createdAt: {
       type: Date,
       default: Date.now,
     },
-
   },
-  
+
   {
     timestamps: true,
   }
 );
 
-export default model<IReportAnalysisDocument>("ReportAnalysis", reportAnalysisSchema);
+export default model<IReportAnalysisDocument>(
+  "ReportAnalysis",
+  reportAnalysisSchema
+);

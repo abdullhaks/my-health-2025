@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { fetchingDoctors } from '../../api/user/userApi';
-import { useNavigate } from 'react-router-dom';
-import { IDoctor } from '../../interfaces/doctor';
+import { useEffect, useState } from "react";
+import { fetchingDoctors } from "../../api/user/userApi";
+import { useNavigate } from "react-router-dom";
+import { IDoctor } from "../../interfaces/doctor";
 
 const Doctors = () => {
   const [doctors, setDoctors] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [location, setLocation] = useState('');
-  const [category, setCategory] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [sortBy, setSortBy] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 3;
@@ -26,13 +26,20 @@ const Doctors = () => {
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const res = await fetchingDoctors({ searchTerm, location, category, sortBy, page, limit });
+      const res = await fetchingDoctors({
+        searchTerm,
+        location,
+        category,
+        sortBy,
+        page,
+        limit,
+      });
       console.log("doctors response is :", res);
       setDoctors(res.doctors);
       setTotalPages(res.totalPages);
       setPage(res.page);
     } catch (error) {
-      console.error('Error fetching doctors:', error);
+      console.error("Error fetching doctors:", error);
     } finally {
       setLoading(false);
     }
@@ -99,7 +106,9 @@ const Doctors = () => {
             <option value="Gynecologist">Gynecologist</option>
             <option value="Dentist">Dentist</option>
             <option value="Physiotherapist">Physiotherapist</option>
-            <option value="Dietitian/Nutritionist">Dietitian/Nutritionist</option>
+            <option value="Dietitian/Nutritionist">
+              Dietitian/Nutritionist
+            </option>
             <option value="Emergency Medicine">Emergency Medicine</option>
             <option value="Pathologist">Pathologist</option>
             <option value="Family Medicine">Family Medicine</option>
@@ -139,7 +148,10 @@ const Doctors = () => {
               >
                 <div className="flex items-center gap-4 sm:gap-6">
                   <img
-                    src={doc.profile || 'https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png'}
+                    src={
+                      doc.profile ||
+                      "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                    }
                     alt="Doctor"
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover flex-shrink-0"
                   />
@@ -148,7 +160,8 @@ const Doctors = () => {
                       Dr. {doc.fullName}
                     </h3>
                     <p className="text-sm sm:text-base text-gray-600 line-clamp-2">
-                      {doc.category} specialist | {doc.experience} years experience
+                      {doc.category} specialist | {doc.experience} years
+                      experience
                     </p>
                     <span className="inline-block px-3 py-1 text-xs sm:text-sm rounded-full bg-blue-100 text-blue-700 font-medium">
                       {doc.category}

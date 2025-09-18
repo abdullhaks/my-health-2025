@@ -33,11 +33,15 @@ function UserRecoveryPassword() {
   const [formData, setFormData] = useState<UserRecPassData>({
     recPass: "",
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof UserRecPassData, string>>>({
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof UserRecPassData, string>>
+  >({
     recPass: "",
   });
   const [isFormValid, setIsFormValid] = useState(false);
-  const [touched, setTouched] = useState<Record<keyof UserRecPassData, boolean>>({
+  const [touched, setTouched] = useState<
+    Record<keyof UserRecPassData, boolean>
+  >({
     recPass: false,
   });
 
@@ -101,7 +105,9 @@ function UserRecoveryPassword() {
     } catch (error: unknown) {
       console.error("Verification failed:", error);
       const errorMessage =
-        error instanceof Error ? error.message : "Something went wrong. Please try again later.";
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again later.";
       toast.error(errorMessage);
       setErrors({ recPass: "Failed to verify recovery code" });
     }
@@ -113,8 +119,19 @@ function UserRecoveryPassword() {
       <div className="absolute inset-0 opacity-70">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="recoveryPasswordGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#3B82F6" strokeWidth="0.5" opacity="0.8"/>
+            <pattern
+              id="recoveryPasswordGrid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 40 0 L 0 0 0 40"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="0.5"
+                opacity="0.8"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#recoveryPasswordGrid)" />
@@ -131,9 +148,9 @@ function UserRecoveryPassword() {
         <div className="container mx-auto flex justify-start items-center">
           <div className="flex items-center space-x-2 sm:space-x-3">
             <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 bg-blue-300 backdrop-blur-sm rounded-lg shadow-md overflow-hidden border border-white/20">
-              <img 
-                src={applogoWhite} 
-                alt="MyHealth Logo" 
+              <img
+                src={applogoWhite}
+                alt="MyHealth Logo"
                 className="w-full h-full object-contain p-1"
               />
             </div>
@@ -148,14 +165,13 @@ function UserRecoveryPassword() {
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative z-10">
         <div className="w-full max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/30 overflow-hidden min-h-[400px] sm:min-h-[500px]">
-            
             {/* Left Side - Illustration (Hidden on mobile) */}
             <div className="hidden lg:flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-white p-6 lg:p-8 xl:p-12 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
               <div className="relative z-10 max-w-md w-full">
-                <img 
-                  src={userLogin} 
-                  alt="Recovery Password Illustration" 
+                <img
+                  src={userLogin}
+                  alt="Recovery Password Illustration"
                   className="w-full h-auto object-contain drop-shadow-lg"
                 />
                 <div className="text-center mt-4 sm:mt-6">
@@ -163,7 +179,8 @@ function UserRecoveryPassword() {
                     Recover Your Account
                   </h3>
                   <p className="text-sm sm:text-base xl:text-base text-gray-600 leading-relaxed line-clamp-3">
-                    Enter the recovery code sent to your email to proceed with password reset
+                    Enter the recovery code sent to your email to proceed with
+                    password reset
                   </p>
                 </div>
               </div>
@@ -172,13 +189,12 @@ function UserRecoveryPassword() {
             {/* Right Side - Form */}
             <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10 xl:p-12 bg-white">
               <div className="w-full max-w-md mx-auto">
-                
                 {/* Mobile Logo (shown only on mobile) */}
                 <div className="lg:hidden flex justify-center mb-6 sm:mb-8">
                   <div className="h-14 w-14 sm:h-16 sm:w-16 bg-gradient-to-br from-blue-300 to-blue-600 rounded-xl shadow-lg overflow-hidden p-2">
-                    <img 
-                      src={applogoWhite} 
-                      alt="MyHealth Logo" 
+                    <img
+                      src={applogoWhite}
+                      alt="MyHealth Logo"
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -190,12 +206,16 @@ function UserRecoveryPassword() {
                     Recovery Password
                   </h1>
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                    Enter the recovery code sent to <span className="font-semibold">{email}</span>
+                    Enter the recovery code sent to{" "}
+                    <span className="font-semibold">{email}</span>
                   </p>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5 sm:space-y-6"
+                >
                   <div className="space-y-4 sm:space-y-5">
                     <Input
                       id="recPass"
@@ -207,8 +227,8 @@ function UserRecoveryPassword() {
                       onChange={handleChange}
                       required
                       className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
-                        touched.recPass && errors.recPass 
-                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                        touched.recPass && errors.recPass
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                           : "focus:border-blue-500 focus:ring-blue-500/20"
                       }`}
                       error={touched.recPass ? errors.recPass : ""}
@@ -223,8 +243,8 @@ function UserRecoveryPassword() {
                       text="Submit"
                       disabled={!isFormValid}
                       className={`w-full min-h-[48px] sm:min-h-[52px] text-sm sm:text-base font-semibold rounded-xl transition-all duration-300 transform ${
-                        isFormValid 
-                          ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]" 
+                        isFormValid
+                          ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                           : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
                     />

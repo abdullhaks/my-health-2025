@@ -1,8 +1,5 @@
-import {IDoctor} from "../../../dto/doctorDTO"
-
+import { IDoctor } from "../../../dto/doctorDTO";
 
 export default interface IPaymentService {
-
-handleWebhookEvent(event:any):Promise<{received:boolean}>
-
+  handleWebhookEvent(event: any): Promise<{ received: boolean }>;
 }

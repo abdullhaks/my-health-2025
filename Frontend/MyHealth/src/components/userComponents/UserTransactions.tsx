@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTransactions } from "../../api/user/userApi"; 
+import { getTransactions } from "../../api/user/userApi";
 import { Table, Select, DatePicker, Button, Pagination } from "antd";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import moment from "moment";
@@ -44,8 +44,12 @@ const UserTransactions = () => {
       const response = await getTransactions(user._id, page, limit, {
         method: filters.method,
         paymentFor: filters.paymentFor,
-        startDate: filters.dateRange ? filters.dateRange[0].toISOString() : undefined,
-        endDate: filters.dateRange ? filters.dateRange[1].toISOString() : undefined,
+        startDate: filters.dateRange
+          ? filters.dateRange[0].toISOString()
+          : undefined,
+        endDate: filters.dateRange
+          ? filters.dateRange[1].toISOString()
+          : undefined,
       });
       setTransactions(response.transactions);
       setTotalPages(response.totalPages);
@@ -60,7 +64,10 @@ const UserTransactions = () => {
     fetchTransactions(currentPage);
   }, [currentPage, filters]);
 
-  const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
+  const handleFilterChange = (
+    key: string,
+    value: string | [moment.Moment, moment.Moment] | null
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -70,31 +77,41 @@ const UserTransactions = () => {
       title: "From",
       dataIndex: "from",
       key: "from",
-      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
+      render: (text: string) => (
+        <span className="text-sm sm:text-base capitalize">{text}</span>
+      ),
     },
     {
       title: "To",
       dataIndex: "to",
       key: "to",
-      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
+      render: (text: string) => (
+        <span className="text-sm sm:text-base capitalize">{text}</span>
+      ),
     },
     {
       title: "Method",
       dataIndex: "method",
       key: "method",
-      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
+      render: (text: string) => (
+        <span className="text-sm sm:text-base capitalize">{text}</span>
+      ),
     },
     {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
-      render: (amount: number) => <span className="text-sm sm:text-base">Rs {amount}</span>,
+      render: (amount: number) => (
+        <span className="text-sm sm:text-base">Rs {amount}</span>
+      ),
     },
     {
       title: "Purpose",
       dataIndex: "paymentFor",
       key: "paymentFor",
-      render: (text: string) => <span className="text-sm sm:text-base capitalize">{text}</span>,
+      render: (text: string) => (
+        <span className="text-sm sm:text-base capitalize">{text}</span>
+      ),
     },
     {
       title: "Date",
@@ -171,7 +188,10 @@ const UserTransactions = () => {
               <RangePicker
                 onChange={(dates) => {
                   if (dates && dates[0] && dates[1]) {
-                    handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                    handleFilterChange("dateRange", [
+                      moment(dates[0].toDate()),
+                      moment(dates[1].toDate()),
+                    ]);
                   } else {
                     handleFilterChange("dateRange", null);
                   }

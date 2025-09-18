@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
 import { getPayouts, updatePayout } from "../../api/admin/adminApi";
-import { Table, Select, DatePicker, Button, Pagination, Tag, Modal, Form, Input, DatePicker as SingleDatePicker, InputNumber, Popconfirm, message } from "antd";
+import {
+  Table,
+  Select,
+  DatePicker,
+  Button,
+  Pagination,
+  Tag,
+  Modal,
+  Form,
+  Input,
+  DatePicker as SingleDatePicker,
+  InputNumber,
+  Popconfirm,
+  message,
+} from "antd";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import moment from "moment";
 
@@ -42,8 +56,12 @@ const AdminPayouts = () => {
     try {
       const response = await getPayouts(page, limit, {
         status: filters.status,
-        startDate: filters.dateRange ? filters.dateRange[0].toISOString() : undefined,
-        endDate: filters.dateRange ? filters.dateRange[1].toISOString() : undefined,
+        startDate: filters.dateRange
+          ? filters.dateRange[0].toISOString()
+          : undefined,
+        endDate: filters.dateRange
+          ? filters.dateRange[1].toISOString()
+          : undefined,
       });
       setTransactions(response.payouts);
       setTotalPages(response.totalPages);
@@ -62,14 +80,17 @@ const AdminPayouts = () => {
     if (selected && visible) {
       form.setFieldsValue({
         paid: selected.paid,
-        transactionId: selected.transactionId || '',
-        invoiceLink: selected.invoiceLink || '',
+        transactionId: selected.transactionId || "",
+        invoiceLink: selected.invoiceLink || "",
         on: moment(),
       });
     }
   }, [selected, visible, form]);
 
-  const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
+  const handleFilterChange = (
+    key: string,
+    value: string | [moment.Moment, moment.Moment] | null
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1);
   };
@@ -79,11 +100,16 @@ const AdminPayouts = () => {
     setVisible(true);
   };
 
-  const onFinishPay = async (values: { paid: number; transactionId: string; invoiceLink: string; on: { toISOString: () => string; }; }) => {
+  const onFinishPay = async (values: {
+    paid: number;
+    transactionId: string;
+    invoiceLink: string;
+    on: { toISOString: () => string };
+  }) => {
     if (!selected) return;
     try {
       const updateData = {
-        status: 'paid',
+        status: "paid",
         paid: values.paid,
         transactionId: values.transactionId,
         invoiceLink: values.invoiceLink || "",
@@ -100,7 +126,7 @@ const AdminPayouts = () => {
   const handleReject = async (record: Transaction) => {
     try {
       const updateData = {
-        status: 'rejected',
+        status: "rejected",
         on: new Date().toISOString(),
       };
       const rewt = await updatePayout(record._id, updateData);
@@ -129,7 +155,9 @@ const AdminPayouts = () => {
       dataIndex: "bankAccNo",
       key: "bankAccNo",
       render: (text: string) => (
-        <span className="text-sm sm:text-base text-gray-700 truncate">{text}</span>
+        <span className="text-sm sm:text-base text-gray-700 truncate">
+          {text}
+        </span>
       ),
     },
     {
@@ -137,7 +165,9 @@ const AdminPayouts = () => {
       dataIndex: "bankAccHolderName",
       key: "bankAccHolderName",
       render: (text: string) => (
-        <span className="text-sm sm:text-base text-gray-700 truncate">{text}</span>
+        <span className="text-sm sm:text-base text-gray-700 truncate">
+          {text}
+        </span>
       ),
     },
     {
@@ -145,7 +175,9 @@ const AdminPayouts = () => {
       dataIndex: "bankIfscCode",
       key: "bankIfscCode",
       render: (text: string) => (
-        <span className="text-sm sm:text-base text-gray-700 truncate">{text}</span>
+        <span className="text-sm sm:text-base text-gray-700 truncate">
+          {text}
+        </span>
       ),
     },
     {
@@ -177,9 +209,9 @@ const AdminPayouts = () => {
       dataIndex: "status",
       key: "status",
       render: (text: string) => {
-        let color = 'blue';
-        if (text === 'paid') color = 'green';
-        if (text === 'rejected') color = 'red';
+        let color = "blue";
+        if (text === "paid") color = "green";
+        if (text === "rejected") color = "red";
         return (
           <Tag
             color={color}
@@ -196,9 +228,9 @@ const AdminPayouts = () => {
       key: "on",
       render: (date: string, record: Transaction) => (
         <span className="text-sm sm:text-base text-gray-700">
-          {record.status !== 'requested' && date
+          {record.status !== "requested" && date
             ? moment(date).format("MMM DD, YYYY h:mm A")
-            : '-'}
+            : "-"}
         </span>
       ),
     },
@@ -206,7 +238,7 @@ const AdminPayouts = () => {
       title: "Trans Id",
       dataIndex: "transactionId",
       key: "transactionId",
-      render: (text: string, record: Transaction) => (
+      render: (text: string, record: Transaction) =>
         record.invoiceLink ? (
           <a
             href={record.invoiceLink}
@@ -214,18 +246,19 @@ const AdminPayouts = () => {
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 text-sm sm:text-base underline transition-colors"
           >
-            {text || 'View'}
+            {text || "View"}
           </a>
         ) : (
-          <span className="text-sm sm:text-base text-gray-700">{text || 'N/A'}</span>
-        )
-      ),
+          <span className="text-sm sm:text-base text-gray-700">
+            {text || "N/A"}
+          </span>
+        ),
     },
     {
       title: "Actions",
       key: "actions",
-      render: (record: Transaction) => (
-        record.status === 'requested' ? (
+      render: (record: Transaction) =>
+        record.status === "requested" ? (
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Button
               type="primary"
@@ -248,8 +281,7 @@ const AdminPayouts = () => {
               </Button>
             </Popconfirm>
           </div>
-        ) : null
-      ),
+        ) : null,
     },
   ];
 
@@ -281,7 +313,10 @@ const AdminPayouts = () => {
             <RangePicker
               onChange={(dates) => {
                 if (dates && dates[0] && dates[1]) {
-                  handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                  handleFilterChange("dateRange", [
+                    moment(dates[0].toDate()),
+                    moment(dates[1].toDate()),
+                  ]);
                 } else {
                   handleFilterChange("dateRange", null);
                 }
@@ -333,20 +368,47 @@ const AdminPayouts = () => {
         onOk={form.submit}
         okText="Submit"
         cancelText="Cancel"
-        width={window.innerWidth < 640 ? '90%' : 520}
+        width={window.innerWidth < 640 ? "90%" : 520}
       >
-        <Form form={form} onFinish={onFinishPay} layout="vertical" className="space-y-4">
-          <Form.Item name="paid" label="Paid Amount" rules={[{ required: true, message: "Please enter the paid amount" }]}>
+        <Form
+          form={form}
+          onFinish={onFinishPay}
+          layout="vertical"
+          className="space-y-4"
+        >
+          <Form.Item
+            name="paid"
+            label="Paid Amount"
+            rules={[
+              { required: true, message: "Please enter the paid amount" },
+            ]}
+          >
             <InputNumber min={0} className="w-full" />
           </Form.Item>
-          <Form.Item name="transactionId" label="Transaction ID" rules={[{ required: true, message: "Please enter the transaction ID" }]}>
+          <Form.Item
+            name="transactionId"
+            label="Transaction ID"
+            rules={[
+              { required: true, message: "Please enter the transaction ID" },
+            ]}
+          >
             <Input className="w-full" />
           </Form.Item>
           <Form.Item name="invoiceLink" label="Invoice Link">
             <Input className="w-full" />
           </Form.Item>
-          <Form.Item name="on" label="Action Date" rules={[{ required: true, message: "Please select the action date" }]}>
-            <SingleDatePicker showTime format="YYYY-MM-DD HH:mm:ss" className="w-full" />
+          <Form.Item
+            name="on"
+            label="Action Date"
+            rules={[
+              { required: true, message: "Please select the action date" },
+            ]}
+          >
+            <SingleDatePicker
+              showTime
+              format="YYYY-MM-DD HH:mm:ss"
+              className="w-full"
+            />
           </Form.Item>
         </Form>
       </Modal>

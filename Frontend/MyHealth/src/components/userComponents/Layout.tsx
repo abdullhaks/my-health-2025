@@ -1,9 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
-  FaHome, FaUserMd, FaCalendarAlt, FaUserFriends, FaBell,
-  FaCog, FaSignOutAlt, FaBars, FaTimes, FaChevronLeft, FaChevronRight, FaSearch, FaComments, FaPodcast,
-  FaCreditCard, FaBlog, FaPlus, FaUsers, FaInfoCircle
+  FaHome,
+  FaUserMd,
+  FaCalendarAlt,
+  FaUserFriends,
+  FaBell,
+  FaCog,
+  FaSignOutAlt,
+  FaBars,
+  FaTimes,
+  FaChevronLeft,
+  FaChevronRight,
+  FaSearch,
+  FaComments,
+  FaPodcast,
+  FaCreditCard,
+  FaBlog,
+  FaPlus,
+  FaUsers,
+  FaInfoCircle,
 } from "react-icons/fa";
 import { BiSolidAnalyse } from "react-icons/bi";
 import applogoBlue from "../../assets/applogoblue.png";
@@ -26,7 +42,14 @@ interface Notification {
   isRead: boolean;
   mention?: string;
   link?: string;
-  type: "appointment" | "payment" | "blog" | "add" | "newConnection" | "common" | "reportAnalysis";
+  type:
+    | "appointment"
+    | "payment"
+    | "blog"
+    | "add"
+    | "newConnection"
+    | "common"
+    | "reportAnalysis";
   createdAt: Date;
 }
 
@@ -39,7 +62,8 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] =
+    useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -71,11 +95,14 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
             }))
             .filter((n: Notification) => !existingIds.has(n._id));
           return [...newNotifications, ...prev].sort(
-            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
         });
 
-        const unreadCount = response.notifications.filter((n: Notification) => !n.isRead).length;
+        const unreadCount = response.notifications.filter(
+          (n: Notification) => !n.isRead
+        ).length;
         setNotificationCount(unreadCount);
       } else {
         setNotificationCount(0);
@@ -86,7 +113,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
     }
   };
 
-const apiUrl = import.meta.env.VITE_API_URL as string;
+  const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
@@ -116,11 +143,15 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
-        transports: ["websocket"],
-        reconnection: true,
-        auth: { token },
-      });
+      const socket = io(
+        import.meta.env.VITE_REACT_APP_SOCKET_URL ||
+          "https://api.abdullhakalamban.online",
+        {
+          transports: ["websocket"],
+          reconnection: true,
+          auth: { token },
+        }
+      );
 
       socketRef.current = socket;
 
@@ -182,10 +213,16 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
         setShowNotificationDropdown(false);
       }
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
         setShowProfileDropdown(false);
       }
     };
@@ -245,7 +282,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60)
+    );
 
     if (diffInMinutes < 60) {
       return `${diffInMinutes}m ago`;
@@ -301,12 +340,24 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
   const menuItems = [
     { name: "Dashboard", path: "/user/dashboard", icon: <FaHome /> },
     { name: "Doctors", path: "/user/doctors", icon: <FaUserMd /> },
-    { name: "Appointments", path: "/user/appointments", icon: <FaCalendarAlt /> },
-    { name: "Report Analysis", path: "/user/report-analysis", icon: <BiSolidAnalyse /> },
+    {
+      name: "Appointments",
+      path: "/user/appointments",
+      icon: <FaCalendarAlt />,
+    },
+    {
+      name: "Report Analysis",
+      path: "/user/report-analysis",
+      icon: <BiSolidAnalyse />,
+    },
     { name: "Chat", path: "/user/chat", icon: <FaComments /> },
     { name: "MyHealth-Ai", path: "/user/ai", icon: <FaPodcast /> },
     { name: "Blogs", path: "/user/blogs", icon: <FaBlog /> },
-    { name: "Transactions", path: "/user/transactions", icon: <FaMoneyBillTransfer /> },
+    {
+      name: "Transactions",
+      path: "/user/transactions",
+      icon: <FaMoneyBillTransfer />,
+    },
     { name: "My Profile", path: "/user/profile", icon: <FaUserFriends /> },
   ];
 
@@ -314,31 +365,46 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
     { name: "Settings", path: "/user/settings", icon: <FaCog /> },
   ];
 
-  const renderMenuItems = (items: { name: string; path: string; icon: React.ReactNode }[]) => {
-    return items.map((item: { name: string; path: string; icon: React.ReactNode }, index: number) => {
-      const isActive = location.pathname === item.path;
+  const renderMenuItems = (
+    items: { name: string; path: string; icon: React.ReactNode }[]
+  ) => {
+    return items.map(
+      (
+        item: { name: string; path: string; icon: React.ReactNode },
+        index: number
+      ) => {
+        const isActive = location.pathname === item.path;
 
-      return (
-        <Link
-          to={item.path}
-          key={index}
-          className={`flex items-center px-3 py-3 mb-2 rounded-lg transition-all duration-200 ${
-            isActive
-              ? "bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-md"
-              : "text-gray-700 hover:bg-blue-50"
-          }`}
-          onClick={handleMobileLinkClick}
-        >
-          <span className={`text-lg md:text-xl ${isActive ? "text-white" : "text-blue-800"}`}>{item.icon}</span>
-          {!collapsed && (
-            <span className="ml-3 text-sm md:text-base font-medium whitespace-nowrap">{item.name}</span>
-          )}
-          {collapsed && isActive && (
-            <div className="absolute left-0 w-1 h-8 bg-cyan-400 rounded-r-full"></div>
-          )}
-        </Link>
-      );
-    });
+        return (
+          <Link
+            to={item.path}
+            key={index}
+            className={`flex items-center px-3 py-3 mb-2 rounded-lg transition-all duration-200 ${
+              isActive
+                ? "bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-md"
+                : "text-gray-700 hover:bg-blue-50"
+            }`}
+            onClick={handleMobileLinkClick}
+          >
+            <span
+              className={`text-lg md:text-xl ${
+                isActive ? "text-white" : "text-blue-800"
+              }`}
+            >
+              {item.icon}
+            </span>
+            {!collapsed && (
+              <span className="ml-3 text-sm md:text-base font-medium whitespace-nowrap">
+                {item.name}
+              </span>
+            )}
+            {collapsed && isActive && (
+              <div className="absolute left-0 w-1 h-8 bg-cyan-400 rounded-r-full"></div>
+            )}
+          </Link>
+        );
+      }
+    );
   };
 
   return (
@@ -355,7 +421,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
       <aside
         className={`fixed top-0 left-0 h-full z-40 shadow-xl transition-all duration-300 ${
           collapsed ? "w-20" : "w-56"
-        } ${mobileOpen ? "translate-x-0 bg-white" : "-translate-x-full md:translate-x-0 md:bg-white"}`}
+        } ${
+          mobileOpen
+            ? "translate-x-0 bg-white"
+            : "-translate-x-full md:translate-x-0 md:bg-white"
+        }`}
       >
         {/* Header with Logo and Close Button */}
         <div className="flex items-center justify-between px-3 py-3 border-b border-gray-100">
@@ -381,13 +451,17 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
           <div className="space-y-4">
             {/* Main Menu */}
             <div className="space-y-1">{renderMenuItems(menuItems)}</div>
-            
+
             {/* Secondary Menu */}
             <div>
               {!collapsed && (
-                <h3 className="px-3 mb-2 text-xs uppercase font-semibold text-gray-500">More</h3>
+                <h3 className="px-3 mb-2 text-xs uppercase font-semibold text-gray-500">
+                  More
+                </h3>
               )}
-              <div className="space-y-1">{renderMenuItems(secondaryMenuItems)}</div>
+              <div className="space-y-1">
+                {renderMenuItems(secondaryMenuItems)}
+              </div>
             </div>
 
             {/* Logout */}
@@ -402,7 +476,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 <span className="text-lg md:text-xl text-red-500">
                   <FaSignOutAlt />
                 </span>
-                {!collapsed && <span className="ml-3 text-sm md:text-base font-medium">Logout</span>}
+                {!collapsed && (
+                  <span className="ml-3 text-sm md:text-base font-medium">
+                    Logout
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -414,7 +492,11 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
           className="absolute bottom-4 -right-3 hidden md:flex items-center justify-center w-6 h-6 rounded-full bg-white text-blue-800 border border-blue-200 hover:bg-blue-50 transition-colors shadow-md"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <FaChevronRight size={10} /> : <FaChevronLeft size={10} />}
+          {collapsed ? (
+            <FaChevronRight size={10} />
+          ) : (
+            <FaChevronLeft size={10} />
+          )}
         </button>
       </aside>
 
@@ -461,7 +543,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
               <div className="relative" ref={notificationRef}>
                 <button
                   className="p-2 rounded-full hover:bg-blue-50 text-blue-800 transition-colors"
-                  onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+                  onClick={() =>
+                    setShowNotificationDropdown(!showNotificationDropdown)
+                  }
                 >
                   <FaBell className="w-4 h-4 md:w-5 md:h-5" />
                   {notificationCount > 0 && (
@@ -475,7 +559,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 {showNotificationDropdown && (
                   <div className="absolute right-0 mt-2 w-72 md:w-80 bg-white rounded-lg shadow-xl border border-gray-300 z-50">
                     <div className="flex items-center justify-between p-3 md:p-4 border-b border-gray-100">
-                      <h3 className="text-base md:text-lg font-semibold text-gray-800">Notifications</h3>
+                      <h3 className="text-base md:text-lg font-semibold text-gray-800">
+                        Notifications
+                      </h3>
                       {notificationCount > 0 && (
                         <button
                           onClick={markAllAsRead}
@@ -490,7 +576,9 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                       {notifications.length === 0 ? (
                         <div className="p-6 text-center text-gray-500">
                           <FaBell className="mx-auto mb-2 text-xl md:text-2xl" />
-                          <p className="text-sm md:text-base">No notifications yet</p>
+                          <p className="text-sm md:text-base">
+                            No notifications yet
+                          </p>
                         </div>
                       ) : (
                         notifications.map((notification) => (
@@ -499,14 +587,22 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                             className={`p-3 md:p-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors ${
                               !notification.isRead ? "bg-blue-50" : ""
                             }`}
-                            onClick={() => handleNotificationClick(notification)}
+                            onClick={() =>
+                              handleNotificationClick(notification)
+                            }
                           >
                             <div className="flex items-start space-x-3">
                               <div className="flex-shrink-0 mt-1">
                                 {getNotificationIcon(notification.type)}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className={`text-xs md:text-sm ${!notification.isRead ? "font-semibold text-gray-900" : "text-gray-700"}`}>
+                                <p
+                                  className={`text-xs md:text-sm ${
+                                    !notification.isRead
+                                      ? "font-semibold text-gray-900"
+                                      : "text-gray-700"
+                                  }`}
+                                >
                                   {notification.message}
                                 </p>
                                 {notification.mention && (
@@ -565,7 +661,10 @@ const apiUrl = import.meta.env.VITE_API_URL as string;
                 >
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-blue-600">
                     <img
-                      src={user.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+                      src={
+                        user.profile ||
+                        "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                      }
                       alt="User profile"
                       className="w-full h-full object-cover"
                     />

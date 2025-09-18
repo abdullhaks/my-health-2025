@@ -1,12 +1,10 @@
 import { Document } from "mongoose";
 import { Types } from "mongoose";
 
-
-
 export interface ILocation {
-    type: "Point";
-    coordinates:[number,number];
-    text:string;
+  type: "Point";
+  coordinates: [number, number];
+  text: string;
 }
 
 // src/dto/userDTO.ts
@@ -26,23 +24,23 @@ export interface UserSignupRequestDTO {
 
 // Response DTOs (from API to client)
 export interface UserResponseDTO {
-    _id:string;
-    fullName:string;
-    email:string;
-    profile:string;
-    phone:string;
-    location:ILocation;
-    gender:string;
-    dob: string;
-    isBlocked:boolean;
-    isVerified:boolean;
-    bmi:string;
-    medicalTags:string;
-    latestHealthSummary:string;
-    walletBalance:number;
-    tags:string[];
-    createdAt:Date;
-    updatedAt:Date
+  _id: string;
+  fullName: string;
+  email: string;
+  profile: string;
+  phone: string;
+  location: ILocation;
+  gender: string;
+  dob: string;
+  isBlocked: boolean;
+  isVerified: boolean;
+  bmi: string;
+  medicalTags: string;
+  latestHealthSummary: string;
+  walletBalance: number;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface AuthResponseDTO {
@@ -52,48 +50,33 @@ export interface AuthResponseDTO {
   refreshToken?: string;
 }
 
-
-
-
-
-
-
-
-
-
-export interface IUserDocument extends Document{
-
-    _id:Types.ObjectId;
-    fullName:string;
-    email:string;
-    password:string;
-    profile:string;
-    phone:string;
-    location:ILocation;
-    gender:string;
-    dob: string;
-    isBlocked:boolean;
-    isVerified:boolean;
-    bmi:string;
-    medicalTags:string;
-    latestHealthSummary:string;
-    walletBalance:number;
-    tags:string[];
-    createdAt:Date;
-    updatedAt:Date
-
+export interface IUserDocument extends Document {
+  _id: Types.ObjectId;
+  fullName: string;
+  email: string;
+  password: string;
+  profile: string;
+  phone: string;
+  location: ILocation;
+  gender: string;
+  dob: string;
+  isBlocked: boolean;
+  isVerified: boolean;
+  bmi: string;
+  medicalTags: string;
+  latestHealthSummary: string;
+  walletBalance: number;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface IUser extends IUserDocument{}; 
+export interface IUser extends IUserDocument {}
 export interface IUserResponse {
-    message: string;
-    user: Partial<IUser>;
-    updatedUser: Partial<IUser>;
-    accessToken:string;
-    refreshToken:string;
-    email:string;
+  message: string;
+  user: Partial<IUser>;
+  updatedUser: Partial<IUser>;
+  accessToken: string;
+  refreshToken: string;
+  email: string;
 }
-
-
-
-

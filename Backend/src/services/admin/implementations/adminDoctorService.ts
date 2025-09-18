@@ -6,18 +6,14 @@ import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import { generateDeclineMail } from "../../../utils/generateSignupDeclineMail";
-import {IDoctor} from "../../../dto/doctorDTO"
-
+import { IDoctor } from "../../../dto/doctorDTO";
 
 dotenv.config();
-
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
 });
-
-
 
 @injectable()
 export default class AdminDoctorService implements IAdminDoctorService {
@@ -29,9 +25,9 @@ export default class AdminDoctorService implements IAdminDoctorService {
   async getDoctors(
     page: number,
     search: string | undefined,
-    limit: number
-    ,onlyPremium:boolean
-  ): Promise<{doctors:IDoctor[]|null,totalPages:number}> {
+    limit: number,
+    onlyPremium: boolean
+  ): Promise<{ doctors: IDoctor[] | null; totalPages: number }> {
     const response = await this._doctorRepository.getDoctors(
       page,
       search,
@@ -53,9 +49,9 @@ export default class AdminDoctorService implements IAdminDoctorService {
     }
 
     const { password, ...userWithoutPassword } = response.toObject();
-            if (userWithoutPassword.profile) {
-              userWithoutPassword.profile = await getSignedImageURL(response.profile);
-            }
+    if (userWithoutPassword.profile) {
+      userWithoutPassword.profile = await getSignedImageURL(response.profile);
+    }
     return userWithoutPassword;
   }
 
@@ -68,7 +64,7 @@ export default class AdminDoctorService implements IAdminDoctorService {
     return response;
   }
 
-   async declineDoctor(id: string, reason: string): Promise<IDoctor> {
+  async declineDoctor(id: string, reason: string): Promise<IDoctor> {
     const response = await this._doctorRepository.declineDoctor(id, reason);
 
     if (!response) {
@@ -88,11 +84,9 @@ export default class AdminDoctorService implements IAdminDoctorService {
     }
 
     return response;
-  };
+  }
 
-
-
-  async block(id: string): Promise<IDoctor| null> {
+  async block(id: string): Promise<IDoctor | null> {
     console.log("id from block....", id);
     const response = await this._doctorRepository.blockDoctor(id);
 
@@ -101,7 +95,7 @@ export default class AdminDoctorService implements IAdminDoctorService {
     return response;
   }
 
-  async unblock(id: string): Promise<IDoctor| null> {
+  async unblock(id: string): Promise<IDoctor | null> {
     console.log("id from block....", id);
     const response = await this._doctorRepository.unblockDoctor(id);
 

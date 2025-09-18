@@ -12,7 +12,10 @@ export default class AppointmentsRepository
   extends BaseRepository<IAppointmentDocument>
   implements IAppointmentsRepository
 {
-  constructor(@inject("appointmentModel") private _appointmentModel: Model<IAppointmentDocument>) {
+  constructor(
+    @inject("appointmentModel")
+    private _appointmentModel: Model<IAppointmentDocument>
+  ) {
     super(_appointmentModel);
   }
 
@@ -20,7 +23,10 @@ export default class AppointmentsRepository
     userId: string,
     page: number,
     limit: number
-  ): Promise<{appointments:IAppointment[] | null,totalPages:number | null}> {
+  ): Promise<{
+    appointments: IAppointment[] | null;
+    totalPages: number | null;
+  }> {
     try {
       const query: FilterQuery<IAppointment> = { userId: userId };
 
@@ -42,9 +48,15 @@ export default class AppointmentsRepository
     }
   }
 
-  async getAppointments(page: number, limit: number): Promise<{appointments:IAppointment[] | null,totalPages:number | null}> {
+  async getAppointments(
+    page: number,
+    limit: number
+  ): Promise<{
+    appointments: IAppointment[] | null;
+    totalPages: number | null;
+  }> {
     try {
-      const query: FilterQuery<IAppointment>  = {};
+      const query: FilterQuery<IAppointment> = {};
 
       const skip = (page - 1) * limit;
 
@@ -67,8 +79,8 @@ export default class AppointmentsRepository
   async getAllAppointments(
     page: number,
     limit: number,
-    query: FilterQuery<IAppointment>  = {}
-  ): Promise<{appointments:IAppointmentDTO[] ,totalPages:number}> {
+    query: FilterQuery<IAppointment> = {}
+  ): Promise<{ appointments: IAppointmentDTO[]; totalPages: number }> {
     try {
       const skip = (page - 1) * limit;
       const appointments = await this._appointmentModel
@@ -104,7 +116,6 @@ export default class AppointmentsRepository
           createdAt: appointment.createdAt,
           updatedAt: appointment.updatedAt,
           slotId: appointment.slotId,
-
         })),
         totalPages,
       };
@@ -112,14 +123,16 @@ export default class AppointmentsRepository
       console.error("Error fetching appointments:", err);
       throw new Error("Failed to fetch appointments");
     }
-  };
+  }
 
-
-   async getAllAppointmentsAdmin(
+  async getAllAppointmentsAdmin(
     page: number,
     limit: number,
     query: FilterQuery<IAppointment> = {}
-  ): Promise<{appointments:IAppointmentDTO[] | null,totalPages:number | null}> {
+  ): Promise<{
+    appointments: IAppointmentDTO[] | null;
+    totalPages: number | null;
+  }> {
     try {
       const skip = (page - 1) * limit;
       const appointments = await this._appointmentModel
@@ -162,8 +175,5 @@ export default class AppointmentsRepository
       console.error("Error fetching appointments:", err);
       throw new Error("Failed to fetch appointments");
     }
-  };
-
-
-  
+  }
 }

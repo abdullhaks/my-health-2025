@@ -1,11 +1,7 @@
-import { Request,Response } from "express";
-
+import { Request, Response } from "express";
 
 export default interface IAdminPayoutController {
+  getPayouts(req: Request, res: Response): Promise<void>;
 
-    getPayouts(req: Request, res: Response): Promise<void>,
-   
-    updatePayout(req: Request, res: Response): Promise<void>,
-    
-};
-
+  updatePayout(req: Request, res: Response): Promise<void>;
+}

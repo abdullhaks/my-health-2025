@@ -42,8 +42,12 @@ const DoctorPayouts = () => {
     try {
       const response = await getPayouts(doctorId, page, limit, {
         status: filters.status,
-        startDate: filters.dateRange ? filters.dateRange[0].toISOString() : undefined,
-        endDate: filters.dateRange ? filters.dateRange[1].toISOString() : undefined,
+        startDate: filters.dateRange
+          ? filters.dateRange[0].toISOString()
+          : undefined,
+        endDate: filters.dateRange
+          ? filters.dateRange[1].toISOString()
+          : undefined,
       });
       setTransactions(response.payouts);
       setTotalPages(response.totalPages);
@@ -58,7 +62,10 @@ const DoctorPayouts = () => {
     fetchTransactions(currentPage);
   }, [currentPage, filters]);
 
-  const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
+  const handleFilterChange = (
+    key: string,
+    value: string | [moment.Moment, moment.Moment] | null
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -75,7 +82,9 @@ const DoctorPayouts = () => {
       dataIndex: "bankAccNo",
       key: "bankAccNo",
       render: (text: string) => (
-        <span className="truncate block max-w-[150px] sm:max-w-[200px]">{text}</span>
+        <span className="truncate block max-w-[150px] sm:max-w-[200px]">
+          {text}
+        </span>
       ),
     },
     {
@@ -83,7 +92,9 @@ const DoctorPayouts = () => {
       dataIndex: "bankAccHolderName",
       key: "bankAccHolderName",
       render: (text: string) => (
-        <span className="truncate block max-w-[150px] sm:max-w-[200px]">{text}</span>
+        <span className="truncate block max-w-[150px] sm:max-w-[200px]">
+          {text}
+        </span>
       ),
     },
     {
@@ -91,7 +102,9 @@ const DoctorPayouts = () => {
       dataIndex: "bankIfscCode",
       key: "bankIfscCode",
       render: (text: string) => (
-        <span className="truncate block max-w-[100px] sm:max-w-[150px]">{text}</span>
+        <span className="truncate block max-w-[100px] sm:max-w-[150px]">
+          {text}
+        </span>
       ),
     },
     {
@@ -117,7 +130,15 @@ const DoctorPayouts = () => {
       dataIndex: "status",
       key: "status",
       render: (text: string) => (
-        <span className={`capitalize ${text === 'paid' ? 'text-green-600' : text === 'rejected' ? 'text-red-600' : 'text-yellow-600'}`}>
+        <span
+          className={`capitalize ${
+            text === "paid"
+              ? "text-green-600"
+              : text === "rejected"
+              ? "text-red-600"
+              : "text-yellow-600"
+          }`}
+        >
           {text}
         </span>
       ),
@@ -127,7 +148,9 @@ const DoctorPayouts = () => {
       dataIndex: "transactionId",
       key: "transactionId",
       render: (text: string) => (
-        <span className="truncate block max-w-[100px] sm:max-w-[150px]">{text || "N/A"}</span>
+        <span className="truncate block max-w-[100px] sm:max-w-[150px]">
+          {text || "N/A"}
+        </span>
       ),
     },
   ];
@@ -158,7 +181,10 @@ const DoctorPayouts = () => {
           <RangePicker
             onChange={(dates) => {
               if (dates && dates[0] && dates[1]) {
-                handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                handleFilterChange("dateRange", [
+                  moment(dates[0].toDate()),
+                  moment(dates[1].toDate()),
+                ]);
               } else {
                 handleFilterChange("dateRange", null);
               }
@@ -195,51 +221,99 @@ const DoctorPayouts = () => {
             <div key={transaction._id} className="p-4 sm:p-5">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Date</span>
-                  <span className="text-sm text-gray-900">{moment(transaction.createdAt).format("DD-MM-YYYY, hh:mm A")}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Date
+                  </span>
+                  <span className="text-sm text-gray-900">
+                    {moment(transaction.createdAt).format(
+                      "DD-MM-YYYY, hh:mm A"
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Acc.No</span>
-                  <span className="text-sm text-gray-900 truncate max-w-[150px]">{transaction.bankAccNo}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Acc.No
+                  </span>
+                  <span className="text-sm text-gray-900 truncate max-w-[150px]">
+                    {transaction.bankAccNo}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Acc.Holder</span>
-                  <span className="text-sm text-gray-900 truncate max-w-[150px]">{transaction.bankAccHolderName}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Acc.Holder
+                  </span>
+                  <span className="text-sm text-gray-900 truncate max-w-[150px]">
+                    {transaction.bankAccHolderName}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">IFSC</span>
-                  <span className="text-sm text-gray-900 truncate max-w-[100px]">{transaction.bankIfscCode}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    IFSC
+                  </span>
+                  <span className="text-sm text-gray-900 truncate max-w-[100px]">
+                    {transaction.bankIfscCode}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Total</span>
-                  <span className="text-sm text-gray-900">Rs {transaction.totalAmount}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Total
+                  </span>
+                  <span className="text-sm text-gray-900">
+                    Rs {transaction.totalAmount}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Paid</span>
-                  <span className="text-sm text-gray-900">Rs {transaction.paid}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Paid
+                  </span>
+                  <span className="text-sm text-gray-900">
+                    Rs {transaction.paid}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Service Amount</span>
-                  <span className="text-sm text-gray-900">Rs {transaction.serviceAmount}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Service Amount
+                  </span>
+                  <span className="text-sm text-gray-900">
+                    Rs {transaction.serviceAmount}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Status</span>
-                  <span className={`text-sm capitalize ${transaction.status === 'paid' ? 'text-green-600' : transaction.status === 'rejected' ? 'text-red-600' : 'text-yellow-600'}`}>
+                  <span className="text-sm font-medium text-gray-700">
+                    Status
+                  </span>
+                  <span
+                    className={`text-sm capitalize ${
+                      transaction.status === "paid"
+                        ? "text-green-600"
+                        : transaction.status === "rejected"
+                        ? "text-red-600"
+                        : "text-yellow-600"
+                    }`}
+                  >
                     {transaction.status}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Transaction ID</span>
-                  <span className="text-sm text-gray-900 truncate max-w-[100px]">{transaction.transactionId || "N/A"}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Transaction ID
+                  </span>
+                  <span className="text-sm text-gray-900 truncate max-w-[100px]">
+                    {transaction.transactionId || "N/A"}
+                  </span>
                 </div>
               </div>
             </div>
           ))}
           {loading && (
-            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">Loading...</div>
+            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">
+              Loading...
+            </div>
           )}
           {!loading && transactions.length === 0 && (
-            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">No transactions found</div>
+            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">
+              No transactions found
+            </div>
           )}
         </div>
       </div>
@@ -253,7 +327,6 @@ const DoctorPayouts = () => {
           onChange={(page) => setCurrentPage(page)}
           showSizeChanger={false}
           className="flex items-center gap-2"
-          
         />
       </div>
     </div>

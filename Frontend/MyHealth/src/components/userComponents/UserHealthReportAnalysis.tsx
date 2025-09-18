@@ -19,9 +19,11 @@ const UserHealthReportAnalysis = () => {
   const [concerns, setConcerns] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [reports, /*setReports*/] = useState<reportAnalysisData[]>([]);
-  const [loadingReports, /*setLoadingReports*/] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
+  const [reports /*setReports*/] = useState<reportAnalysisData[]>([]);
+  const [loadingReports /*setLoadingReports*/] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<
+    "idle" | "processing" | "success" | "error"
+  >("idle");
   const maxFiles = 5;
   const maxFileSize = 5 * 1024 * 1024; // 5MB per file
 
@@ -109,22 +111,24 @@ const UserHealthReportAnalysis = () => {
 
     try {
       setUploading(true);
-      const urls = files.map(async(file,indx) =>{
-
-        message.loading({ content: `Uploading file ${indx + 1} of ${files.length}`, key: "upload" });
+      const urls = files.map(async (file, indx) => {
+        message.loading({
+          content: `Uploading file ${indx + 1} of ${files.length}`,
+          key: "upload",
+        });
         const formData = new FormData();
         formData.append("doc", file);
         formData.append("location", "healthReports");
         const uploadResult = await directFileUpload(formData);
         if (!uploadResult?.url) {
           throw new Error("Failed to upload file");
-        };
+        }
 
         return uploadResult.url;
       });
 
       const uploadedFiles = await Promise.all(urls);
-      console.log("uploadedFiles",uploadedFiles);
+      console.log("uploadedFiles", uploadedFiles);
 
       setPaymentStatus("processing");
       const amountInPaise = doctor.reportAnalysisFees * 100; // Convert to paise
@@ -132,7 +136,7 @@ const UserHealthReportAnalysis = () => {
         doctorId: doctor._id,
         doctorName: doctor.fullName,
         doctorCategory: doctor.category,
-        userId: user._id, 
+        userId: user._id,
         concerns,
         file1: uploadedFiles[0] || "",
         file2: uploadedFiles[1] || "",
@@ -144,17 +148,15 @@ const UserHealthReportAnalysis = () => {
         type: "report_analysis",
       };
 
-
       const data = await createOneTimePayment(amountInPaise, metadata);
       console.log("Payment data:", data);
-            const stripe = await stripePromise;
-      
-            if (stripe) {
-              window.location.href = data.url;
-            } else {
-              throw new Error("Stripe initialization failed.");
-            }
+      const stripe = await stripePromise;
 
+      if (stripe) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Stripe initialization failed.");
+      }
     } catch (error) {
       setPaymentStatus("error");
       toast.error("Error initiating payment.");
@@ -208,20 +210,31 @@ const UserHealthReportAnalysis = () => {
         {/* Doctor Details */}
         <div className="flex items-center gap-4 mb-6">
           <img
-            src={doctor.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+            src={
+              doctor.profile ||
+              "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+            }
             alt="Doctor"
             className="w-20 h-20 rounded-full object-cover"
           />
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">Dr. {doctor.fullName}</h2>
-            <p className="text-sm text-gray-600">{doctor.category} Specialist</p>
-            <p className="text-sm text-gray-600">Fee: Rs: {doctor.reportAnalysisFees}</p>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Dr. {doctor.fullName}
+            </h2>
+            <p className="text-sm text-gray-600">
+              {doctor.category} Specialist
+            </p>
+            <p className="text-sm text-gray-600">
+              Fee: Rs: {doctor.reportAnalysisFees}
+            </p>
           </div>
         </div>
 
         {/* Concerns Input */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">Health Concerns</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Health Concerns
+          </label>
           <textarea
             className="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
             rows={4}
@@ -245,7 +258,10 @@ const UserHealthReportAnalysis = () => {
           />
           <div className="mt-2 flex flex-wrap gap-2">
             {files.map((file, index) => (
-              <div key={index} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+              <div
+                key={index}
+                className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full"
+              >
                 <span className="text-sm text-gray-700">{file.name}</span>
                 <button
                   onClick={() => removeFile(index)}
@@ -276,15 +292,21 @@ const UserHealthReportAnalysis = () => {
           onClick={handlePayment}
           disabled={uploading || paymentStatus === "processing"}
           className={`w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ${
-            uploading || paymentStatus === "processing" ? "opacity-50 cursor-not-allowed" : ""
+            uploading || paymentStatus === "processing"
+              ? "opacity-50 cursor-not-allowed"
+              : ""
           }`}
         >
-          {uploading || paymentStatus === "processing" ? "Processing..." : `Pay Rs: ${doctor.reportAnalysisFees}`}
+          {uploading || paymentStatus === "processing"
+            ? "Processing..."
+            : `Pay Rs: ${doctor.reportAnalysisFees}`}
         </button>
 
         {/* Submitted Reports */}
         <div className="mt-8">
-          <h3 className="text-lg font-semibold text-gray-800">Your Submitted Reports</h3>
+          <h3 className="text-lg font-semibold text-gray-800">
+            Your Submitted Reports
+          </h3>
           {loadingReports ? (
             <p>Loading reports...</p>
           ) : reports.length === 0 ? (
@@ -298,9 +320,12 @@ const UserHealthReportAnalysis = () => {
                 >
                   <div>
                     <p className="text-sm text-gray-600">
-                      Submitted on: {new Date(report.createdAt).toLocaleDateString()}
+                      Submitted on:{" "}
+                      {new Date(report.createdAt).toLocaleDateString()}
                     </p>
-                    <p className="text-sm text-gray-600">Status: {report.analysisStatus}</p>
+                    <p className="text-sm text-gray-600">
+                      Status: {report.analysisStatus}
+                    </p>
                   </div>
                   <button
                     onClick={() => navigate(`/report-details/${report._id}`)}

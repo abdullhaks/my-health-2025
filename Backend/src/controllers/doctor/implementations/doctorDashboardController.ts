@@ -1,138 +1,148 @@
-import {Request , Response} from "express";
+import { Request, Response } from "express";
 import IDoctorDashboardCtrl from "../interfaces/IDoctorDashboardCtrl";
 import IDoctorDashboardService from "../../../services/doctor/interfaces/IDoctorDashboardService";
-import {inject,injectable} from "inversify";
+import { inject, injectable } from "inversify";
 import { HttpStatusCode } from "../../../utils/enum";
-
+import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DoctorDashboardController implements IDoctorDashboardCtrl{
+export default class DoctorDashboardController implements IDoctorDashboardCtrl {
+  constructor(
+    @inject("IDoctorDashboardService")
+    private _doctorDashboardService: IDoctorDashboardService
+  ) {}
 
-    constructor(
-        @inject("IDoctorDashboardService") private _doctorDashboardService : IDoctorDashboardService
-    ){}
-
-
-   async getDashboardContent(req: Request, res: Response): Promise<void> {
+  async getDashboardContent(req: Request, res: Response): Promise<void> {
     try {
-   
-      const {doctorId} = req.query;
+      const { doctorId } = req.query;
 
       if (!doctorId) {
-              res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'bad request , doctor id missed' });
-              return;
-        }
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "bad request , doctor id missed" });
+        return;
+      }
 
-      const response = await this._doctorDashboardService.getDashboardContent(doctorId.toString());
+      const response = await this._doctorDashboardService.getDashboardContent(
+        doctorId.toString()
+      );
       if (!response) {
-        res.status(HttpStatusCode.NOT_FOUND).json({ message: 'No content found' });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ message: "No content found" });
         return;
       }
 
       res.status(HttpStatusCode.OK).json({
-        message: 'Dashboard content fetched successfully',
+        message: "Dashboard content fetched successfully",
         data: response,
       });
     } catch (err) {
-      console.error('Error fetching dashboard content:', err);
+      console.error("Error fetching dashboard content:", err);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        message: 'Failed to fetch dashboard content',
+        message: MESSAGES.server.serverError,
       });
     }
-  };
-
+  }
 
   async appointmentStats(req: Request, res: Response): Promise<void> {
     try {
-   
-      const {doctorId,filter} = req.query;
+      const { doctorId, filter } = req.query;
 
       if (!doctorId || !filter) {
-              res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'bad request , doctor id missed' });
-              return;
-        }
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "bad request , doctor id missed" });
+        return;
+      }
 
-      const response = await this._doctorDashboardService.appointmentStats(doctorId.toString(),filter?.toString());
+      const response = await this._doctorDashboardService.appointmentStats(
+        doctorId.toString(),
+        filter?.toString()
+      );
       if (!response) {
-        res.status(HttpStatusCode.NOT_FOUND).json({ message: 'No stats found' });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ message: "No stats found" });
         return;
       }
 
       res.status(HttpStatusCode.OK).json({
-        message: 'Appointment stats fetched successfully',
+        message: "Appointment stats fetched successfully",
         data: response,
       });
     } catch (err) {
-      console.error('Error fetching appointment stats:', err);
+      console.error("Error fetching appointment stats:", err);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        message: 'Failed to fetch appointment stats',
+        message: MESSAGES.server.serverError,
       });
     }
-  };
-
+  }
 
   async reportsStats(req: Request, res: Response): Promise<void> {
     try {
-   
-      const {doctorId,filter} = req.query;
+      const { doctorId, filter } = req.query;
 
       if (!doctorId || !filter) {
-              res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'bad request , doctor id missed' });
-              return;
-        }
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "bad request , doctor id missed" });
+        return;
+      }
 
-      const response = await this._doctorDashboardService.reportsStats(doctorId.toString(),filter?.toString());
+      const response = await this._doctorDashboardService.reportsStats(
+        doctorId.toString(),
+        filter?.toString()
+      );
       if (!response) {
-        res.status(HttpStatusCode.NOT_FOUND).json({ message: 'No stats found' });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ message: "No stats found" });
         return;
       }
 
       res.status(HttpStatusCode.OK).json({
-        message: 'Reports stats fetched successfully',
+        message: "Reports stats fetched successfully",
         data: response,
       });
     } catch (err) {
-      console.error('Error fetching reports stats:', err);
+      console.error("Error fetching reports stats:", err);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        message: 'Failed to fetch reports stats',
+        message: MESSAGES.server.serverError,
       });
     }
-  };
-
+  }
 
   async payoutsStats(req: Request, res: Response): Promise<void> {
     try {
-   
-      const {doctorId} = req.query;
+      const { doctorId } = req.query;
 
       if (!doctorId) {
-              res.status(HttpStatusCode.BAD_REQUEST).json({ message: 'bad request , doctor id missed' });
-              return;
-        }
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "bad request , doctor id missed" });
+        return;
+      }
 
-      const response = await this._doctorDashboardService.payoutsStats(doctorId.toString());
+      const response = await this._doctorDashboardService.payoutsStats(
+        doctorId.toString()
+      );
       if (!response) {
-        res.status(HttpStatusCode.NOT_FOUND).json({ message: 'No stats found' });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ message: "No stats found" });
         return;
       }
 
       res.status(HttpStatusCode.OK).json({
-        message: 'Payouts stats fetched successfully',
+        message: "Payouts stats fetched successfully",
         data: response,
       });
     } catch (err) {
-      console.error('Error fetching payouts stats:', err);
+      console.error("Error fetching payouts stats:", err);
       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
-        message: 'Failed to fetch payouts stats',
+        message: MESSAGES.server.serverError,
       });
     }
-  };
-
-
-
-
-
-
-        
+  }
 }
-

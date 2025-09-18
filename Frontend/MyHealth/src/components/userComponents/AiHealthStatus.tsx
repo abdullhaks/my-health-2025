@@ -1,5 +1,16 @@
 import { useState, useMemo } from "react";
-import { FaHeartbeat, FaInfoCircle, FaSpinner, FaUser, FaWeight, FaRuler, FaTint, FaCheckCircle, FaExclamationTriangle, FaVenusMars } from "react-icons/fa";
+import {
+  FaHeartbeat,
+  FaInfoCircle,
+  FaSpinner,
+  FaUser,
+  FaWeight,
+  FaRuler,
+  FaTint,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaVenusMars,
+} from "react-icons/fa";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const AiHealthStatusGenerator = () => {
@@ -15,25 +26,35 @@ const AiHealthStatusGenerator = () => {
 
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const genAI = useMemo(() => new GoogleGenerativeAI(apiKey), [apiKey]);
-  const model = useMemo(() => genAI.getGenerativeModel({
-    model: "gemini-2.0-flash-exp",
-  }), [genAI]);
-  const generationConfig = useMemo(() => ({
-    temperature: 1,
-    topP: 0.95,
-    topK: 40,
-    maxOutputTokens: 8192,
-    responseMimeType: "text/plain",
-  }), []);
-  const run = useMemo(() => async (prompt: string) => {
-    const chatSession = model.startChat({
-      generationConfig,
-      history: [],
-    });
-    const result = await chatSession.sendMessage(prompt);
-    console.log(result.response.text());
-    return result.response.text();
-  }, [model, generationConfig]);
+  const model = useMemo(
+    () =>
+      genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-exp",
+      }),
+    [genAI]
+  );
+  const generationConfig = useMemo(
+    () => ({
+      temperature: 1,
+      topP: 0.95,
+      topK: 40,
+      maxOutputTokens: 8192,
+      responseMimeType: "text/plain",
+    }),
+    []
+  );
+  const run = useMemo(
+    () => async (prompt: string) => {
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [],
+      });
+      const result = await chatSession.sendMessage(prompt);
+      console.log(result.response.text());
+      return result.response.text();
+    },
+    [model, generationConfig]
+  );
 
   const generateHealthStatus = async () => {
     setError(null);
@@ -80,70 +101,93 @@ const AiHealthStatusGenerator = () => {
   };
 
   const formatHealthResponse = (text: string) => {
-    const sections = text.split(/(?=\d+\.\s+[A-Z][^:]*:)|(?=##\s+[A-Z])/m).filter(Boolean);
+    const sections = text
+      .split(/(?=\d+\.\s+[A-Z][^:]*:)|(?=##\s+[A-Z])/m)
+      .filter(Boolean);
 
-    return sections.map((section, index) => {
-      const trimmedSection = section.trim();
-      if (!trimmedSection) return null;
+    return sections
+      .map((section, index) => {
+        const trimmedSection = section.trim();
+        if (!trimmedSection) return null;
 
-      if (/^\d+\.\s+[A-Z]/.test(trimmedSection) || /^##\s+[A-Z]/.test(trimmedSection)) {
-        const [heading, ...content] = trimmedSection.split(/:\s*/);
-        const headingText = heading.replace(/^\d+\.\s+|^##\s+/, '').trim();
+        if (
+          /^\d+\.\s+[A-Z]/.test(trimmedSection) ||
+          /^##\s+[A-Z]/.test(trimmedSection)
+        ) {
+          const [heading, ...content] = trimmedSection.split(/:\s*/);
+          const headingText = heading.replace(/^\d+\.\s+|^##\s+/, "").trim();
 
-        return (
-          <div key={index} className="mb-6 sm:mb-8">
-            <h4 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-800 mb-3 sm:mb-4 flex items-center gap-2">
-              {headingText.includes('Summary') && <FaHeartbeat className="text-red-500" />}
-              {headingText.includes('Tips') && <FaCheckCircle className="text-green-500" />}
-              {headingText.includes('Awareness') && <FaInfoCircle className="text-blue-500" />}
-              {headingText}
-            </h4>
-            <div className="space-y-3 sm:space-y-4">
-              {content.join(':').split('\n').map((line, lineIndex) => {
-                const trimmedLine = line.trim();
-                if (!trimmedLine) return null;
+          return (
+            <div key={index} className="mb-6 sm:mb-8">
+              <h4 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-800 mb-3 sm:mb-4 flex items-center gap-2">
+                {headingText.includes("Summary") && (
+                  <FaHeartbeat className="text-red-500" />
+                )}
+                {headingText.includes("Tips") && (
+                  <FaCheckCircle className="text-green-500" />
+                )}
+                {headingText.includes("Awareness") && (
+                  <FaInfoCircle className="text-blue-500" />
+                )}
+                {headingText}
+              </h4>
+              <div className="space-y-3 sm:space-y-4">
+                {content
+                  .join(":")
+                  .split("\n")
+                  .map((line, lineIndex) => {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) return null;
 
-                const cleanLine = trimmedLine
-                  .replace(/^[•\-*]\s*/, '') // Remove bullet markers
-                  .replace(/\*\*(.*?)\*\*/g, '<span class="font-bold">$1</span>') // Handle bold
-                  .replace(/\*(.*?)\*/g, '<span class="italic">$1</span>'); // Handle italic
+                    const cleanLine = trimmedLine
+                      .replace(/^[•\-*]\s*/, "") // Remove bullet markers
+                      .replace(
+                        /\*\*(.*?)\*\*/g,
+                        '<span class="font-bold">$1</span>'
+                      ) // Handle bold
+                      .replace(/\*(.*?)\*/g, '<span class="italic">$1</span>'); // Handle italic
 
-                if (/^[•\-*]\s+/.test(trimmedLine)) {
-                  return (
-                    <div key={lineIndex} className="flex items-start gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg sm:rounded-xl border-l-4 border-blue-400">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    if (/^[•\-*]\s+/.test(trimmedLine)) {
+                      return (
+                        <div
+                          key={lineIndex}
+                          className="flex items-start gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg sm:rounded-xl border-l-4 border-blue-400"
+                        >
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <p
+                            className="text-gray-700 leading-relaxed text-sm sm:text-base"
+                            dangerouslySetInnerHTML={{ __html: cleanLine }}
+                          />
+                        </div>
+                      );
+                    }
+
+                    return (
                       <p
+                        key={lineIndex}
                         className="text-gray-700 leading-relaxed text-sm sm:text-base"
                         dangerouslySetInnerHTML={{ __html: cleanLine }}
                       />
-                    </div>
-                  );
-                }
-
-                return (
-                  <p
-                    key={lineIndex}
-                    className="text-gray-700 leading-relaxed text-sm sm:text-base"
-                    dangerouslySetInnerHTML={{ __html: cleanLine }}
-                  />
-                );
-              }).filter(Boolean)}
+                    );
+                  })
+                  .filter(Boolean)}
+              </div>
             </div>
-          </div>
-        );
-      }
+          );
+        }
 
-      const cleanText = trimmedSection
-        .replace(/\*\*(.*?)\*\*/g, '<span class="font-bold">$1</span>')
-        .replace(/\*(.*?)\*/g, '<span class="italic">$1</span>');
-      return (
-        <p
-          key={index}
-          className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base"
-          dangerouslySetInnerHTML={{ __html: cleanText }}
-        />
-      );
-    }).filter(Boolean);
+        const cleanText = trimmedSection
+          .replace(/\*\*(.*?)\*\*/g, '<span class="font-bold">$1</span>')
+          .replace(/\*(.*?)\*/g, '<span class="italic">$1</span>');
+        return (
+          <p
+            key={index}
+            className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base"
+            dangerouslySetInnerHTML={{ __html: cleanText }}
+          />
+        );
+      })
+      .filter(Boolean);
   };
 
   return (
@@ -158,7 +202,8 @@ const AiHealthStatusGenerator = () => {
             AI Health Status Generator
           </h1>
           <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Get personalized health insights and recommendations based on your vital statistics
+            Get personalized health insights and recommendations based on your
+            vital statistics
           </p>
         </div>
 
@@ -169,11 +214,14 @@ const AiHealthStatusGenerator = () => {
             <div className="flex items-start gap-3">
               <FaExclamationTriangle className="text-amber-600 text-xl sm:text-2xl mt-1 flex-shrink-0" />
               <div>
-                <h3 className="font-bold text-amber-800 text-sm sm:text-base mb-2">Important Disclaimer</h3>
+                <h3 className="font-bold text-amber-800 text-sm sm:text-base mb-2">
+                  Important Disclaimer
+                </h3>
                 <p className="text-xs sm:text-sm text-amber-700 leading-relaxed">
-                  This tool provides informational insights based on basic details. It is NOT a substitute
-                  for professional medical advice, diagnosis, or treatment. Always consult
-                  with a qualified healthcare professional for any health concerns.
+                  This tool provides informational insights based on basic
+                  details. It is NOT a substitute for professional medical
+                  advice, diagnosis, or treatment. Always consult with a
+                  qualified healthcare professional for any health concerns.
                 </p>
               </div>
             </div>
@@ -188,7 +236,10 @@ const AiHealthStatusGenerator = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
               {/* Height Input */}
               <div className="group">
-                <label htmlFor="height" className="block text-sm sm:text-base font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="height"
+                  className="block text-sm sm:text-base font-semibold text-gray-700 mb-2"
+                >
                   <FaRuler className="inline mr-2 text-blue-500" />
                   Height (cm) *
                 </label>
@@ -210,7 +261,10 @@ const AiHealthStatusGenerator = () => {
 
               {/* Weight Input */}
               <div className="group">
-                <label htmlFor="weight" className="block text-sm sm:text-base font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="weight"
+                  className="block text-sm sm:text-base font-semibold text-gray-700 mb-2"
+                >
                   <FaWeight className="inline mr-2 text-green-500" />
                   Weight (kg) *
                 </label>
@@ -232,7 +286,10 @@ const AiHealthStatusGenerator = () => {
 
               {/* Age Input */}
               <div className="group">
-                <label htmlFor="age" className="block text-sm sm:text-base font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="age"
+                  className="block text-sm sm:text-base font-semibold text-gray-700 mb-2"
+                >
                   <FaUser className="inline mr-2 text-purple-500" />
                   Age (years) *
                 </label>
@@ -254,7 +311,10 @@ const AiHealthStatusGenerator = () => {
 
               {/* Gender Input */}
               <div className="group">
-                <label htmlFor="gender" className="block text-sm sm:text-base font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="gender"
+                  className="block text-sm sm:text-base font-semibold text-gray-700 mb-2"
+                >
                   <FaVenusMars className="inline mr-2 text-pink-500" />
                   Gender *
                 </label>
@@ -265,7 +325,9 @@ const AiHealthStatusGenerator = () => {
                   className="w-full px-4 py-3 sm:py-4 border-2 border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm sm:text-base bg-gray-50 hover:bg-white group-hover:border-gray-300"
                   required
                 >
-                  <option value="" disabled>Select Gender</option>
+                  <option value="" disabled>
+                    Select Gender
+                  </option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
@@ -274,7 +336,10 @@ const AiHealthStatusGenerator = () => {
 
               {/* Blood Sugar Input */}
               <div className="group">
-                <label htmlFor="sugar" className="block text-sm sm:text-base font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="sugar"
+                  className="block text-sm sm:text-base font-semibold text-gray-700 mb-2"
+                >
                   <FaTint className="inline mr-2 text-red-500" />
                   Blood Sugar (Optional)
                 </label>
@@ -295,7 +360,10 @@ const AiHealthStatusGenerator = () => {
 
               {/* Blood Pressure Input */}
               <div className="group">
-                <label htmlFor="pressure" className="block text-sm sm:text-base font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="pressure"
+                  className="block text-sm sm:text-base font-semibold text-gray-700 mb-2"
+                >
                   <FaHeartbeat className="inline mr-2 text-indigo-500" />
                   Blood Pressure (Optional)
                 </label>
@@ -342,8 +410,12 @@ const AiHealthStatusGenerator = () => {
             <div className="flex items-start gap-3">
               <FaExclamationTriangle className="text-red-500 text-xl sm:text-2xl mt-1 flex-shrink-0" />
               <div>
-                <h3 className="font-bold text-red-800 text-sm sm:text-base mb-2">Error</h3>
-                <p className="text-red-700 text-sm sm:text-base leading-relaxed">{error}</p>
+                <h3 className="font-bold text-red-800 text-sm sm:text-base mb-2">
+                  Error
+                </h3>
+                <p className="text-red-700 text-sm sm:text-base leading-relaxed">
+                  {error}
+                </p>
               </div>
             </div>
           </div>
@@ -381,9 +453,13 @@ const AiHealthStatusGenerator = () => {
                   <FaInfoCircle className="text-gray-500 text-lg sm:text-xl mt-1 flex-shrink-0" />
                   <div>
                     <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-medium">
-                      <span className="font-bold">Medical Disclaimer:</span> This information is for general knowledge and informational purposes only. 
-                      It does not constitute medical advice and is not a substitute for professional medical advice, diagnosis, or treatment. 
-                      Always consult with qualified healthcare professionals for any health concerns.
+                      <span className="font-bold">Medical Disclaimer:</span>{" "}
+                      This information is for general knowledge and
+                      informational purposes only. It does not constitute
+                      medical advice and is not a substitute for professional
+                      medical advice, diagnosis, or treatment. Always consult
+                      with qualified healthcare professionals for any health
+                      concerns.
                     </p>
                   </div>
                 </div>

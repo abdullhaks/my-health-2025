@@ -1,9 +1,6 @@
-import {IConversation} from "../../../dto/conversationDTO"
-
+import { IConversation } from "../../../dto/conversationDTO";
 
 export default interface IConversationService {
-    
-createOrGetConversation(userIds: string[]):Promise<IConversation>;
-getUserConversations(userId: string,from:string):Promise<IConversation[]>;
-
+  createOrGetConversation(userIds: string[]): Promise<IConversation>;
+  getUserConversations(userId: string, from: string): Promise<IConversation[]>;
 }

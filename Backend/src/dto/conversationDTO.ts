@@ -1,10 +1,9 @@
-import { Document,Types } from "mongoose";
-
+import { Document, Types } from "mongoose";
 
 export interface IConversationDocument extends Document {
   members: string[];
-  updatedAt:Date
+  updatedAt: Date;
   lastMessage?: string;
-};
+}
 
-export interface IConversation extends IConversationDocument{};
+export interface IConversation extends IConversationDocument {}

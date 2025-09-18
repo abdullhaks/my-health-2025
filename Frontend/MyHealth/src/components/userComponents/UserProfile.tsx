@@ -4,7 +4,11 @@ import EditProfileModal from "./EditProfile";
 import ChangePasswordModal from "./ChangePassword";
 import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-import { updateProfile, updateProfileImage, changePassword } from "../../api/user/userApi";
+import {
+  updateProfile,
+  updateProfileImage,
+  changePassword,
+} from "../../api/user/userApi";
 import { updateUser } from "../../redux/slices/userSlices";
 import { IUserData, PasswordData } from "../../interfaces/user";
 import { userProfileData } from "../../interfaces/user";
@@ -18,7 +22,8 @@ const UserProfile = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
-  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -90,7 +95,10 @@ const UserProfile = () => {
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDifference = today.getMonth() - birthDate.getMonth();
 
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
 
@@ -103,12 +111,18 @@ const UserProfile = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
           {/* Profile Header */}
           <div className="p-4 sm:p-6 lg:p-8">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">My Profile</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">
+              My Profile
+            </h1>
 
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 lg:gap-8">
               <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 flex-shrink-0">
                 <img
-                  src={previewImage || profileData.profile || `https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png`}
+                  src={
+                    previewImage ||
+                    profileData.profile ||
+                    `https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png`
+                  }
                   alt="Profile"
                   className="w-full h-full rounded-full object-cover border-4 border-blue-100 shadow-md"
                 />
@@ -124,7 +138,9 @@ const UserProfile = () => {
               </div>
 
               <div className="flex flex-col items-center sm:items-start text-center sm:text-left flex-1">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 truncate max-w-xs sm:max-w-md">{profileData.fullName}</h2>
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 truncate max-w-xs sm:max-w-md">
+                  {profileData.fullName}
+                </h2>
                 <div className="mt-2 sm:mt-3 space-y-2 text-gray-600">
                   <div className="flex items-center gap-2 justify-center sm:justify-start">
                     <span className="text-xs sm:text-sm truncate max-w-[200px] sm:max-w-[300px]">
@@ -140,7 +156,7 @@ const UserProfile = () => {
                   </div>
                   <div className="flex items-center gap-2 justify-center sm:justify-start">
                     <span className="text-xs sm:text-sm truncate max-w-[200px] sm:max-w-[300px]">
-                      medical tags: {profileData.medicalTags || 'None'}
+                      medical tags: {profileData.medicalTags || "None"}
                     </span>
                   </div>
                 </div>
@@ -179,41 +195,65 @@ const UserProfile = () => {
 
           {/* Personal Information Section */}
           <div className="p-4 sm:p-6 lg:p-8 border-t border-gray-200">
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Personal Information</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+              Personal Information
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="space-y-1">
                 <p className="text-xs sm:text-sm text-gray-500">Location</p>
-                <p className="text-sm sm:text-base text-gray-900 truncate">{profileData?.location?.text || "Not provided"}</p>
+                <p className="text-sm sm:text-base text-gray-900 truncate">
+                  {profileData?.location?.text || "Not provided"}
+                </p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs sm:text-sm text-gray-500">Date of Birth</p>
-                <p className="text-sm sm:text-base text-gray-900">{profileData.dob || "Not provided"}</p>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Date of Birth
+                </p>
+                <p className="text-sm sm:text-base text-gray-900">
+                  {profileData.dob || "Not provided"}
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs sm:text-sm text-gray-500">Age</p>
-                <p className="text-sm sm:text-base text-gray-900">{profileData.dob ? calculateAge(profileData.dob) : "Not provided"}</p>
+                <p className="text-sm sm:text-base text-gray-900">
+                  {profileData.dob
+                    ? calculateAge(profileData.dob)
+                    : "Not provided"}
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs sm:text-sm text-gray-500">Phone Number</p>
-                <p className="text-sm sm:text-base text-gray-900 truncate">{profileData.phone || "Not provided"}</p>
+                <p className="text-sm sm:text-base text-gray-900 truncate">
+                  {profileData.phone || "Not provided"}
+                </p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs sm:text-sm text-gray-500">Email Address</p>
-                <p className="text-sm sm:text-base text-gray-900 truncate max-w-[200px] sm:max-w-[300px]">{profileData.email || "Not provided"}</p>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Email Address
+                </p>
+                <p className="text-sm sm:text-base text-gray-900 truncate max-w-[200px] sm:max-w-[300px]">
+                  {profileData.email || "Not provided"}
+                </p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs sm:text-sm text-gray-500">Gender</p>
-                <p className="text-sm sm:text-base text-gray-900">{profileData.gender || "Not provided"}</p>
+                <p className="text-sm sm:text-base text-gray-900">
+                  {profileData.gender || "Not provided"}
+                </p>
               </div>
             </div>
           </div>
 
           {/* General Section */}
           <div className="p-4 sm:p-6 lg:p-8 border-t border-gray-200">
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">General</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+              General
+            </h3>
             <div className="flex flex-col sm:flex-row sm:justify-between gap-4 sm:gap-6">
               <div className="flex items-center justify-between sm:justify-start gap-4">
-                <p className="text-sm sm:text-base text-gray-900">Change Password</p>
+                <p className="text-sm sm:text-base text-gray-900">
+                  Change Password
+                </p>
                 <button
                   onClick={() => setIsChangePasswordModalOpen(true)}
                   className="px-4 py-2 bg-white border border-blue-500 text-blue-500 rounded-lg text-sm font-medium hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
@@ -223,8 +263,12 @@ const UserProfile = () => {
               </div>
               <div className="flex items-center justify-between sm:justify-start gap-4">
                 <div>
-                  <p className="text-sm sm:text-base text-gray-900">My Wallet</p>
-                  <p className="text-xs sm:text-sm text-gray-500">Balance: {profileData.walletBalance} rs</p>
+                  <p className="text-sm sm:text-base text-gray-900">
+                    My Wallet
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-500">
+                    Balance: {profileData.walletBalance} rs
+                  </p>
                 </div>
                 {/* Uncomment if withdraw functionality is needed */}
                 {/* <button className="px-4 py-2 bg-white border border-blue-500 text-blue-500 rounded-lg text-sm font-medium hover:bg-blue-50 hover:border-blue-600 hover:text-blue-600 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300">
@@ -246,7 +290,7 @@ const UserProfile = () => {
             location: profileData.location ?? null,
             dob: profileData.dob || " ",
             phone: profileData.phone || "",
-            gender: profileData.gender || ""
+            gender: profileData.gender || "",
           }}
         />
 

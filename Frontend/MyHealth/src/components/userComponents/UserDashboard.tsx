@@ -1,12 +1,30 @@
-import { useEffect, useState, useRef } from 'react';
-import { Eye, Calendar as CalendarIcon, Clock, User, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Pill, FileText, ArrowRight, Stethoscope } from 'lucide-react';
-import { getDashboardContent, getLatestPrescription } from '../../api/user/userApi';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { message } from 'antd';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import { IUserData } from '../../interfaces/user';
+import { useEffect, useState, useRef } from "react";
+import {
+  Eye,
+  Calendar as CalendarIcon,
+  Clock,
+  User,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Pill,
+  FileText,
+  ArrowRight,
+  Stethoscope,
+} from "lucide-react";
+import {
+  getDashboardContent,
+  getLatestPrescription,
+} from "../../api/user/userApi";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { message } from "antd";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import { IUserData } from "../../interfaces/user";
 
 interface Blog {
   _id: string;
@@ -57,13 +75,14 @@ const UserDashboard = () => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const navigate = useNavigate();
   const user = useSelector((state: IUserData) => state.user.user);
-  const [/*location*/, setLocation] = useState<{
+  const [, /*location*/ setLocation] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
-  const [latestPrescription, setLatestPrescription] = useState<Prescription | null>(null);
+  const [latestPrescription, setLatestPrescription] =
+    useState<Prescription | null>(null);
   const [calendarValue, setCalendarValue] = useState<Date | null>(new Date());
 
   const fetchDashboardContent = async () => {
@@ -71,15 +90,20 @@ const UserDashboard = () => {
     try {
       const days = 30;
       const userId = user._id;
-      const response = await getDashboardContent(days, userId, latitude, longitude);
+      const response = await getDashboardContent(
+        days,
+        userId,
+        latitude,
+        longitude
+      );
       const latestPres = await getLatestPrescription(userId);
       setLatestPrescription(latestPres || null);
       setBlogs(response.blogs || []);
       setAdvertisements(response.advertisements || []);
       setError(null);
     } catch (err) {
-      setError('Failed to load dashboard content. Please try again.');
-      console.error('Error fetching dashboard content:', err);
+      setError("Failed to load dashboard content. Please try again.");
+      console.error("Error fetching dashboard content:", err);
     } finally {
       setLoading(false);
     }
@@ -93,7 +117,9 @@ const UserDashboard = () => {
 
   useEffect(() => {
     if (advertisements.length > 0) {
-      videoRefs.current = advertisements.map((_, i) => videoRefs.current[i] || null);
+      videoRefs.current = advertisements.map(
+        (_, i) => videoRefs.current[i] || null
+      );
     }
   }, [advertisements]);
 
@@ -103,10 +129,11 @@ const UserDashboard = () => {
         video.muted = isMuted;
         if (index === currentAdIndex) {
           video.currentTime = 0;
-          video.play()
+          video
+            .play()
             .then(() => setIsVideoPlaying(true))
             .catch((err) => {
-              console.error('Video play error:', err);
+              console.error("Video play error:", err);
               setIsVideoPlaying(false);
             });
         } else {
@@ -120,7 +147,9 @@ const UserDashboard = () => {
 
   const goToPrevious = () => {
     setIsPaused(true);
-    setCurrentAdIndex((prev) => (prev === 0 ? advertisements.length - 1 : prev - 1));
+    setCurrentAdIndex((prev) =>
+      prev === 0 ? advertisements.length - 1 : prev - 1
+    );
     setTimeout(() => setIsPaused(false), 3000);
   };
 
@@ -162,7 +191,7 @@ const UserDashboard = () => {
   };
 
   const handleViewBlog = (blog: Blog) => {
-    navigate('/user/blog', { state: { blog } });
+    navigate("/user/blog", { state: { blog } });
   };
 
   const handleGetPrescription = (appointmentId: string) => {
@@ -170,10 +199,10 @@ const UserDashboard = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
@@ -206,7 +235,7 @@ const UserDashboard = () => {
       setLatitude(null);
       setLongitude(null);
     };
-    
+
     navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {
       enableHighAccuracy: true,
       timeout: 10000,
@@ -229,7 +258,9 @@ const UserDashboard = () => {
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1 sm:mb-2">
             Dashboard
           </h1>
-          <p className="text-sm sm:text-base text-gray-600">Stay updated with the latest content and trends</p>
+          <p className="text-sm sm:text-base text-gray-600">
+            Stay updated with the latest content and trends
+          </p>
         </div>
 
         {/* Welcome Message with Prescription Reminder */}
@@ -246,18 +277,24 @@ const UserDashboard = () => {
               {latestPrescription && (
                 <>
                   <p className="text-sm sm:text-base text-gray-600 mt-2">
-                    Have you taken your {latestPrescription.medications[0]?.name || "medication"} (
-                    {latestPrescription.medications[0]?.dosage || "dosage"}) today as prescribed for your {latestPrescription.medicalCondition || "condition"}?
-                    {latestPrescription.notes && ` Do you ${latestPrescription.notes}`}
+                    Have you taken your{" "}
+                    {latestPrescription.medications[0]?.name || "medication"} (
+                    {latestPrescription.medications[0]?.dosage || "dosage"})
+                    today as prescribed for your{" "}
+                    {latestPrescription.medicalCondition || "condition"}?
+                    {latestPrescription.notes &&
+                      ` Do you ${latestPrescription.notes}`}
                   </p>
                   {latestPrescription?.medications[0]?.instructions && (
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Instructions:</span> {latestPrescription.medications[0].instructions}
+                      <span className="font-medium">Instructions:</span>{" "}
+                      {latestPrescription.medications[0].instructions}
                     </p>
                   )}
                   {latestPrescription?.medications[0]?.notes && (
                     <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                      <span className="font-medium">Notes:</span> {latestPrescription.medications[0].notes}
+                      <span className="font-medium">Notes:</span>{" "}
+                      {latestPrescription.medications[0].notes}
                     </p>
                   )}
                 </>
@@ -286,7 +323,9 @@ const UserDashboard = () => {
                 <div className="flex items-center justify-center h-48 sm:h-64 lg:h-96 bg-gradient-to-r from-gray-100 to-gray-200">
                   <div className="text-center text-gray-500 p-4">
                     <div className="text-2xl sm:text-4xl mb-4">📺</div>
-                    <p className="text-base sm:text-lg">No advertisements available</p>
+                    <p className="text-base sm:text-lg">
+                      No advertisements available
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -317,7 +356,7 @@ const UserDashboard = () => {
                           <button
                             onClick={togglePlayPause}
                             className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200"
-                            title={isVideoPlaying ? 'Pause' : 'Play'}
+                            title={isVideoPlaying ? "Pause" : "Play"}
                           >
                             {isVideoPlaying ? (
                               <Pause className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -328,7 +367,7 @@ const UserDashboard = () => {
                           <button
                             onClick={toggleMute}
                             className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200"
-                            title={isMuted ? 'Unmute' : 'Mute'}
+                            title={isMuted ? "Unmute" : "Mute"}
                           >
                             {isMuted ? (
                               <VolumeX className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -336,12 +375,16 @@ const UserDashboard = () => {
                               <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             )}
                           </button>
-                          {advertisements.length > 1 && !isPaused && !isHovering && (
-                            <div className="hidden sm:flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-full">
-                              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                              <span className="text-white text-sm font-medium">Auto</span>
-                            </div>
-                          )}
+                          {advertisements.length > 1 &&
+                            !isPaused &&
+                            !isHovering && (
+                              <div className="hidden sm:flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-full">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <span className="text-white text-sm font-medium">
+                                  Auto
+                                </span>
+                              </div>
+                            )}
                         </div>
                         {advertisements.length > 1 && (
                           <div className="flex gap-1 sm:gap-2">
@@ -351,8 +394,8 @@ const UserDashboard = () => {
                                 onClick={() => setCurrentAdIndex(index)}
                                 className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-200 ${
                                   index === currentAdIndex
-                                    ? 'bg-white scale-110'
-                                    : 'bg-white/50 hover:bg-white/75'
+                                    ? "bg-white scale-110"
+                                    : "bg-white/50 hover:bg-white/75"
                                 }`}
                               />
                             ))}
@@ -389,7 +432,9 @@ const UserDashboard = () => {
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center">
                   <CalendarIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800">Calendar</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                  Calendar
+                </h2>
               </div>
               <div className="flex justify-center w-full h-full">
                 <Calendar
@@ -397,7 +442,11 @@ const UserDashboard = () => {
                   onChange={(value) => {
                     if (value instanceof Date) {
                       setCalendarValue(value);
-                    } else if (Array.isArray(value) && value.length > 0 && value[0] instanceof Date) {
+                    } else if (
+                      Array.isArray(value) &&
+                      value.length > 0 &&
+                      value[0] instanceof Date
+                    ) {
                       setCalendarValue(value[0]);
                     } else {
                       setCalendarValue(null);
@@ -405,9 +454,10 @@ const UserDashboard = () => {
                   }}
                   className="w-full border-none text-sm sm:text-base"
                   tileClassName={({ date, view }) =>
-                    view === 'month' && date.toDateString() === new Date().toDateString()
-                      ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-lg'
-                      : 'hover:bg-blue-50 text-gray-600 rounded-lg'
+                    view === "month" &&
+                    date.toDateString() === new Date().toDateString()
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-lg"
+                      : "hover:bg-blue-50 text-gray-600 rounded-lg"
                   }
                 />
               </div>
@@ -423,8 +473,12 @@ const UserDashboard = () => {
                 <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Latest Prescription</h2>
-                <p className="text-xs sm:text-sm text-gray-500">Your most recent medical prescription</p>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+                  Latest Prescription
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Your most recent medical prescription
+                </p>
               </div>
             </div>
 
@@ -434,15 +488,21 @@ const UserDashboard = () => {
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-green-100">
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                     <Stethoscope className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-800">Medical Condition</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+                      Medical Condition
+                    </h3>
                   </div>
-                  <p className="text-base sm:text-lg text-gray-700 font-medium">{latestPrescription.medicalCondition}</p>
+                  <p className="text-base sm:text-lg text-gray-700 font-medium">
+                    {latestPrescription.medicalCondition}
+                  </p>
                 </div>
 
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-blue-100">
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                     <Pill className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-800">Primary Medication</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+                      Primary Medication
+                    </h3>
                   </div>
                   <div className="space-y-2 sm:space-y-3">
                     <div>
@@ -454,10 +514,12 @@ const UserDashboard = () => {
                       </span>
                     </div>
                     <div className="text-sm sm:text-base text-gray-600">
-                      <span className="font-medium">Frequency:</span> {latestPrescription.medications[0]?.frequency}
+                      <span className="font-medium">Frequency:</span>{" "}
+                      {latestPrescription.medications[0]?.frequency}
                     </div>
                     <div className="text-sm sm:text-base text-gray-600">
-                      <span className="font-medium">Duration:</span> {latestPrescription.medications[0]?.duration}
+                      <span className="font-medium">Duration:</span>{" "}
+                      {latestPrescription.medications[0]?.duration}
                     </div>
                   </div>
                 </div>
@@ -468,33 +530,47 @@ const UserDashboard = () => {
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-amber-100">
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                     <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-800">Prescription Details</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+                      Prescription Details
+                    </h3>
                   </div>
                   <div className="space-y-2 sm:space-y-3">
                     <div className="flex justify-between text-sm sm:text-base">
                       <span className="text-gray-600">Prescribed:</span>
-                      <span className="font-medium text-gray-800">{formatDate(latestPrescription.createdAt)}</span>
+                      <span className="font-medium text-gray-800">
+                        {formatDate(latestPrescription.createdAt)}
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm sm:text-base">
                       <span className="text-gray-600">Days Ago:</span>
-                      <span className="font-medium text-gray-800">{getDaysAgo(latestPrescription.createdAt)} days</span>
+                      <span className="font-medium text-gray-800">
+                        {getDaysAgo(latestPrescription.createdAt)} days
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm sm:text-base">
                       <span className="text-gray-600">Total Medications:</span>
-                      <span className="font-medium text-gray-800">{latestPrescription.medications.length}</span>
+                      <span className="font-medium text-gray-800">
+                        {latestPrescription.medications.length}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {latestPrescription.notes && (
                   <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-purple-100">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">Doctor's Notes</h3>
-                    <p className="text-sm sm:text-base text-gray-700 leading-relaxed">{latestPrescription.notes}</p>
+                    <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-2 sm:mb-3">
+                      Doctor's Notes
+                    </h3>
+                    <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                      {latestPrescription.notes}
+                    </p>
                   </div>
                 )}
 
                 <button
-                  onClick={() => handleGetPrescription(latestPrescription.appointmentId)}
+                  onClick={() =>
+                    handleGetPrescription(latestPrescription.appointmentId)
+                  }
                   className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl cursor-pointer text-sm sm:text-base min-h-[44px]"
                 >
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -513,8 +589,12 @@ const UserDashboard = () => {
               <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Latest Blogs & News</h2>
-              <p className="text-xs sm:text-sm text-gray-500">Stay informed with our latest insights</p>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+                Latest Blogs & News
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-500">
+                Stay informed with our latest insights
+              </p>
             </div>
           </div>
 
@@ -530,7 +610,9 @@ const UserDashboard = () => {
           ) : blogs.length === 0 ? (
             <div className="text-center py-12 sm:py-16 text-gray-500">
               <div className="text-2xl sm:text-4xl mb-4">📝</div>
-              <p className="text-sm sm:text-lg">No blogs available at the moment</p>
+              <p className="text-sm sm:text-lg">
+                No blogs available at the moment
+              </p>
             </div>
           ) : (
             <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

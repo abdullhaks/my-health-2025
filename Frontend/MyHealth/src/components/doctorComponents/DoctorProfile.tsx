@@ -5,10 +5,20 @@ import toast from "react-hot-toast";
 import EditDoctorProfileModal from "./DoctorProfileEdit";
 import ChangePasswordModal from "./DoctorChangePassword";
 import DoctorPayoutModal from "./DoctorPayoutModal";
-import { updateProfileImage, updateDoctorProfile, changePassword, payoutRequest } from "../../api/doctor/doctorApi";
+import {
+  updateProfileImage,
+  updateDoctorProfile,
+  changePassword,
+  payoutRequest,
+} from "../../api/doctor/doctorApi";
 import { updateDoctor } from "../../redux/slices/doctorSlices";
 import { message } from "antd";
-import { payoutDetails, IDoctorData, doctorProfileUpdate, IDoctor } from "../../interfaces/doctor";
+import {
+  payoutDetails,
+  IDoctorData,
+  doctorProfileUpdate,
+  IDoctor,
+} from "../../interfaces/doctor";
 
 const DoctorProfile = () => {
   const doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
@@ -19,7 +29,8 @@ const DoctorProfile = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
 
   useEffect(() => {
@@ -69,7 +80,9 @@ const DoctorProfile = () => {
   };
 
   const handleCopyMHID = () => {
-    navigator.clipboard.writeText(`MH-DR-${profileData._id.slice(0, 6).toUpperCase()}`);
+    navigator.clipboard.writeText(
+      `MH-DR-${profileData._id.slice(0, 6).toUpperCase()}`
+    );
     toast.success("MH ID copied!");
   };
 
@@ -132,7 +145,12 @@ const DoctorProfile = () => {
             />
             <label className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md cursor-pointer hover:bg-gray-100 transition-all duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center">
               <FiCamera className="text-lg sm:text-xl text-gray-600" />
-              <input type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
             </label>
           </div>
 
@@ -207,71 +225,133 @@ const DoctorProfile = () => {
         {/* Profile Details Grid */}
         <div className="p-4 sm:p-6 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 border-t border-gray-200">
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Email</p>
-            <p className="text-sm sm:text-base truncate">{profileData.email || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Email
+            </p>
+            <p className="text-sm sm:text-base truncate">
+              {profileData.email || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Phone</p>
-            <p className="text-sm sm:text-base truncate">{profileData.phone || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Phone
+            </p>
+            <p className="text-sm sm:text-base truncate">
+              {profileData.phone || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
             <p className="text-xs sm:text-sm font-medium text-gray-500">DOB</p>
-            <p className="text-sm sm:text-base">{profileData.dob || "Not provided"}</p>
+            <p className="text-sm sm:text-base">
+              {profileData.dob || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Gender</p>
-            <p className="text-sm sm:text-base">{profileData.gender || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Gender
+            </p>
+            <p className="text-sm sm:text-base">
+              {profileData.gender || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Location</p>
-            <p className="text-sm sm:text-base truncate">{profileData.location?.text || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Location
+            </p>
+            <p className="text-sm sm:text-base truncate">
+              {profileData.location?.text || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Category</p>
-            <p className="text-sm sm:text-base">{profileData.category || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Category
+            </p>
+            <p className="text-sm sm:text-base">
+              {profileData.category || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Graduation</p>
-            <p className="text-sm sm:text-base">{profileData.graduation || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Graduation
+            </p>
+            <p className="text-sm sm:text-base">
+              {profileData.graduation || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Experience</p>
-            <p className="text-sm sm:text-base">{profileData.experience ? `${profileData.experience} years` : "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Experience
+            </p>
+            <p className="text-sm sm:text-base">
+              {profileData.experience
+                ? `${profileData.experience} years`
+                : "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Medical Reg. No</p>
-            <p className="text-sm sm:text-base truncate">{profileData.registerNo || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Medical Reg. No
+            </p>
+            <p className="text-sm sm:text-base truncate">
+              {profileData.registerNo || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Bank Account No</p>
-            <p className="text-sm sm:text-base truncate">{profileData.bankAccNo || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Bank Account No
+            </p>
+            <p className="text-sm sm:text-base truncate">
+              {profileData.bankAccNo || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Account Holder Name</p>
-            <p className="text-sm sm:text-base truncate">{profileData.bankAccHolderName || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Account Holder Name
+            </p>
+            <p className="text-sm sm:text-base truncate">
+              {profileData.bankAccHolderName || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">IFSC Code</p>
-            <p className="text-sm sm:text-base truncate">{profileData.bankIfscCode || "Not provided"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              IFSC Code
+            </p>
+            <p className="text-sm sm:text-base truncate">
+              {profileData.bankIfscCode || "Not provided"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Verification Status</p>
-            <p className="text-sm sm:text-base">{profileData.isVerified ? "Verified" : "Not Verified"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Verification Status
+            </p>
+            <p className="text-sm sm:text-base">
+              {profileData.isVerified ? "Verified" : "Not Verified"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Admin Verification</p>
-            <p className="text-sm sm:text-base">{profileData.adminVerified ? "Approved" : "Pending"}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Admin Verification
+            </p>
+            <p className="text-sm sm:text-base">
+              {profileData.adminVerified ? "Approved" : "Pending"}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Report Analysis Fees</p>
-            <p className="text-sm sm:text-base">₹{profileData.reportAnalysisFees || 50}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Report Analysis Fees
+            </p>
+            <p className="text-sm sm:text-base">
+              ₹{profileData.reportAnalysisFees || 50}
+            </p>
           </div>
         </div>
 
         {/* Actions Section */}
         <div className="p-4 sm:p-6 md:p-8 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6">
           <div className="flex flex-col items-center sm:items-start">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Change Password</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Change Password
+            </p>
             <button
               onClick={() => setIsChangePasswordModalOpen(true)}
               className="mt-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium text-blue-600 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 min-h-[44px]"
@@ -280,8 +360,12 @@ const DoctorProfile = () => {
             </button>
           </div>
           <div className="flex flex-col items-center sm:items-end">
-            <p className="text-xs sm:text-sm font-medium text-gray-500">Earnings</p>
-            <p className="text-sm sm:text-base font-semibold text-gray-900">{profileData.walletBalance || 0} ₹</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-500">
+              Earnings
+            </p>
+            <p className="text-sm sm:text-base font-semibold text-gray-900">
+              {profileData.walletBalance || 0} ₹
+            </p>
             <button
               onClick={handlePayout}
               className="mt-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium text-blue-600 border border-blue-500 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 min-h-[44px]"

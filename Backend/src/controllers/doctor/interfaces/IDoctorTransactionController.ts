@@ -1,12 +1,5 @@
-
-import {Request,Response} from "express";
-
+import { Request, Response } from "express";
 
 export default interface IDoctorTransactionController {
-    
-getRevenues(req: Request, res: Response): Promise<void>,
-
-
+  getRevenues(req: Request, res: Response): Promise<void>;
 }
-
-

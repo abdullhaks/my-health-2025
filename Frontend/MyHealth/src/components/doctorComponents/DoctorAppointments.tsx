@@ -1,21 +1,36 @@
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getDoctorAppointments, cancelAppointment } from "../../api/doctor/doctorApi";
-import { Popconfirm, message, Modal, Select, DatePicker, Button, Pagination } from "antd";
-import { SearchOutlined, FilterOutlined, FileTextOutlined } from "@ant-design/icons";
+import {
+  getDoctorAppointments,
+  cancelAppointment,
+} from "../../api/doctor/doctorApi";
+import {
+  Popconfirm,
+  message,
+  Modal,
+  Select,
+  DatePicker,
+  Button,
+  Pagination,
+} from "antd";
+import {
+  SearchOutlined,
+  FilterOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
 import { IDoctorData } from "../../interfaces/doctor";
 import { ApiError } from "../../interfaces/error";
 
-interface medication { 
-  name: string; 
-  dosage: string; 
-  frequency: string; 
-  duration: string; 
-  instructions?: string | undefined; 
+interface medication {
+  name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions?: string | undefined;
 }
 
 interface prescriptionData {
@@ -55,7 +70,14 @@ interface IAppointment {
 interface Notification {
   userId: string;
   message: string;
-  type: "appointment" | "payment" | "blog" | "add" | "newConnection" | "common" | "reportAnalysis";
+  type:
+    | "appointment"
+    | "payment"
+    | "blog"
+    | "add"
+    | "newConnection"
+    | "common"
+    | "reportAnalysis";
   isRead: boolean;
   link?: string;
   mention?: string;
@@ -77,7 +99,8 @@ const DoctorAppointments = () => {
     appointmentStatus: "booked",
     dateRange: null as [moment.Moment, moment.Moment] | null,
   });
-  const [selectedAppointment, setSelectedAppointment] = useState<IAppointment | null>(null);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<IAppointment | null>(null);
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
   const doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
   const navigate = useNavigate();
@@ -87,7 +110,11 @@ const DoctorAppointments = () => {
 
   const getAccessToken = async () => {
     try {
-      const response = await axios.post(`${apiUrl}/doctor/refreshToken`, {}, { withCredentials: true });
+      const response = await axios.post(
+        `${apiUrl}/doctor/refreshToken`,
+        {},
+        { withCredentials: true }
+      );
       return response.data.accessToken;
     } catch (error) {
       console.error("Failed to fetch access token:", error);
@@ -109,11 +136,15 @@ const DoctorAppointments = () => {
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
-        transports: ["websocket"],
-        reconnection: true,
-        auth: { token },
-      });
+      const socket = io(
+        import.meta.env.VITE_REACT_APP_SOCKET_URL ||
+          "https://api.abdullhakalamban.online",
+        {
+          transports: ["websocket"],
+          reconnection: true,
+          auth: { token },
+        }
+      );
 
       socketRef.current = socket;
 
@@ -133,7 +164,9 @@ const DoctorAppointments = () => {
             message.error("Failed to reconnect. Please log in again.");
           }
         } else {
-          message.error("Failed to connect to notification server: " + err.message);
+          message.error(
+            "Failed to connect to notification server: " + err.message
+          );
         }
       });
 
@@ -158,8 +191,12 @@ const DoctorAppointments = () => {
     try {
       const response = await getDoctorAppointments(doctor._id, page, limit, {
         appointmentStatus: filters.appointmentStatus,
-        startDate: filters.dateRange ? filters.dateRange[0].toISOString().split("T")[0] : undefined,
-        endDate: filters.dateRange ? filters.dateRange[1].toISOString().split("T")[0] : undefined,
+        startDate: filters.dateRange
+          ? filters.dateRange[0].toISOString().split("T")[0]
+          : undefined,
+        endDate: filters.dateRange
+          ? filters.dateRange[1].toISOString().split("T")[0]
+          : undefined,
       });
 
       console.log("doctor appointments...", response);
@@ -167,8 +204,14 @@ const DoctorAppointments = () => {
       setTotalPages(response.totalPages || 1);
     } catch (error) {
       console.error("Error fetching appointments:", error);
-      const errorMessage = (error as ApiError)?.response?.data?.message ?? "Failed fetching appointments. Please try again.";
-      setErrorMessage(typeof errorMessage === "string" ? errorMessage : "Failed fetching appointments. Please try again.");
+      const errorMessage =
+        (error as ApiError)?.response?.data?.message ??
+        "Failed fetching appointments. Please try again.";
+      setErrorMessage(
+        typeof errorMessage === "string"
+          ? errorMessage
+          : "Failed fetching appointments. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -178,7 +221,10 @@ const DoctorAppointments = () => {
     if (doctor._id) fetchAppointments(currentPage);
   }, [doctor._id, currentPage, filters]);
 
-  const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
+  const handleFilterChange = (
+    key: string,
+    value: string | [moment.Moment, moment.Moment] | null
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -195,7 +241,9 @@ const DoctorAppointments = () => {
         let userId: string = "";
         let date: string = "";
 
-        const targetAppointment = appointments.find((appt) => appt._id === appointmentId);
+        const targetAppointment = appointments.find(
+          (appt) => appt._id === appointmentId
+        );
         if (targetAppointment) {
           doctorName = targetAppointment.doctorName || "Patient";
           userId = targetAppointment.userId || "";
@@ -207,7 +255,11 @@ const DoctorAppointments = () => {
         setAppointments((prev) =>
           prev.map((appt) =>
             appt._id === appointmentId
-              ? { ...appt, appointmentStatus: "cancelled", paymentStatus: "refunded" }
+              ? {
+                  ...appt,
+                  appointmentStatus: "cancelled",
+                  paymentStatus: "refunded",
+                }
               : appt
           )
         );
@@ -215,7 +267,9 @@ const DoctorAppointments = () => {
         if (userId) {
           const notification: Notification = {
             userId: userId,
-            message: `Your appointment with Dr.${doctorName} on ${new Date(date).toLocaleDateString("en-US", {
+            message: `Your appointment with Dr.${doctorName} on ${new Date(
+              date
+            ).toLocaleDateString("en-US", {
               weekday: "short",
               year: "numeric",
               month: "short",
@@ -237,8 +291,14 @@ const DoctorAppointments = () => {
       }
     } catch (error) {
       console.error("Error cancelling appointment:", error);
-      const errorMessage = (error as ApiError)?.response?.data?.message ?? "Failed to cancel appointment. Please try again.";
-      setErrorMessage(typeof errorMessage === "string" ? errorMessage : "Failed to cancel appointment. Please try again.");
+      const errorMessage =
+        (error as ApiError)?.response?.data?.message ??
+        "Failed to cancel appointment. Please try again.";
+      setErrorMessage(
+        typeof errorMessage === "string"
+          ? errorMessage
+          : "Failed to cancel appointment. Please try again."
+      );
     } finally {
       setIsCanceling(false);
     }
@@ -276,7 +336,9 @@ const DoctorAppointments = () => {
               placeholder="Filter by Status"
               className="w-full"
               value={filters.appointmentStatus}
-              onChange={(value) => handleFilterChange("appointmentStatus", value)}
+              onChange={(value) =>
+                handleFilterChange("appointmentStatus", value)
+              }
               allowClear
             >
               <Option value="booked">Booked</Option>
@@ -289,7 +351,10 @@ const DoctorAppointments = () => {
             <RangePicker
               onChange={(dates) => {
                 if (dates && dates[0] && dates[1]) {
-                  handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                  handleFilterChange("dateRange", [
+                    moment(dates[0].toDate()),
+                    moment(dates[1].toDate()),
+                  ]);
                 } else {
                   handleFilterChange("dateRange", null);
                 }
@@ -335,38 +400,57 @@ const DoctorAppointments = () => {
                 <div className="flex flex-col gap-4 sm:gap-6">
                   <div className="flex items-center gap-3 sm:gap-4">
                     <img
-                      src={appt.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+                      src={
+                        appt.profile ||
+                        "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                      }
                       alt="User"
                       className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover shadow-sm"
                     />
                     <div>
-                      <p className="text-sm sm:text-base font-medium text-gray-900 truncate max-w-[150px] sm:max-w-[200px]" title={appt.userName}>
+                      <p
+                        className="text-sm sm:text-base font-medium text-gray-900 truncate max-w-[150px] sm:max-w-[200px]"
+                        title={appt.userName}
+                      >
                         {appt.userName}
                       </p>
-                      <p className="text-xs sm:text-sm text-gray-600">({appt.doctorCategory})</p>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        ({appt.doctorCategory})
+                      </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
                     <div>
-                      <span className="font-medium text-gray-700">Date & Time: </span>
-                      {moment(appt.start).format("DD-MM-YYYY hh:mm A")} - {moment(appt.end).format("hh:mm A")}
+                      <span className="font-medium text-gray-700">
+                        Date & Time:{" "}
+                      </span>
+                      {moment(appt.start).format("DD-MM-YYYY hh:mm A")} -{" "}
+                      {moment(appt.end).format("hh:mm A")}
                     </div>
                     <div>
-                      <span className="font-medium text-gray-700">Duration: </span>
+                      <span className="font-medium text-gray-700">
+                        Duration:{" "}
+                      </span>
                       {appt.duration} minutes
                     </div>
                     <div>
-                      <span className="font-medium text-gray-700">Fee: </span>
-                      ₹{appt.fee}
+                      <span className="font-medium text-gray-700">Fee: </span>₹
+                      {appt.fee}
                     </div>
                     <div>
-                      <span className="font-medium text-gray-700">Status: </span>
-                      {appt.appointmentStatus.charAt(0).toUpperCase() + appt.appointmentStatus.slice(1)}
+                      <span className="font-medium text-gray-700">
+                        Status:{" "}
+                      </span>
+                      {appt.appointmentStatus.charAt(0).toUpperCase() +
+                        appt.appointmentStatus.slice(1)}
                     </div>
                     <div>
                       <span className="font-medium text-gray-700">Email: </span>
-                      <span className="truncate max-w-[150px] sm:max-w-[200px]" title={appt.userEmail}>
+                      <span
+                        className="truncate max-w-[150px] sm:max-w-[200px]"
+                        title={appt.userEmail}
+                      >
                         {appt.userEmail}
                       </span>
                     </div>
@@ -395,23 +479,29 @@ const DoctorAppointments = () => {
                         cancelText="No"
                       >
                         <button
-                          disabled={isCanceling || appt.appointmentStatus !== "booked"}
+                          disabled={
+                            isCanceling || appt.appointmentStatus !== "booked"
+                          }
                           className={`px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg min-w-[100px] ${
-                            isCanceling ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 active:scale-95"
+                            isCanceling
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-red-600 hover:bg-red-700 active:scale-95"
                           }`}
                         >
                           Cancel
                         </button>
                       </Popconfirm>
                     )}
-                    {appt.appointmentStatus === "completed" && appt.prescriptions && appt.prescriptions.length > 0 && (
-                      <button
-                        onClick={() => handleViewPrescription(appt)}
-                        className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg bg-blue-600 hover:bg-blue-700 active:scale-95 min-w-[100px]"
-                      >
-                        View Prescription
-                      </button>
-                    )}
+                    {appt.appointmentStatus === "completed" &&
+                      appt.prescriptions &&
+                      appt.prescriptions.length > 0 && (
+                        <button
+                          onClick={() => handleViewPrescription(appt)}
+                          className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg text-white font-medium transition-all duration-300 shadow-md hover:shadow-lg bg-blue-600 hover:bg-blue-700 active:scale-95 min-w-[100px]"
+                        >
+                          View Prescription
+                        </button>
+                      )}
                   </div>
                 </div>
               </div>
@@ -433,7 +523,11 @@ const DoctorAppointments = () => {
 
         {/* Prescription Modal */}
         <Modal
-          title={<h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">Prescription Details</h3>}
+          title={
+            <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">
+              Prescription Details
+            </h3>
+          }
           open={isPrescriptionModalOpen}
           onCancel={() => setIsPrescriptionModalOpen(false)}
           footer={[
@@ -443,7 +537,7 @@ const DoctorAppointments = () => {
               className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 min-w-[100px]"
             >
               Close
-            </Button>
+            </Button>,
           ]}
           className="rounded-xl"
           bodyStyle={{ padding: "16px 24px" }}
@@ -454,92 +548,174 @@ const DoctorAppointments = () => {
             <div className="space-y-3 sm:space-y-4 lg:space-y-6">
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4">
                 <img
-                  src={selectedAppointment.profile || "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+                  src={
+                    selectedAppointment.profile ||
+                    "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                  }
                   alt="User"
                   className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full object-cover shadow-md"
                 />
                 <div className="text-center sm:text-left">
-                  <h4 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">{selectedAppointment.userName}</h4>
-                  <p className="text-xs sm:text-sm text-gray-600">{selectedAppointment.doctorCategory}</p>
+                  <h4 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
+                    {selectedAppointment.userName}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    {selectedAppointment.doctorCategory}
+                  </p>
                 </div>
               </div>
               <div className="space-y-3 sm:space-y-4">
-                <h4 className="text-sm sm:text-base font-semibold text-gray-700">Prescriptions</h4>
-                {selectedAppointment.prescriptions && selectedAppointment.prescriptions.length > 0 ? (
-                  selectedAppointment.prescriptions.map((prescription, index) => (
-                    <div key={index} className="bg-gray-50 p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200">
-                      <p className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Prescription {index + 1}</p>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
-                        <div>
-                          <span className="font-medium text-gray-700">Appointment ID: </span>
-                          <span className="truncate max-w-[150px] sm:max-w-[200px]" title={prescription.appointmentId}>
-                            {prescription.appointmentId}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700">User ID: </span>
-                          <span className="truncate max-w-[150px] sm:max-w-[200px]" title={prescription.userId}>
-                            {prescription.userId}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700">Doctor ID: </span>
-                          <span className="truncate max-w-[150px] sm:max-w-[200px]" title={prescription.doctorId}>
-                            {prescription.doctorId}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700">Medical Condition: </span>
-                          <span className="truncate max-w-[150px] sm:max-w-[200px]" title={prescription.medicalCondition}>
-                            {prescription.medicalCondition}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700">Medication Period: </span>
-                          {prescription.medicationPeriod} days
-                        </div>
-                        {prescription.createdAt && (
+                <h4 className="text-sm sm:text-base font-semibold text-gray-700">
+                  Prescriptions
+                </h4>
+                {selectedAppointment.prescriptions &&
+                selectedAppointment.prescriptions.length > 0 ? (
+                  selectedAppointment.prescriptions.map(
+                    (prescription, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-50 p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200"
+                      >
+                        <p className="text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                          Prescription {index + 1}
+                        </p>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
                           <div>
-                            <span className="font-medium text-gray-700">Created At: </span>
-                            {moment(prescription.createdAt).format("DD-MM-YYYY hh:mm A")}
+                            <span className="font-medium text-gray-700">
+                              Appointment ID:{" "}
+                            </span>
+                            <span
+                              className="truncate max-w-[150px] sm:max-w-[200px]"
+                              title={prescription.appointmentId}
+                            >
+                              {prescription.appointmentId}
+                            </span>
                           </div>
-                        )}
-                      </div>
-                      {prescription.notes && (
-                        <div className="mt-2 sm:mt-3">
-                          <span className="font-medium text-gray-700">Notes: </span>
-                          <p className="text-xs sm:text-sm text-gray-600 break-words">
-                            {prescription.notes}
-                          </p>
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              User ID:{" "}
+                            </span>
+                            <span
+                              className="truncate max-w-[150px] sm:max-w-[200px]"
+                              title={prescription.userId}
+                            >
+                              {prescription.userId}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              Doctor ID:{" "}
+                            </span>
+                            <span
+                              className="truncate max-w-[150px] sm:max-w-[200px]"
+                              title={prescription.doctorId}
+                            >
+                              {prescription.doctorId}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              Medical Condition:{" "}
+                            </span>
+                            <span
+                              className="truncate max-w-[150px] sm:max-w-[200px]"
+                              title={prescription.medicalCondition}
+                            >
+                              {prescription.medicalCondition}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-700">
+                              Medication Period:{" "}
+                            </span>
+                            {prescription.medicationPeriod} days
+                          </div>
+                          {prescription.createdAt && (
+                            <div>
+                              <span className="font-medium text-gray-700">
+                                Created At:{" "}
+                              </span>
+                              {moment(prescription.createdAt).format(
+                                "DD-MM-YYYY hh:mm A"
+                              )}
+                            </div>
+                          )}
                         </div>
-                      )}
-                      <div className="mt-2 sm:mt-3">
-                        <span className="font-medium text-gray-700">Medications: </span>
-                        {prescription.medications && prescription.medications.length > 0 ? (
-                          <div className="space-y-2 sm:space-y-3 mt-2">
-                            {prescription.medications.map((med, medIndex) => (
-                              <div key={medIndex} className="bg-white p-2 sm:p-3 rounded-lg border border-gray-200 shadow-sm">
-                                <p className="text-xs sm:text-sm font-medium text-gray-700">Medication {medIndex + 1}</p>
-                                <div className="grid grid-cols-1 gap-1 sm:gap-2 text-xs sm:text-sm">
-                                  <p><span className="font-medium text-gray-700">Name: </span>{med.name}</p>
-                                  <p><span className="font-medium text-gray-700">Dosage: </span>{med.dosage}</p>
-                                  <p><span className="font-medium text-gray-700">Frequency: </span>{med.frequency}</p>
-                                  <p><span className="font-medium text-gray-700">Duration: </span>{med.duration}</p>
-                                  {med.instructions && (
-                                    <p><span className="font-medium text-gray-700">Instructions: </span>{med.instructions}</p>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
+                        {prescription.notes && (
+                          <div className="mt-2 sm:mt-3">
+                            <span className="font-medium text-gray-700">
+                              Notes:{" "}
+                            </span>
+                            <p className="text-xs sm:text-sm text-gray-600 break-words">
+                              {prescription.notes}
+                            </p>
                           </div>
-                        ) : (
-                          <p className="text-xs sm:text-sm text-gray-600">No medications listed.</p>
                         )}
+                        <div className="mt-2 sm:mt-3">
+                          <span className="font-medium text-gray-700">
+                            Medications:{" "}
+                          </span>
+                          {prescription.medications &&
+                          prescription.medications.length > 0 ? (
+                            <div className="space-y-2 sm:space-y-3 mt-2">
+                              {prescription.medications.map((med, medIndex) => (
+                                <div
+                                  key={medIndex}
+                                  className="bg-white p-2 sm:p-3 rounded-lg border border-gray-200 shadow-sm"
+                                >
+                                  <p className="text-xs sm:text-sm font-medium text-gray-700">
+                                    Medication {medIndex + 1}
+                                  </p>
+                                  <div className="grid grid-cols-1 gap-1 sm:gap-2 text-xs sm:text-sm">
+                                    <p>
+                                      <span className="font-medium text-gray-700">
+                                        Name:{" "}
+                                      </span>
+                                      {med.name}
+                                    </p>
+                                    <p>
+                                      <span className="font-medium text-gray-700">
+                                        Dosage:{" "}
+                                      </span>
+                                      {med.dosage}
+                                    </p>
+                                    <p>
+                                      <span className="font-medium text-gray-700">
+                                        Frequency:{" "}
+                                      </span>
+                                      {med.frequency}
+                                    </p>
+                                    <p>
+                                      <span className="font-medium text-gray-700">
+                                        Duration:{" "}
+                                      </span>
+                                      {med.duration}
+                                    </p>
+                                    {med.instructions && (
+                                      <p>
+                                        <span className="font-medium text-gray-700">
+                                          Instructions:{" "}
+                                        </span>
+                                        {med.instructions}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs sm:text-sm text-gray-600">
+                              No medications listed.
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    )
+                  )
                 ) : (
-                  <p className="text-xs sm:text-sm text-gray-600">No prescriptions available.</p>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    No prescriptions available.
+                  </p>
                 )}
               </div>
             </div>

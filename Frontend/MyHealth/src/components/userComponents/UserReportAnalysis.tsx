@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
-import { getAnalysisReports, cancelAnalysisReports } from "../../api/user/userApi";
+import {
+  getAnalysisReports,
+  cancelAnalysisReports,
+} from "../../api/user/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { message, Popconfirm } from "antd";
 import { updateUser } from "../../redux/slices/userSlices";
-import { FileText, Eye, X,User,AlertCircle, CheckCircle, Clock, XCircle } from "lucide-react";
+import {
+  FileText,
+  Eye,
+  X,
+  User,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  XCircle,
+} from "lucide-react";
 import { IUserData } from "../../interfaces/user";
 
 type Report = {
@@ -19,7 +31,7 @@ type Report = {
   analysisStatus: string;
 };
 
-const UserReportAnalysis = ()=> {
+const UserReportAnalysis = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,12 +43,12 @@ const UserReportAnalysis = ()=> {
     const analysisId = report._id;
     const userId = report.userId;
     const fee = report.fee;
-    
+
     if (!analysisId) {
       message.error("Invalid report ID.");
       return;
     }
-    
+
     setCancellingId(analysisId);
     try {
       const response = await cancelAnalysisReports(analysisId, userId, fee);
@@ -45,7 +57,9 @@ const UserReportAnalysis = ()=> {
         dispatch(updateUser(response.userWithoutPassword));
         setReports((prevReports) =>
           prevReports.map((r) =>
-            r._id === response.response._id ? { ...r, analysisStatus: "cancelled" } : r
+            r._id === response.response._id
+              ? { ...r, analysisStatus: "cancelled" }
+              : r
           )
         );
       }
@@ -122,8 +136,12 @@ const UserReportAnalysis = ()=> {
               <FileText className="w-8 h-8 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Analysis Reports</h1>
-              <p className="text-gray-600 mt-1">Track your medical analysis reports and results</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Analysis Reports
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Track your medical analysis reports and results
+              </p>
             </div>
           </div>
         </div>
@@ -134,9 +152,12 @@ const UserReportAnalysis = ()=> {
             <div className="p-4 bg-blue-50 rounded-full inline-block mb-4">
               <FileText className="w-12 h-12 text-blue-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Reports Available</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No Reports Available
+            </h3>
             <p className="text-gray-600 max-w-md mx-auto">
-              You haven't submitted any analysis reports yet. Once you do, they'll appear here for you to track and review.
+              You haven't submitted any analysis reports yet. Once you do,
+              they'll appear here for you to track and review.
             </p>
           </div>
         )}
@@ -157,15 +178,21 @@ const UserReportAnalysis = ()=> {
                         <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 text-lg">{report.doctorName}</h3>
-                        <p className="text-blue-600 text-sm font-medium">{report.doctorCategory}</p>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {report.doctorName}
+                        </h3>
+                        <p className="text-blue-600 text-sm font-medium">
+                          {report.doctorCategory}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Fee */}
-                  <div className="flex items-center space-x-2 mb-1">  
-                    <span className="text-lg font-semibold text-green-600">₹{report.fee}</span>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="text-lg font-semibold text-green-600">
+                      ₹{report.fee}
+                    </span>
                   </div>
 
                   {/* Concerns */}
@@ -178,9 +205,15 @@ const UserReportAnalysis = ()=> {
 
                   {/* Status */}
                   <div className="mb-4">
-                    <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(report.analysisStatus)}`}>
+                    <div
+                      className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
+                        report.analysisStatus
+                      )}`}
+                    >
                       {getStatusIcon(report.analysisStatus)}
-                      <span className="capitalize">{report.analysisStatus}</span>
+                      <span className="capitalize">
+                        {report.analysisStatus}
+                      </span>
                     </div>
                   </div>
 
@@ -212,7 +245,7 @@ const UserReportAnalysis = ()=> {
                             )}
                           </button>
                         </Popconfirm>
-                        
+
                         <button
                           onClick={() => setSelectedReport(report)}
                           className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
@@ -222,7 +255,7 @@ const UserReportAnalysis = ()=> {
                         </button>
                       </>
                     )}
-                    
+
                     {report.analysisStatus === "submited" && (
                       <button
                         onClick={() => setSelectedReport(report)}
@@ -252,11 +285,13 @@ const UserReportAnalysis = ()=> {
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold">
-                        {selectedReport.analysisStatus === "submited" ? "Analysis Report" : "Report Details"}
+                        {selectedReport.analysisStatus === "submited"
+                          ? "Analysis Report"
+                          : "Report Details"}
                       </h2>
                       <p className="text-blue-100">
-                        {selectedReport.analysisStatus === "submited" 
-                          ? "Detailed medical analysis results" 
+                        {selectedReport.analysisStatus === "submited"
+                          ? "Detailed medical analysis results"
                           : "Report information and submitted documents"}
                       </p>
                     </div>
@@ -280,24 +315,34 @@ const UserReportAnalysis = ()=> {
                         <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">Dr. {selectedReport.doctorName}</h3>
-                        <p className="text-blue-600 text-sm">{selectedReport.doctorCategory}</p>
+                        <h3 className="font-semibold text-gray-900">
+                          Dr. {selectedReport.doctorName}
+                        </h3>
+                        <p className="text-blue-600 text-sm">
+                          {selectedReport.doctorCategory}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Medical Concern */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Medical Concern</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      Medical Concern
+                    </h3>
                     <div className="bg-gray-50 rounded-xl p-4">
-                      <p className="text-gray-700 leading-relaxed">{selectedReport.concerns}</p>
+                      <p className="text-gray-700 leading-relaxed">
+                        {selectedReport.concerns}
+                      </p>
                     </div>
                   </div>
 
                   {/* Files */}
                   {selectedReport.files.length > 0 ? (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Attached Files</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Attached Files
+                      </h3>
                       <div className="grid gap-3">
                         {selectedReport.files.map((file, index) => (
                           <a
@@ -329,9 +374,13 @@ const UserReportAnalysis = ()=> {
                   {/* Analysis Result - Only show when status is "submited" */}
                   {selectedReport.analysisStatus === "submited" && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Analysis Result</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Analysis Result
+                      </h3>
                       <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedReport.result}</p>
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                          {selectedReport.result}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -342,8 +391,14 @@ const UserReportAnalysis = ()=> {
                       <div className="flex items-center space-x-2">
                         <Clock className="w-5 h-5 text-amber-600" />
                         <div>
-                          <h4 className="font-semibold text-amber-800">Analysis in Progress</h4>
-                          <p className="text-amber-700 text-sm">Your report is being analyzed by the doctor. You will receive the results once the analysis is complete.</p>
+                          <h4 className="font-semibold text-amber-800">
+                            Analysis in Progress
+                          </h4>
+                          <p className="text-amber-700 text-sm">
+                            Your report is being analyzed by the doctor. You
+                            will receive the results once the analysis is
+                            complete.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -368,6 +423,6 @@ const UserReportAnalysis = ()=> {
       </div>
     </div>
   );
-}
+};
 
 export default UserReportAnalysis;

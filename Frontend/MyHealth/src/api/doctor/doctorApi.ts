@@ -2,7 +2,11 @@ import { message } from "antd";
 import { ROUTES } from "../../constants/routes";
 import { doctorInstance } from "../../services/axiosFactory";
 import { metadataDto } from "../../interfaces/subscription";
-import { doctorhCangePasswordDto,doctorProfileUpdate, UpdateProfileResponse } from "../../interfaces/doctor";
+import {
+  doctorhCangePasswordDto,
+  doctorProfileUpdate,
+  UpdateProfileResponse,
+} from "../../interfaces/doctor";
 import { blogCreate } from "../../interfaces/blog";
 import { advertisement } from "../../interfaces/advertisement";
 import { prescriptionData } from "../../interfaces/prescription";
@@ -41,7 +45,10 @@ export const getMe = async () => {
   }
 };
 
-export const loginDoctor = async (doctorData: {email:string,password:string}) => {
+export const loginDoctor = async (doctorData: {
+  email: string;
+  password: string;
+}) => {
   try {
     const response = await doctorInstance.post(ROUTES.doctor.login, doctorData);
     console.log("Login response:", response.data);
@@ -52,7 +59,10 @@ export const loginDoctor = async (doctorData: {email:string,password:string}) =>
   }
 };
 
-export const verifyDoctorOtp = async (otpData: { email:string, otp: string }) => {
+export const verifyDoctorOtp = async (otpData: {
+  email: string;
+  otp: string;
+}) => {
   try {
     console.log("OTP data:", otpData);
     const response = await doctorInstance.post(
@@ -115,11 +125,14 @@ export const handlePayment = async (priceId: string, metadata: metadataDto) => {
   }
 };
 
-export const verifySubscription = async (sessionId: string,doctorId:string) => {
+export const verifySubscription = async (
+  sessionId: string,
+  doctorId: string
+) => {
   try {
     const response = await doctorInstance.post(
       ROUTES.doctor.verifySubscription,
-      { sessionId,doctorId }
+      { sessionId, doctorId }
     );
 
     return response.data;
@@ -129,7 +142,10 @@ export const verifySubscription = async (sessionId: string,doctorId:string) => {
   }
 };
 
-export const changePassword = async (data: doctorhCangePasswordDto, userId: string) => {
+export const changePassword = async (
+  data: doctorhCangePasswordDto,
+  userId: string
+) => {
   console.log("new password....", data, userId);
 
   try {
@@ -148,7 +164,10 @@ export const changePassword = async (data: doctorhCangePasswordDto, userId: stri
   }
 };
 
-export const updateDoctorProfile = async (userData: doctorProfileUpdate, userId: string): Promise<UpdateProfileResponse> => {
+export const updateDoctorProfile = async (
+  userData: doctorProfileUpdate,
+  userId: string
+): Promise<UpdateProfileResponse> => {
   try {
     const response = await doctorInstance.patch<UpdateProfileResponse>(
       ROUTES.doctor.updateProfile(userId),
@@ -162,7 +181,10 @@ export const updateDoctorProfile = async (userData: doctorProfileUpdate, userId:
   }
 };
 
-export const updateProfileImage = async (formData: FormData, userId: string) => {
+export const updateProfileImage = async (
+  formData: FormData,
+  userId: string
+) => {
   try {
     console.log("doctor dp changin api is working......");
     const response = await doctorInstance.patch(
@@ -243,14 +265,19 @@ export const getSessions = async (doctorId: string) => {
   }
 };
 
-export const getDoctorAppointments = async (doctorId: string,page:number,limit:number,filter:{ appointmentStatus?: string; startDate?: string; endDate?: string }) => {
+export const getDoctorAppointments = async (
+  doctorId: string,
+  page: number,
+  limit: number,
+  filter: { appointmentStatus?: string; startDate?: string; endDate?: string }
+) => {
   try {
     const response = await doctorInstance.get(ROUTES.doctor.getAppointments, {
-      params: { 
+      params: {
         doctorId: doctorId,
         page,
         limit,
-        filter
+        filter,
       },
     });
 
@@ -423,7 +450,11 @@ export const createAdvertisement = async (AddData: advertisement) => {
   }
 };
 
-export const getAdds = async (doctorId: string, page: number, limit: number) => {
+export const getAdds = async (
+  doctorId: string,
+  page: number,
+  limit: number
+) => {
   try {
     console.log("deleteBlog from frndend...", doctorId);
 
@@ -461,384 +492,349 @@ export const getPrescriptions = async (userId: string) => {
   }
 };
 
-
-export const submitPrescription = async (prescriptionData:prescriptionData) => {
-  try{
-
-    console.log("prescriptionData is............",prescriptionData);
-    const response = await doctorInstance.post(ROUTES.doctor.prescription,{prescriptionData});
+export const submitPrescription = async (
+  prescriptionData: prescriptionData
+) => {
+  try {
+    console.log("prescriptionData is............", prescriptionData);
+    const response = await doctorInstance.post(ROUTES.doctor.prescription, {
+      prescriptionData,
+    });
     return response.data;
-
-  }catch(error){
+  } catch (error) {
     console.log("Error in submiting prescription");
     throw error;
   }
 };
 
-export const getUser = async (userId:string) => {
-  try{
+export const getUser = async (userId: string) => {
+  try {
+    const response = await doctorInstance.get(ROUTES.doctor.getUser, {
+      params: { userId: userId },
+    });
 
-   
-    const response = await doctorInstance.get(ROUTES.doctor.getUser,{
-      params:{userId:userId} });
-
-      return response.data;
-
-  }catch(error){
+    return response.data;
+  } catch (error) {
     console.log("Error in get user detials");
     throw error;
   }
-  
-}
-
+};
 
 export const getDashboardContent = async (doctorId: string) => {
   try {
-    console.log(" doctor id ... is ...",doctorId);
-    
-    const response = await doctorInstance.get(ROUTES.doctor.dashboard,{
-      params:{doctorId:doctorId}
+    console.log(" doctor id ... is ...", doctorId);
+
+    const response = await doctorInstance.get(ROUTES.doctor.dashboard, {
+      params: { doctorId: doctorId },
     });
-    console.log('Dashboard API response:', response.data);
+    console.log("Dashboard API response:", response.data);
     return response.data.data;
   } catch (err) {
-    console.log('Error fetching dashboard content:', err);
-    throw new Error('Failed to fetch dashboard content');
+    console.log("Error fetching dashboard content:", err);
+    throw new Error("Failed to fetch dashboard content");
   }
 };
 
+export const payoutRequest = async (
+  payoutDetails: payoutDetails,
+  doctorId: string
+) => {
+  try {
+    console.log("payoutDetails is", payoutDetails);
+    console.log("doctorId is", doctorId);
 
-export const payoutRequest = async (payoutDetails:payoutDetails,doctorId:string) =>{
-  try{
-    console.log("payoutDetails is",payoutDetails);
-    console.log("doctorId is",doctorId);
-
-    const response = await doctorInstance.post(ROUTES.doctor.requestPayout,{
+    const response = await doctorInstance.post(ROUTES.doctor.requestPayout, {
       doctorId,
-      payoutDetails
+      payoutDetails,
     });
     return response.data;
-  }catch(err){
+  } catch (err) {
     console.log("Error in requesting payout");
-    throw new Error ("requesting payment failed");
+    throw new Error("requesting payment failed");
   }
 };
 
-
-export const getBookedSlots = async (doctorId:string, selectedDate:string)=>{
-  try{
-    console.log("data is",doctorId, selectedDate);
-    const response = await doctorInstance.get(ROUTES.doctor.bookedSlots, { params: { doctorId, selectedDate } });
-    return response.data;
-  }catch(error){
-    console.log("Error in get doctor booked slots",error);
-    throw error;
-  }
-};
-
-
-export const addSession = async (sessionToAdd:sessionData )=>{
-  try{
-    console.log("data id",sessionToAdd);
-    const response = await doctorInstance.post(ROUTES.doctor.session, {
-      sessionToAdd
+export const getBookedSlots = async (
+  doctorId: string,
+  selectedDate: string
+) => {
+  try {
+    console.log("data is", doctorId, selectedDate);
+    const response = await doctorInstance.get(ROUTES.doctor.bookedSlots, {
+      params: { doctorId, selectedDate },
     });
     return response.data;
-  }catch(error){
-    console.log("Error in adding new session",error);
+  } catch (error) {
+    console.log("Error in get doctor booked slots", error);
     throw error;
   }
 };
 
-export const updateSession = async ( sessionId:string, editingSession:sessionData)=>{
-  try{
-    console.log("data id",sessionId, editingSession);
+export const addSession = async (sessionToAdd: sessionData) => {
+  try {
+    console.log("data id", sessionToAdd);
+    const response = await doctorInstance.post(ROUTES.doctor.session, {
+      sessionToAdd,
+    });
+    return response.data;
+  } catch (error) {
+    console.log("Error in adding new session", error);
+    throw error;
+  }
+};
+
+export const updateSession = async (
+  sessionId: string,
+  editingSession: sessionData
+) => {
+  try {
+    console.log("data id", sessionId, editingSession);
     const response = await doctorInstance.patch(ROUTES.doctor.session, {
       sessionId,
-      editingSession
+      editingSession,
     });
     return response.data;
-  }catch(error){
-    console.log("Error in get doctor booked slots",error);
+  } catch (error) {
+    console.log("Error in get doctor booked slots", error);
     throw error;
   }
 };
 
-export const deleteSession = async ( id:string)=>{
-  try{
-    console.log("data id",id);
-    const response = await doctorInstance.delete(ROUTES.doctor.session,{
-      params:{sessionId:id}
+export const deleteSession = async (id: string) => {
+  try {
+    console.log("data id", id);
+    const response = await doctorInstance.delete(ROUTES.doctor.session, {
+      params: { sessionId: id },
     });
-    console.log('Dashboard API response:', response.data);
+    console.log("Dashboard API response:", response.data);
     return response.data;
-
-  }catch(error){
-    console.log("Error in get doctor booked slots",error);
+  } catch (error) {
+    console.log("Error in get doctor booked slots", error);
     throw error;
   }
 };
 
-
-
-export const getUnavailableSlots = async ( doctorId:string, localDate:string )=>{
-  try{
-    console.log("data id",doctorId,localDate);
-  }catch(error){
-    console.log("Error in get doctor booked slots",error);
+export const getUnavailableSlots = async (
+  doctorId: string,
+  localDate: string
+) => {
+  try {
+    console.log("data id", doctorId, localDate);
+  } catch (error) {
+    console.log("Error in get doctor booked slots", error);
     throw error;
   }
 };
 
-  export const makeSessionUnavailable = async (doctorId:string, date:Date, sessionId:string )=>{
-  try{
-    console.log("data id",doctorId, date, sessionId);
-    const response = await doctorInstance.post(ROUTES.doctor.unAvailableSessions,{
+export const makeSessionUnavailable = async (
+  doctorId: string,
+  date: Date,
+  sessionId: string
+) => {
+  try {
+    console.log("data id", doctorId, date, sessionId);
+    const response = await doctorInstance.post(
+      ROUTES.doctor.unAvailableSessions,
+      {
+        doctorId,
+        date,
+        sessionId,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error in get doctor booked slots", error);
+    throw error;
+  }
+};
+
+export const getUnavailableSessions = async (doctorId: string) => {
+  try {
+    console.log("data id", doctorId);
+    const response = await doctorInstance.get(
+      ROUTES.doctor.unAvailableSessions,
+      {
+        params: { doctorId },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error in get unavailable sessions", error);
+    throw error;
+  }
+};
+
+export const makeSessionAvailable = async (
+  doctorId: string,
+  date: Date,
+  sessionId: string
+) => {
+  try {
+    console.log("data id", doctorId, date, sessionId);
+    const response = await doctorInstance.delete(
+      ROUTES.doctor.unAvailableSessions,
+      {
+        params: { doctorId, date, sessionId },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log("Error in make session available", error);
+    throw error;
+  }
+};
+
+export const makeDayUnavailable = async (doctorId: string, date: Date) => {
+  try {
+    console.log("makeDayUnavailable data is......", doctorId, date);
+    const response = await doctorInstance.post(ROUTES.doctor.unAvailableDays, {
       doctorId,
       date,
-      sessionId
     });
     return response.data;
-
-  }catch(error){
-    console.log("Error in get doctor booked slots",error);
+  } catch (error) {
+    console.log("Error in get doctor booked slots", error);
     throw error;
   }
 };
 
-export const getUnavailableSessions = async ( doctorId:string)=>{
-  try{
-    console.log("data id",doctorId);
-     const response = await doctorInstance.get(ROUTES.doctor.unAvailableSessions,{
-      params:{doctorId}
+export const getUnavailableDays = async (doctorId: string) => {
+  try {
+    console.log("data id", doctorId);
+    const response = await doctorInstance.get(ROUTES.doctor.unAvailableDays, {
+      params: { doctorId },
     });
     return response.data;
-  }catch(error){
-    console.log("Error in get unavailable sessions",error);
+  } catch (error) {
+    console.log("Error in get unavailable days", error);
     throw error;
   }
 };
 
-
-export const makeSessionAvailable = async ( doctorId:string, date:Date, sessionId:string)=>{
-  try{
-        console.log("data id",doctorId, date, sessionId);
-    const response = await doctorInstance.delete(ROUTES.doctor.unAvailableSessions,{
-      params:{doctorId,
-      date,
-      sessionId}
-    });
+export const makeDayAvailable = async (doctorId: string, date: Date) => {
+  try {
+    console.log("data id", doctorId, date);
+    const response = await doctorInstance.delete(
+      ROUTES.doctor.unAvailableDays,
+      {
+        params: { doctorId, date },
+      }
+    );
     return response.data;
-  }catch(error){
-    console.log("Error in make session available",error);
+  } catch (error) {
+    console.log("Error in gmake day available", error);
     throw error;
   }
 };
 
-export const makeDayUnavailable = async (doctorId:string, date:Date)=>{
-  try{
-    console.log("makeDayUnavailable data is......",doctorId, date, );
-    const response = await doctorInstance.post(ROUTES.doctor.unAvailableDays,{
-      doctorId,
-      date
-    });
+export const cancelAppointment = async (appointmentId: string) => {
+  try {
+    console.log("appointment id is ", appointmentId);
+    const response = await doctorInstance.patch(
+      ROUTES.doctor.cancelAppointment,
+      null,
+      {
+        params: { appointmentId },
+      }
+    );
+
+    console.log("response data is ....", response.data);
     return response.data;
-  }catch(error){
-    console.log("Error in get doctor booked slots",error);
-    throw error;
-  }
-};
-
-
-export const getUnavailableDays = async ( doctorId:string)=>{
-  try{
-    console.log("data id",doctorId);
-     const response = await doctorInstance.get(ROUTES.doctor.unAvailableDays,{
-      params:{doctorId}
-    });
-    return response.data;
-  }catch(error){
-    console.log("Error in get unavailable days",error);
-    throw error;
-  }
-};
-
-export const makeDayAvailable = async ( doctorId:string, date:Date, )=>{
-  try{
-    console.log("data id",doctorId, date);
-    const response = await doctorInstance.delete(ROUTES.doctor.unAvailableDays,{
-      params:{doctorId,
-      date}
-    });
-    return response.data;
-  }catch(error){
-    console.log("Error in gmake day available",error);
-    throw error;
-  }
-};
-
-
-export const cancelAppointment = async (appointmentId:string) => {
-  try{
-
-    console.log("appointment id is ",appointmentId);
-    const response = await doctorInstance.patch(ROUTES.doctor.cancelAppointment, null, {
-      params: { appointmentId }
-    });
-
-    console.log("response data is ....",response.data)
-    return response.data;
-
-  }catch(error){
+  } catch (error) {
     console.error("Error in cancel appointments..:", error);
     throw error;
   }
 };
 
-
-
-
-export const getPayouts = async (doctorId:string,page:number, limit:number,filters:payoutFilter)=>{
-    try{
-
-        const response = await doctorInstance.get(ROUTES.doctor.getPayouts,{
+export const getPayouts = async (
+  doctorId: string,
+  page: number,
+  limit: number,
+  filters: payoutFilter
+) => {
+  try {
+    const response = await doctorInstance.get(ROUTES.doctor.getPayouts, {
       params: {
         doctorId,
         page,
         limit,
         ...filters,
-      }});
-        return response.data;
-
-    }catch(err){
-        console.log("error in get total analytics");
-        throw err
-        
-    }
+      },
+    });
+    return response.data;
+  } catch (err) {
+    console.log("error in get total analytics");
+    throw err;
+  }
 };
 
-
-export const getRevenues = async (doctorId:string,page:number, limit:number,filters:payoutFilter)=>{
-    try{
-        const response = await doctorInstance.get(ROUTES.doctor.getRevenues,{
+export const getRevenues = async (
+  doctorId: string,
+  page: number,
+  limit: number,
+  filters: payoutFilter
+) => {
+  try {
+    const response = await doctorInstance.get(ROUTES.doctor.getRevenues, {
       params: {
         doctorId,
         page,
         limit,
         ...filters,
-      }});
-        return response.data;
-    }catch(err){
-        console.log("error in get total analytics");
-        throw err     
-    }
+      },
+    });
+    return response.data;
+  } catch (err) {
+    console.log("error in get total analytics");
+    throw err;
+  }
 };
 
-
-export const getDoctorAppointmentsStats = async (doctorId: string, filter: "day" | "month" | "year") => {
-  console.log("doctorId and filter in stats api is", doctorId,filter);
-  try{
-
-    const response = await doctorInstance.get(ROUTES.doctor.appointmentStats,{
-      params:{doctorId, filter}
+export const getDoctorAppointmentsStats = async (
+  doctorId: string,
+  filter: "day" | "month" | "year"
+) => {
+  console.log("doctorId and filter in stats api is", doctorId, filter);
+  try {
+    const response = await doctorInstance.get(ROUTES.doctor.appointmentStats, {
+      params: { doctorId, filter },
     });
     console.log("appointment stats response is ", response.data);
     return response.data;
-
-  }catch(err){
+  } catch (err) {
     console.log("error in get doctor appointment stats");
-    throw err
+    throw err;
   }
-  
 };
 
-export const getDoctorReportsStats = async (doctorId: string, filter: "day" | "month" | "year") => {
-   console.log("doctorId and filter in stats api is", doctorId,filter);
-  try{
-
-    const response = await doctorInstance.get(ROUTES.doctor.reportsStats,{
-      params:{doctorId, filter}
+export const getDoctorReportsStats = async (
+  doctorId: string,
+  filter: "day" | "month" | "year"
+) => {
+  console.log("doctorId and filter in stats api is", doctorId, filter);
+  try {
+    const response = await doctorInstance.get(ROUTES.doctor.reportsStats, {
+      params: { doctorId, filter },
     });
     console.log("appointment stats response is ", response.data);
     return response.data;
-
-  }catch(err){
+  } catch (err) {
     console.log("error in get doctor appointment stats");
-    throw err
+    throw err;
   }
-
 };
 
 export const getDoctorPayouts = async (doctorId: string) => {
-
   console.log("doctorId in payouts api is", doctorId);
-  try{
-    const response = await doctorInstance.get(ROUTES.doctor.payoutsStats,{
-      params:{doctorId}
+  try {
+    const response = await doctorInstance.get(ROUTES.doctor.payoutsStats, {
+      params: { doctorId },
     });
     console.log("payouts response is ", response.data);
     return response.data;
-
-  }catch(err){
+  } catch (err) {
     console.log("error in get doctor payouts");
-    throw err
+    throw err;
   }
-
- 
 };
 
-
-
-
-
-// export const setSessions = async (sessionData) => {
-//   try {
-//     console.log("session data is ", sessionData);
-
-//     const response = await doctorInstance.post(ROUTES.doctor.sessions, {
-//       sessionData,
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error in set sessions", error);
-//     throw error;
-//   }
-// };
-
-// export const getDoctorTransactions = async (doctorId: string) => {
-//   return [
-//     { date: new Date().toISOString(), amount: 1500, paymentFor: "appointment", method: "stripe" },
-//     { date: new Date().toISOString(), amount: 2000, paymentFor: "analysis", method: "wallet" },
-//   ];
-// };
-
-
-// Note: Add these new API functions to ../../api/doctor/doctorApi.ts
-// export const addSession = async (session: Session) => {
-//   const response = await axios.post('/api/doctor/sessions', session);
-//   return response.data;
-// };
-// export const updateSession = async (id: string, session: Partial<Session>) => {
-  // const response = await axios.put(`/api/doctor/sessions/${id}`, session);
-  // return response.data;
-// };
-// export const deleteSession = async (id: string) => {
-//   const response = await axios.delete(`/api/doctor/sessions/${id}`);
-//   return response.data;
-// };
-// export const getUnavailableSlots = async (doctorId: string, date: string) => {
-//   const response = await axios.get(`/api/doctor/unavailableSlots?doctorId=${doctorId}&date=${date}`);
-//   return response.data; // Assume returns string[] of slotIds
-// };
-// export const makeSlotsUnavailable = async (doctorId: string, date: string, slotIds: string[]) => {
-//   const response = await axios.post('/api/doctor/makeUnavailable', { doctorId, date, slotIds });
-//   return response.data;
-// };
-// export const makeSlotsAvailable = async (doctorId: string, date: string, slotIds: string[]) => {
-//   const response = await axios.post('/api/doctor/makeAvailable', { doctorId, date, slotIds });
-//   return response.data;
-// };
-// export const cancelAppointment = async (appointmentId: string) => {
-//   const response = await axios.post(`/api/doctor/cancelAppointment/${appointmentId}`);
-//   return response.data;
-// };

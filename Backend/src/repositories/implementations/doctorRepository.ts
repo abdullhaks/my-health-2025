@@ -1,4 +1,4 @@
-import { injectable , inject } from "inversify";
+import { injectable, inject } from "inversify";
 import doctorModel from "../../models/doctor";
 import OtpModel from "../../models/otp";
 import { IDoctorDocument } from "../../entities/doctorEntities";
@@ -8,228 +8,227 @@ import { FilterQuery, Model } from "mongoose";
 import { IDoctor } from "../../dto/doctorDTO";
 import { PipelineStage } from "mongoose";
 
-
 @injectable()
+export default class DoctorRepository
+  extends BaseRepository<IDoctorDocument>
+  implements IDoctorRepository
+{
+  constructor(
+    @inject("doctorModel") private _doctorModel: Model<IDoctorDocument>
+  ) {
+    super(_doctorModel);
+  }
 
-export default class DoctorRepository extends BaseRepository<IDoctorDocument> implements IDoctorRepository{
+  async fetchingDoctors(
+    search: string,
+    location: string,
+    category: string,
+    sort: string,
+    page: number,
+    limit: number
+  ): Promise<{
+    doctors: IDoctor[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    try {
+      const query: FilterQuery<IDoctorDocument> = {
+        isBlocked: false,
+        isVerified: true,
+        adminVerified: 1,
+      };
 
-    constructor(
-        @inject("doctorModel") private _doctorModel: Model<IDoctorDocument>,
-      
-    ) {
-        super(_doctorModel);
+      if (search) {
+        query.fullName = { $regex: search, $options: "i" };
+      }
+      if (location) {
+        query["location.text"] = { $regex: location, $options: "i" };
+      }
+      if (category) {
+        query.category = { $regex: category, $options: "i" };
+      }
+
+      let sortOption: Partial<{
+        experience: 1 | -1;
+        fullName: 1 | -1;
+      }> = {};
+      if (sort === "experience") {
+        sortOption.experience = -1;
+      } else if (sort === "alphabet") {
+        sortOption.fullName = 1;
+      }
+
+      const skip = (page - 1) * limit;
+
+      const [doctors, total] = await Promise.all([
+        this._doctorModel.find(query).sort(sortOption).skip(skip).limit(limit),
+        this._doctorModel.countDocuments(query),
+      ]);
+
+      return {
+        doctors,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      };
+    } catch (err) {
+      console.error("Error in repository fetchingDoctors:", err);
+      throw err;
     }
+  }
 
-       async fetchingDoctors(
-        search: string,
-        location: string,
-        category: string,
-        sort: string,
-        page: number,
-        limit: number
-        ): Promise<{doctors:IDoctor[],
-            total:number,
-            page:number,
-            totalPages:number}> {
-        try {
-            const query: FilterQuery<IDoctorDocument> = {
-            isBlocked: false,
-            isVerified: true,
-            adminVerified:1,
-            };
+  async getDoctors(
+    page: number,
+    search: string | undefined,
+    limit: number,
+    onlyPremium: boolean
+  ): Promise<{ doctors: IDoctor[] | null; totalPages: number }> {
+    try {
+      const query: FilterQuery<IDoctorDocument> = {};
 
-            if (search) {
-            query.fullName = { $regex: search, $options: "i" };
-            }
-            if (location) {
-            query["location.text"] = { $regex: location, $options: "i" };
-            }
-            if (category) {
-            query.category = { $regex: category, $options: "i" };
-            }
+      if (search) {
+        query.$or = [
+          { fullName: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+        ];
+      }
 
-           let sortOption: Partial<{
-                experience: 1 | -1;
-                fullName: 1 | -1;
-                }> = {};
-            if (sort === "experience") {
-            sortOption.experience = -1;
-            } else if (sort === "alphabet") {
-            sortOption.fullName = 1;
-            }
+      if (onlyPremium) {
+        query.premiumMembership = true;
+      }
 
-            const skip = (page - 1) * limit;
+      const skip = (page - 1) * limit;
 
-            const [doctors, total] = await Promise.all([
-            this._doctorModel.find(query).sort(sortOption).skip(skip).limit(limit),
-            this._doctorModel.countDocuments(query)
-            ]);
+      const doctors = await this._doctorModel
+        .find(query)
+        .skip(skip)
+        .limit(limit);
 
-            return {
-            doctors,
-            total,
-            page,
-            totalPages: Math.ceil(total / limit)
-            };
-        } catch (err) {
-            console.error("Error in repository fetchingDoctors:", err);
-            throw err;
-        }
-        };
+      const total = await this._doctorModel.countDocuments(query);
+      return {
+        doctors,
+        totalPages: Math.ceil(total / limit),
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to fetch doctors");
+    }
+  }
 
+  async getDoctor(id: string): Promise<IDoctor | null> {
+    try {
+      const response = await this._doctorModel.findOne({ _id: id });
+      return response;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Fialed to find doctor");
+    }
+  }
 
-        async getDoctors(page: number, search: string | undefined, limit: number,onlyPremium:boolean): Promise<{doctors:IDoctor[]|null,totalPages:number}> {
-        try {
-            const query: FilterQuery<IDoctorDocument> = {};
+  async verifyDoctorByAdmin(id: string): Promise<IDoctor | null> {
+    try {
+      const resp = await this._doctorModel.findByIdAndUpdate(
+        id,
+        { adminVerified: 1 },
+        { new: true }
+      );
+      console.log("doctor verifying....", resp);
 
-            if (search) {
-                query.$or = [
-                    { fullName: { $regex: search, $options: "i" } },
-                    { email: { $regex: search, $options: "i" } }
-                ];
-            }
+      return resp;
+    } catch (error) {
+      console.log(error);
+      throw new Error("doctor verifying has been failed");
+    }
+  }
 
-            if (onlyPremium) {
-                query.premiumMembership = true;
-            }
+  async declineDoctor(id: string, reason: string): Promise<IDoctor | null> {
+    try {
+      const resp = await this._doctorModel.findByIdAndUpdate(
+        id,
+        { adminVerified: 3, rejectionReason: reason },
+        { new: true }
+      );
+      console.log("doctor declining....", resp);
 
-            const skip = (page - 1) * limit;
+      return resp;
+    } catch (error) {
+      console.log(error);
+      throw new Error("doctor declining has been failed");
+    }
+  }
 
-            const doctors = await this._doctorModel
-                .find(query)
-                .skip(skip)
-                .limit(limit);
+  async blockDoctor(id: string): Promise<IDoctor | null> {
+    try {
+      const resp = await this._doctorModel.findByIdAndUpdate(
+        id,
+        { isBlocked: true },
+        { new: true }
+      );
+      console.log("resp form repo....", resp);
+      return resp;
+    } catch (error) {
+      console.log(error);
+      throw new Error("doctor blockig has beeb failed");
+    }
+  }
 
-                const total = await this._doctorModel.countDocuments(query);
-            return {
-                doctors,
-                totalPages: Math.ceil(total / limit),
-            };
-         
-        } catch (error) {
-            console.log(error);
-            throw new Error("Failed to fetch doctors");
-        }
-    };
+  async unblockDoctor(id: string): Promise<IDoctor | null> {
+    try {
+      const resp = await this._doctorModel.findByIdAndUpdate(
+        id,
+        { isBlocked: false },
+        { new: true }
+      );
+      console.log("resp form repo....", resp);
+      return resp;
+    } catch (error) {
+      console.log(error);
+      throw new Error("doctor blockig has beeb failed");
+    }
+  }
 
-     async getDoctor(id:string):Promise<IDoctor | null>{
+  async findByEmail(email: string): Promise<IDoctorDocument | null> {
+    try {
+      const doctor = await this._doctorModel.findOne({ email: email });
+      return doctor;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Fialed to find doctor with this email");
+    }
+  }
 
-        try{
+  async verifyDoctor(email: string): Promise<IDoctor | null> {
+    try {
+      const result = await this._doctorModel.findOneAndUpdate(
+        { email },
+        { $set: { isVerified: true } },
+        { new: true } // returns updated document
+      );
 
-            const response = await this._doctorModel.findOne({_id:id});
-            return response
+      if (!result) {
+        throw new Error("doctor not found for verification.");
+      }
 
-        }catch(error){
-            console.log(error);
-            throw new Error("Fialed to find doctor");
-        }
-    };
+      console.log("doctor verified successfully:", result);
+      return result;
+    } catch (error) {
+      console.error("Error verifying doctor:", error);
+      throw new Error("Failed to verify doctor with this email.");
+    }
+  }
 
-
-    
-    async verifyDoctorByAdmin(id:string):Promise<IDoctor | null>{
-        try{
-
-            const resp = await this._doctorModel.findByIdAndUpdate(id,{adminVerified:1}, { new: true });
-            console.log("doctor verifying....",resp);
-            
-            return resp;
-
-        }catch(error){
-            console.log(error);
-            throw new Error ("doctor verifying has been failed")
-        }
-    };
-
-
-    async declineDoctor(id:string,reason:string):Promise<IDoctor | null>{
-        try{
-
-            const resp = await this._doctorModel.findByIdAndUpdate(id,{adminVerified:3,rejectionReason:reason}, { new: true });
-            console.log("doctor declining....",resp);
-            
-            return resp;
-
-        }catch(error){
-            console.log(error);
-            throw new Error ("doctor declining has been failed") 
-        }
-    };
-
-
-    async blockDoctor(id:string):Promise<IDoctor | null>{
-        try{
-            const resp =await this._doctorModel.findByIdAndUpdate(id, {isBlocked:true}, { new: true });
-            console.log("resp form repo....",resp);
-            return resp;
-
-
-        }catch(error){
-            console.log(error);
-            throw new Error("doctor blockig has beeb failed")
-        }
-    };
-
-
-    async unblockDoctor(id:string):Promise<IDoctor | null>{
-        try{
-            const resp =await this._doctorModel.findByIdAndUpdate(id, {isBlocked:false}, { new: true });
-            console.log("resp form repo....",resp);
-            return resp;
-
-        }catch(error){
-            console.log(error);
-            throw new Error("doctor blockig has beeb failed")
-        }
-    };
-
-    
-    async findByEmail ( email:string):Promise<IDoctorDocument | null>{
-            try{
-    
-                const doctor =await this._doctorModel.findOne({email:email});
-                return doctor
-    
-            }catch(error){
-                console.log(error);
-                throw new Error("Fialed to find doctor with this email");
-            }
-        };
-
-
-    async verifyDoctor(email: string): Promise<IDoctor | null> {
-        try {
-            const result = await this._doctorModel.findOneAndUpdate(
-                { email },
-                { $set: { isVerified: true } },
-                { new: true } // returns updated document
-            );
-    
-            if (!result) {
-                throw new Error("doctor not found for verification.");
-            }
-    
-            console.log("doctor verified successfully:", result);
-            return result;
-            
-        } catch (error) {
-            console.error("Error verifying doctor:", error);
-            throw new Error("Failed to verify doctor with this email.");
-        }
-    };
-
-
-    async aggregate<T=IDoctorDocument>(pipeline: PipelineStage[]): Promise<T[]> {
-        try {
-            const resp = await this._doctorModel.aggregate(pipeline);
-            console.log("pipeline is .....", pipeline);
-            console.log("resp is .....", resp);
-            return resp;
-        } catch (error) {
-            console.error("Error in aggregate:", error);
-            throw new Error("Failed to perform aggregation");
-        }
-        }
-        
-
+  async aggregate<T = IDoctorDocument>(
+    pipeline: PipelineStage[]
+  ): Promise<T[]> {
+    try {
+      const resp = await this._doctorModel.aggregate(pipeline);
+      console.log("pipeline is .....", pipeline);
+      console.log("resp is .....", resp);
+      return resp;
+    } catch (error) {
+      console.error("Error in aggregate:", error);
+      throw new Error("Failed to perform aggregation");
+    }
+  }
 }

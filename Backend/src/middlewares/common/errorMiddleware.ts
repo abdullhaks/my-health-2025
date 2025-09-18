@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { HttpStatusCode } from '../../utils/enum';
-
+import { Request, Response, NextFunction } from "express";
+import { HttpStatusCode } from "../../utils/enum";
 
 interface CustomError extends Error {
   statusCode?: number;
@@ -8,16 +7,15 @@ interface CustomError extends Error {
   details?: string;
 }
 
-
 export const errorHandler = (
   err: CustomError,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  // Set default 
+  // Set default
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || "Internal Server Error";
 
   // Loging....
   console.error({
@@ -28,7 +26,6 @@ export const errorHandler = (
     method: req.method,
   });
 
-
   const errorResponse = {
     success: false,
     error: {
@@ -38,24 +35,23 @@ export const errorHandler = (
     },
   };
 
-  
-  if (err.name === 'ValidationError') {
+  if (err.name === "ValidationError") {
     return res.status(HttpStatusCode.BAD_REQUEST).json({
       ...errorResponse,
       error: {
         ...errorResponse.error,
-        message: 'Validation Error',
+        message: "Validation Error",
         details: err.details || err.message,
       },
     });
   }
 
-  if (err.name === 'UnauthorizedError') {
+  if (err.name === "UnauthorizedError") {
     return res.status(HttpStatusCode.UNAUTHORIZED).json({
       ...errorResponse,
       error: {
         ...errorResponse.error,
-        message: 'Unauthorized Access',
+        message: "Unauthorized Access",
       },
     });
   }

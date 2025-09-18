@@ -1,25 +1,24 @@
-import { Response,Request } from "express";
+import { Response, Request } from "express";
 import IAdminAppointmentController from "../interfaces/IAdminAppointmentController";
 import { inject, injectable } from "inversify";
 import IAdminAppointmentService from "../../../services/admin/interfaces/IAdminAppointmentServices";
 import { HttpStatusCode } from "../../../utils/enum";
+import { MESSAGES } from "../../../utils/messages";
 
+injectable();
 
+export default class AdminAppointmentController
+  implements IAdminAppointmentController
+{
+  constructor(
+    @inject("IAdminAppointmentsService")
+    private _adminAppointmentService: IAdminAppointmentService
+  ) {}
 
-
-injectable()
-
-export default class AdminAppointmentController implements IAdminAppointmentController {
-
-
-
-    constructor(
-        @inject("IAdminAppointmentsService") private _adminAppointmentService: IAdminAppointmentService
-    ) { };
-
- async getAppointments(req: Request, res: Response): Promise<void> {
+  async getAppointments(req: Request, res: Response): Promise<void> {
     try {
-      const { page, limit, status, doctorCategory, startDate, endDate } = req.query;
+      const { page, limit, status, doctorCategory, startDate, endDate } =
+        req.query;
 
       const pageNumber = page ? parseInt(page as string, 10) : 1;
       const limitNumber = limit ? parseInt(limit as string, 10) : 10;
@@ -31,16 +30,18 @@ export default class AdminAppointmentController implements IAdminAppointmentCont
         endDate: endDate as string,
       };
 
-      const appointments = await this._adminAppointmentService.getAppointments(pageNumber, limitNumber, filters);
+      const appointments = await this._adminAppointmentService.getAppointments(
+        pageNumber,
+        limitNumber,
+        filters
+      );
 
       res.status(HttpStatusCode.OK).json(appointments);
     } catch (err) {
       console.error("Error in fetching user appointments:", err);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
   }
-
-};
-
-
-
+}

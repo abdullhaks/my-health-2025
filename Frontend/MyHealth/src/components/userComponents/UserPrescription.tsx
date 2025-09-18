@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "antd";
-import { ArrowLeft, Download, Pill, Calendar, User, FileText } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  Pill,
+  Calendar,
+  User,
+  FileText,
+} from "lucide-react";
 import moment from "moment";
 import { jsPDF } from "jspdf";
 import { getPrescription } from "../../api/user/userApi";
@@ -105,8 +112,12 @@ const UserPrescriptionDetails = () => {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100);
-    doc.text("Digital Healthcare Solutions", pageWidth - margin, y + 12, { align: "right" });
-    doc.text("Registration: MH-2025-DIGITAL", pageWidth - margin, y + 18, { align: "right" });
+    doc.text("Digital Healthcare Solutions", pageWidth - margin, y + 12, {
+      align: "right",
+    });
+    doc.text("Registration: MH-2025-DIGITAL", pageWidth - margin, y + 18, {
+      align: "right",
+    });
 
     y += 35;
 
@@ -120,14 +131,24 @@ const UserPrescriptionDetails = () => {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100);
-    doc.text(`Date: ${moment(prescription.createdAt).format("DD/MM/YYYY")}`, pageWidth - margin, y - 8, { align: "right" });
-    doc.text(`Rx No: ${prescription._id.slice(-8).toUpperCase()}`, pageWidth - margin, y + 2, { align: "right" });
+    doc.text(
+      `Date: ${moment(prescription.createdAt).format("DD/MM/YYYY")}`,
+      pageWidth - margin,
+      y - 8,
+      { align: "right" }
+    );
+    doc.text(
+      `Rx No: ${prescription._id.slice(-8).toUpperCase()}`,
+      pageWidth - margin,
+      y + 2,
+      { align: "right" }
+    );
 
     y += 25;
 
     // Patient Information Box
     doc.setFillColor(248, 249, 250);
-    doc.rect(margin, y - 5, pageWidth - 2 * margin, 35, 'F');
+    doc.rect(margin, y - 5, pageWidth - 2 * margin, 35, "F");
     doc.setDrawColor(220, 220, 220);
     doc.rect(margin, y - 5, pageWidth - 2 * margin, 35);
 
@@ -139,15 +160,27 @@ const UserPrescriptionDetails = () => {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text(`Name: ${prescription.user.fullName}`, margin + 5, y + 15);
-    doc.text(`Age: ${calculateAge(prescription.user.dob)} years`, margin + 5, y + 23);
-    doc.text(`Patient ID: ${prescription.userId.slice(-8).toUpperCase()}`, pageWidth/2 + 10, y + 15);
-    doc.text(`Date of Birth: ${moment(prescription.user.dob).format("DD/MM/YYYY")}`, pageWidth/2 + 10, y + 23);
+    doc.text(
+      `Age: ${calculateAge(prescription.user.dob)} years`,
+      margin + 5,
+      y + 23
+    );
+    doc.text(
+      `Patient ID: ${prescription.userId.slice(-8).toUpperCase()}`,
+      pageWidth / 2 + 10,
+      y + 15
+    );
+    doc.text(
+      `Date of Birth: ${moment(prescription.user.dob).format("DD/MM/YYYY")}`,
+      pageWidth / 2 + 10,
+      y + 23
+    );
 
     y += 45;
 
     // Doctor Information Box
     doc.setFillColor(235, 247, 255);
-    doc.rect(margin, y - 5, pageWidth - 2 * margin, 35, 'F');
+    doc.rect(margin, y - 5, pageWidth - 2 * margin, 35, "F");
     doc.setDrawColor(41, 128, 185);
     doc.rect(margin, y - 5, pageWidth - 2 * margin, 35);
 
@@ -160,8 +193,16 @@ const UserPrescriptionDetails = () => {
     doc.setFont("helvetica", "normal");
     doc.text(`Dr. ${prescription.doctor.fullName}`, margin + 5, y + 15);
     doc.text(`${prescription.doctor.graduation}`, margin + 5, y + 23);
-    doc.text(`Specialty: ${prescription.doctor.category}`, pageWidth/2 + 10, y + 15);
-    doc.text(`Reg. No: ${prescription.doctor.registerNo}`, pageWidth/2 + 10, y + 23);
+    doc.text(
+      `Specialty: ${prescription.doctor.category}`,
+      pageWidth / 2 + 10,
+      y + 15
+    );
+    doc.text(
+      `Reg. No: ${prescription.doctor.registerNo}`,
+      pageWidth / 2 + 10,
+      y + 23
+    );
 
     y += 45;
 
@@ -172,7 +213,10 @@ const UserPrescriptionDetails = () => {
     y += 8;
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    const diagnosisLines = doc.splitTextToSize(prescription.medicalCondition, pageWidth - 2 * margin);
+    const diagnosisLines = doc.splitTextToSize(
+      prescription.medicalCondition,
+      pageWidth - 2 * margin
+    );
     doc.text(diagnosisLines, margin, y);
     y += diagnosisLines.length * 5 + 10;
 
@@ -184,7 +228,10 @@ const UserPrescriptionDetails = () => {
       y += 8;
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
-      const notesLines = doc.splitTextToSize(prescription.notes, pageWidth - 2 * margin);
+      const notesLines = doc.splitTextToSize(
+        prescription.notes,
+        pageWidth - 2 * margin
+      );
       doc.text(notesLines, margin, y);
       y += notesLines.length * 5 + 10;
     }
@@ -197,7 +244,7 @@ const UserPrescriptionDetails = () => {
 
     // Medications Table Header
     doc.setFillColor(41, 128, 185);
-    doc.rect(margin, y - 5, pageWidth - 2 * margin, 12, 'F');
+    doc.rect(margin, y - 5, pageWidth - 2 * margin, 12, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
@@ -220,7 +267,7 @@ const UserPrescriptionDetails = () => {
       // Alternating row colors
       if (index % 2 === 0) {
         doc.setFillColor(248, 249, 250);
-        doc.rect(margin, y - 2, pageWidth - 2 * margin, 25, 'F');
+        doc.rect(margin, y - 2, pageWidth - 2 * margin, 25, "F");
       }
 
       doc.setFontSize(9);
@@ -240,7 +287,10 @@ const UserPrescriptionDetails = () => {
       if (med.instructions) {
         doc.setFontSize(8);
         doc.setTextColor(100, 100, 100);
-        const instrLines = doc.splitTextToSize(`Instructions: ${med.instructions}`, pageWidth - 2 * margin - 20);
+        const instrLines = doc.splitTextToSize(
+          `Instructions: ${med.instructions}`,
+          pageWidth - 2 * margin - 20
+        );
         doc.text(instrLines, margin + 20, y + 12);
       }
 
@@ -248,7 +298,10 @@ const UserPrescriptionDetails = () => {
       if (med.notes) {
         doc.setFontSize(8);
         doc.setTextColor(200, 100, 100);
-        const notesLines = doc.splitTextToSize(`Notes: ${med.notes}`, pageWidth - 2 * margin - 20);
+        const notesLines = doc.splitTextToSize(
+          `Notes: ${med.notes}`,
+          pageWidth - 2 * margin - 20
+        );
         doc.text(notesLines, margin + 20, y + 18);
       }
 
@@ -264,17 +317,34 @@ const UserPrescriptionDetails = () => {
 
     doc.setFontSize(8);
     doc.setTextColor(100, 100, 100);
-    doc.text("This is a digitally generated prescription. Please consult your physician before making any changes.", margin, y + 8);
-    doc.text(`Generated on: ${moment().format("DD/MM/YYYY HH:mm")}`, margin, y + 15);
+    doc.text(
+      "This is a digitally generated prescription. Please consult your physician before making any changes.",
+      margin,
+      y + 8
+    );
+    doc.text(
+      `Generated on: ${moment().format("DD/MM/YYYY HH:mm")}`,
+      margin,
+      y + 15
+    );
 
     // Doctor signature placeholder
     doc.setFont("helvetica", "italic");
-    doc.text("Dr. " + prescription.doctor.fullName, pageWidth - margin, y + 8, { align: "right" });
+    doc.text("Dr. " + prescription.doctor.fullName, pageWidth - margin, y + 8, {
+      align: "right",
+    });
     doc.setFontSize(7);
-    doc.text("Digital Signature", pageWidth - margin, y + 15, { align: "right" });
+    doc.text("Digital Signature", pageWidth - margin, y + 15, {
+      align: "right",
+    });
 
     // Save PDF
-    doc.save(`Prescription_${prescription.user.fullName.replace(/\s+/g, '_')}_${moment().format("DDMMYYYY")}.pdf`);
+    doc.save(
+      `Prescription_${prescription.user.fullName.replace(
+        /\s+/g,
+        "_"
+      )}_${moment().format("DDMMYYYY")}.pdf`
+    );
   };
 
   return (
@@ -288,7 +358,9 @@ const UserPrescriptionDetails = () => {
               className="flex items-center gap-2 p-2 sm:p-3 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               <ArrowLeft size={20} />
-              <span className="text-sm sm:text-base font-medium hidden sm:inline">Back</span>
+              <span className="text-sm sm:text-base font-medium hidden sm:inline">
+                Back
+              </span>
             </button>
             <Button
               type="primary"
@@ -315,12 +387,16 @@ const UserPrescriptionDetails = () => {
         {loading ? (
           <div className="text-center py-12 sm:py-16">
             <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 text-sm sm:text-base">Loading prescription...</p>
+            <p className="text-gray-600 text-sm sm:text-base">
+              Loading prescription...
+            </p>
           </div>
         ) : !prescription ? (
           <div className="text-center py-12 sm:py-16">
             <FileText className="mx-auto text-gray-400 mb-4" size={40} />
-            <p className="text-gray-500 text-base sm:text-lg">No prescription found.</p>
+            <p className="text-gray-500 text-base sm:text-lg">
+              No prescription found.
+            </p>
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
@@ -334,15 +410,25 @@ const UserPrescriptionDetails = () => {
                     className="h-12 sm:h-14 lg:h-16 object-contain bg-white p-2 rounded-lg shadow-md"
                   />
                   <div>
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">MyHealth App</h1>
-                    <p className="text-blue-100 text-sm sm:text-base">Digital Healthcare Solutions</p>
-                    <p className="text-blue-200 text-xs sm:text-sm">Registration: MH-2025-DIGITAL</p>
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
+                      MyHealth App
+                    </h1>
+                    <p className="text-blue-100 text-sm sm:text-base">
+                      Digital Healthcare Solutions
+                    </p>
+                    <p className="text-blue-200 text-xs sm:text-sm">
+                      Registration: MH-2025-DIGITAL
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-3xl sm:text-4xl font-bold mb-2">℞</div>
-                  <p className="text-blue-100 text-sm sm:text-base">Prescription</p>
-                  <p className="text-blue-200 text-xs sm:text-sm">Rx No: {prescription._id.slice(-8).toUpperCase()}</p>
+                  <p className="text-blue-100 text-sm sm:text-base">
+                    Prescription
+                  </p>
+                  <p className="text-blue-200 text-xs sm:text-sm">
+                    Rx No: {prescription._id.slice(-8).toUpperCase()}
+                  </p>
                 </div>
               </div>
             </div>
@@ -351,9 +437,13 @@ const UserPrescriptionDetails = () => {
               {/* Date and Basic Info */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
                 <div className="flex items-center gap-2 text-gray-600">
-                  <Calendar size={18}  />
-                  <span className="font-medium text-sm sm:text-base">Date:</span>
-                  <span className="text-sm sm:text-base">{moment(prescription.createdAt).format("MMMM DD, YYYY")}</span>
+                  <Calendar size={18} />
+                  <span className="font-medium text-sm sm:text-base">
+                    Date:
+                  </span>
+                  <span className="text-sm sm:text-base">
+                    {moment(prescription.createdAt).format("MMMM DD, YYYY")}
+                  </span>
                 </div>
                 <div className="text-gray-500 text-xs sm:text-sm">
                   Generated at {moment(prescription.createdAt).format("HH:mm")}
@@ -364,24 +454,40 @@ const UserPrescriptionDetails = () => {
               <div className="bg-blue-50 rounded-xl p-4 sm:p-6 border border-blue-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <User className="text-blue-600" size={20} />
-                  <h3 className="text-lg sm:text-xl font-semibold text-blue-900">Patient Information</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-blue-900">
+                    Patient Information
+                  </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Full Name</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">{prescription.user.fullName}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                      Full Name
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                      {prescription.user.fullName}
+                    </p>
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm text-gray-600 mb-1">Age</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{calculateAge(prescription.user.dob)} years</p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                      {calculateAge(prescription.user.dob)} years
+                    </p>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Date of Birth</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{moment(prescription.user.dob).format("MMMM DD, YYYY")}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                      Date of Birth
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                      {moment(prescription.user.dob).format("MMMM DD, YYYY")}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Patient ID</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base font-mono">{prescription.userId.slice(-8).toUpperCase()}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                      Patient ID
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base font-mono">
+                      {prescription.userId.slice(-8).toUpperCase()}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -390,26 +496,44 @@ const UserPrescriptionDetails = () => {
               <div className="bg-green-50 rounded-xl p-4 sm:p-6 border border-green-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-green-600 text-white p-2 rounded-full">
-                    <User size={18}  />
+                    <User size={18} />
                   </div>
-                  <h3 className="text-lg sm:text-xl font-semibold text-green-900">Prescribing Physician</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-green-900">
+                    Prescribing Physician
+                  </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Doctor Name</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">Dr. {prescription.doctor.fullName}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                      Doctor Name
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                      Dr. {prescription.doctor.fullName}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Qualification</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{prescription.doctor.graduation}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                      Qualification
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                      {prescription.doctor.graduation}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Specialty</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base">{prescription.doctor.category}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                      Specialty
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                      {prescription.doctor.category}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1">Registration Number</p>
-                    <p className="font-semibold text-gray-900 text-sm sm:text-base font-mono">{prescription.doctor.registerNo}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                      Registration Number
+                    </p>
+                    <p className="font-semibold text-gray-900 text-sm sm:text-base font-mono">
+                      {prescription.doctor.registerNo}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -418,7 +542,9 @@ const UserPrescriptionDetails = () => {
               <div className="bg-amber-50 rounded-xl p-4 sm:p-6 border border-amber-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <FileText className="text-amber-600" size={20} />
-                  <h3 className="text-lg sm:text-xl font-semibold text-amber-900">Diagnosis</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-amber-900">
+                    Diagnosis
+                  </h3>
                 </div>
                 <p className="text-gray-800 text-sm sm:text-base leading-relaxed bg-white p-3 sm:p-4 rounded-lg border border-amber-100">
                   {prescription.medicalCondition}
@@ -429,8 +555,10 @@ const UserPrescriptionDetails = () => {
               {prescription.notes && (
                 <div className="bg-red-50 rounded-xl p-4 sm:p-6 border border-red-200 shadow-sm">
                   <div className="flex items-center gap-3 mb-4">
-                    <FileText className="text-red-600" size={20}  />
-                    <h3 className="text-lg sm:text-xl font-semibold text-red-900">General Notes</h3>
+                    <FileText className="text-red-600" size={20} />
+                    <h3 className="text-lg sm:text-xl font-semibold text-red-900">
+                      General Notes
+                    </h3>
                   </div>
                   <p className="text-gray-800 text-sm sm:text-base leading-relaxed bg-white p-3 sm:p-4 rounded-lg border border-red-100">
                     {prescription.notes}
@@ -441,32 +569,57 @@ const UserPrescriptionDetails = () => {
               {/* Medications */}
               <div className="bg-purple-50 rounded-xl p-4 sm:p-6 border border-purple-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                  <Pill className="text-purple-600" size={20}  />
-                  <h3 className="text-lg sm:text-xl font-semibold text-purple-900">Medications Prescribed</h3>
+                  <Pill className="text-purple-600" size={20} />
+                  <h3 className="text-lg sm:text-xl font-semibold text-purple-900">
+                    Medications Prescribed
+                  </h3>
                 </div>
                 <div className="space-y-4 sm:space-y-6">
                   {prescription.medications.map((med, index) => (
-                    <div key={index} className="bg-white rounded-lg border border-purple-100 shadow-sm overflow-hidden">
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg border border-purple-100 shadow-sm overflow-hidden"
+                    >
                       <div className="bg-purple-600 text-white px-4 sm:px-6 py-3">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                          <h4 className="font-semibold text-base sm:text-lg truncate">{index + 1}. {med.name}</h4>
-                          <span className="bg-purple-500 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">{med.dosage}</span>
+                          <h4 className="font-semibold text-base sm:text-lg truncate">
+                            {index + 1}. {med.name}
+                          </h4>
+                          <span className="bg-purple-500 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                            {med.dosage}
+                          </span>
                         </div>
                       </div>
                       <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <p className="text-xs sm:text-sm text-gray-600 mb-1">Frequency</p>
-                          <p className="font-semibold text-gray-900 text-sm sm:text-base">{med.frequency}</p>
-                          <p className="text-xs sm:text-sm text-gray-600 mb-1 mt-3">Duration</p>
-                          <p className="font-semibold text-gray-900 text-sm sm:text-base">{med.duration}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                            Frequency
+                          </p>
+                          <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                            {med.frequency}
+                          </p>
+                          <p className="text-xs sm:text-sm text-gray-600 mb-1 mt-3">
+                            Duration
+                          </p>
+                          <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                            {med.duration}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-xs sm:text-sm text-gray-600 mb-1">Instructions</p>
-                          <p className="text-gray-800 text-sm sm:text-base bg-gray-50 p-2 sm:p-3 rounded leading-relaxed">{med.instructions}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 mb-1">
+                            Instructions
+                          </p>
+                          <p className="text-gray-800 text-sm sm:text-base bg-gray-50 p-2 sm:p-3 rounded leading-relaxed">
+                            {med.instructions}
+                          </p>
                           {med.notes && (
                             <>
-                              <p className="text-xs sm:text-sm text-gray-600 mb-1 mt-3">Additional Notes</p>
-                              <p className="text-red-700 text-sm sm:text-base bg-red-50 p-2 sm:p-3 rounded leading-relaxed border border-red-200">{med.notes}</p>
+                              <p className="text-xs sm:text-sm text-gray-600 mb-1 mt-3">
+                                Additional Notes
+                              </p>
+                              <p className="text-red-700 text-sm sm:text-base bg-red-50 p-2 sm:p-3 rounded leading-relaxed border border-red-200">
+                                {med.notes}
+                              </p>
                             </>
                           )}
                         </div>
@@ -478,11 +631,20 @@ const UserPrescriptionDetails = () => {
 
               {/* Footer */}
               <div className="border-t border-gray-200 pt-4 sm:pt-6 text-center text-gray-500">
-                <p className="text-xs sm:text-sm mb-2">This is a digitally generated prescription. Please consult your physician before making any changes.</p>
-                <p className="text-xs sm:text-sm">Generated on {moment().format("MMMM DD, YYYY [at] HH:mm")}</p>
+                <p className="text-xs sm:text-sm mb-2">
+                  This is a digitally generated prescription. Please consult
+                  your physician before making any changes.
+                </p>
+                <p className="text-xs sm:text-sm">
+                  Generated on {moment().format("MMMM DD, YYYY [at] HH:mm")}
+                </p>
                 <div className="mt-4 text-right">
-                  <p className="text-gray-700 text-sm sm:text-base font-medium">Dr. {prescription.doctor.fullName}</p>
-                  <p className="text-xs text-gray-500 italic">Digital Signature</p>
+                  <p className="text-gray-700 text-sm sm:text-base font-medium">
+                    Dr. {prescription.doctor.fullName}
+                  </p>
+                  <p className="text-xs text-gray-500 italic">
+                    Digital Signature
+                  </p>
                 </div>
               </div>
             </div>

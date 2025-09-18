@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 
 interface BankDetails {
-    bankAccNo?: string,
-    bankAccHolderName?: string,
-    bankIfscCode?: string
+  bankAccNo?: string;
+  bankAccHolderName?: string;
+  bankIfscCode?: string;
 }
 
 interface PayoutModalProps {
@@ -14,7 +14,12 @@ interface PayoutModalProps {
   initialData: BankDetails;
 }
 
-const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModalProps) => {
+const DoctorPayoutModal = ({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+}: PayoutModalProps) => {
   const [formData, setFormData] = useState<BankDetails>(initialData);
   const [errors, setErrors] = useState<Partial<BankDetails>>({});
 
@@ -25,7 +30,9 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
     }
   }, [isOpen, initialData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -33,14 +40,17 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
     let error: string | undefined;
     switch (name) {
       case "bankAccNo":
-        if (value && !/^[0-9]{9,18}$/.test(value)) error = "Bank account number must be 9-18 digits";
+        if (value && !/^[0-9]{9,18}$/.test(value))
+          error = "Bank account number must be 9-18 digits";
         break;
       case "bankAccHolderName":
         if (value && !/^[a-zA-Z\s.-]+$/.test(value))
-          error = "Account holder name can only contain letters, spaces, periods, or hyphens";
+          error =
+            "Account holder name can only contain letters, spaces, periods, or hyphens";
         break;
       case "bankIfscCode":
-        if (value && !/^[A-Z]{4}[0][A-Z0-9]{6}$/.test(value)) error = "Invalid IFSC code format (e.g., SBIN0001234)";
+        if (value && !/^[A-Z]{4}[0][A-Z0-9]{6}$/.test(value))
+          error = "Invalid IFSC code format (e.g., SBIN0001234)";
         break;
     }
 
@@ -57,11 +67,18 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
       newErrors.bankAccNo = "Bank account number must be 9-18 digits";
     }
 
-    if (formData.bankAccHolderName && !/^[a-zA-Z\s.-]+$/.test(formData.bankAccHolderName)) {
-      newErrors.bankAccHolderName = "Account holder name can only contain letters, spaces, periods, or hyphens";
+    if (
+      formData.bankAccHolderName &&
+      !/^[a-zA-Z\s.-]+$/.test(formData.bankAccHolderName)
+    ) {
+      newErrors.bankAccHolderName =
+        "Account holder name can only contain letters, spaces, periods, or hyphens";
     }
 
-    if (formData.bankIfscCode && !/^[A-Z]{4}[0][A-Z0-9]{6}$/.test(formData.bankIfscCode)) {
+    if (
+      formData.bankIfscCode &&
+      !/^[A-Z]{4}[0][A-Z0-9]{6}$/.test(formData.bankIfscCode)
+    ) {
       newErrors.bankIfscCode = "Invalid IFSC code format (e.g., SBIN0001234)";
     }
 
@@ -86,7 +103,9 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md sm:max-w-lg md:max-w-xl relative overflow-hidden transform transition-transform duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Payout Request</h2>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+            Payout Request
+          </h2>
           <button
             onClick={onClose}
             className="p-2 sm:p-3 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-200 transition-all duration-200 min-w-[44px] min-h-[44px]"
@@ -97,7 +116,10 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="p-4 sm:p-6 space-y-4 sm:space-y-6"
+        >
           {/* Bank Account Number */}
           <div className="space-y-2">
             <label
@@ -117,7 +139,9 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
               }`}
             />
             {errors.bankAccNo && (
-              <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.bankAccNo}</p>
+              <p className="text-xs sm:text-sm text-red-600 mt-1">
+                {errors.bankAccNo}
+              </p>
             )}
           </div>
 
@@ -140,7 +164,9 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
               }`}
             />
             {errors.bankAccHolderName && (
-              <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.bankAccHolderName}</p>
+              <p className="text-xs sm:text-sm text-red-600 mt-1">
+                {errors.bankAccHolderName}
+              </p>
             )}
           </div>
 
@@ -163,7 +189,9 @@ const DoctorPayoutModal = ({ isOpen, onClose, onSave, initialData }: PayoutModal
               }`}
             />
             {errors.bankIfscCode && (
-              <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.bankIfscCode}</p>
+              <p className="text-xs sm:text-sm text-red-600 mt-1">
+                {errors.bankIfscCode}
+              </p>
             )}
           </div>
 

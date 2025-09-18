@@ -1,4 +1,4 @@
-import { inject,injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import IDoctorPayoutService from "../interfaces/IDoctorPayoutService";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import IPayoutRepository from "../../../repositories/interfaces/IPayoutRepository";
@@ -13,60 +13,63 @@ interface filter {
 
 @injectable()
 export default class DoctorPayoutService implements IDoctorPayoutService {
-    
-    constructor(
-        @inject("ITransactionRepository") private _transactionRepository : ITransactionRepository,
-        @inject("IPayoutRepository") private _payoutRepository : IPayoutRepository,
-        @inject("IDoctorRepository") private _doctorRepository: IDoctorRepository,
+  constructor(
+    @inject("ITransactionRepository")
+    private _transactionRepository: ITransactionRepository,
+    @inject("IPayoutRepository") private _payoutRepository: IPayoutRepository,
+    @inject("IDoctorRepository") private _doctorRepository: IDoctorRepository
+  ) {}
 
-    ){};
+  async requestPayout(payoutDetails: any, doctorId: string): Promise<any> {
+    const doctor = await this._doctorRepository.findOne({ _id: doctorId });
+    if (!doctor) {
+      throw new Error("invalied credentials");
+    }
 
-    async requestPayout(payoutDetails:any,doctorId:string): Promise<any> {
+    const response = await this._payoutRepository.create({
+      doctorId: doctorId,
+      bankAccNo: payoutDetails.bankAccNo,
+      bankAccHolderName: payoutDetails.bankAccHolderName,
+      bankIfscCode: payoutDetails.bankIfscCode,
+      totalAmount: doctor.walletBalance,
+    });
 
-        const doctor = await this._doctorRepository.findOne({_id:doctorId});
-        if(!doctor){
-            throw new Error ("invalied credentials")
-        }
+    if (!response) {
+      throw new Error("payout request failed");
+    }
 
-        
-        
-        const response = await this._payoutRepository.create({
-            doctorId:doctorId,
-            bankAccNo:payoutDetails.bankAccNo,
-            bankAccHolderName:payoutDetails.bankAccHolderName,
-            bankIfscCode:payoutDetails.bankIfscCode,
-            totalAmount:doctor.walletBalance,
-        });
+    const walletManage = await this._doctorRepository.update(doctorId, {
+      walletBalance: 0,
+    });
+    if (!walletManage) {
+      throw new Error("payout request failed");
+    }
+    const { password, ...userWithoutPassword } = walletManage.toObject();
 
-        if(!response){
-            throw new Error ("payout request failed");
-        }
-
-        const walletManage = await this._doctorRepository.update(doctorId,{walletBalance:0})
-        if(!walletManage){
-            throw new Error ("payout request failed");
-        }
-         const { password, ...userWithoutPassword } = walletManage.toObject();
-              
-                        if(userWithoutPassword.profile){
-                          userWithoutPassword.profile = await getSignedImageURL(userWithoutPassword.profile)
-                        }
-        return {
-            message: "payout requested",
-            updatedDoctor: userWithoutPassword,
-            };
-        
+    if (userWithoutPassword.profile) {
+      userWithoutPassword.profile = await getSignedImageURL(
+        userWithoutPassword.profile
+      );
+    }
+    return {
+      message: "payout requested",
+      updatedDoctor: userWithoutPassword,
     };
+  }
 
-
-     async getgetPayouts(doctorId:string,pageNumber:number, limitNumber:number, filters:filter = {}): Promise<any[]> {
-    const query: any = {doctorId:doctorId};
+  async getgetPayouts(
+    doctorId: string,
+    pageNumber: number,
+    limitNumber: number,
+    filters: filter = {}
+  ): Promise<any[]> {
+    const query: any = { doctorId: doctorId };
 
     if (filters.status) {
-      console.log("status....",filters.status)
+      console.log("status....", filters.status);
       query.status = filters.status;
     }
-   
+
     if (filters.startDate && filters.endDate) {
       query.date = {
         $gte: new Date(filters.startDate),
@@ -74,11 +77,13 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
       };
     }
 
-    const transactions = await this._payoutRepository.getPayouts(pageNumber, limitNumber, query);
+    const transactions = await this._payoutRepository.getPayouts(
+      pageNumber,
+      limitNumber,
+      query
+    );
     console.log("transactions from service...", transactions);
 
     return transactions;
   }
-
-
 }

@@ -5,9 +5,10 @@ interface filter {
   endDate?: string;
 }
 export default interface IAdminPayoutService {
-
-    
-    getgetPayouts(pageNumber:number, limitNumber:number, filters:filter):Promise<IPayouts[]>,
-    updatePayout(id:string, data:any):Promise<IPayouts>,
-
+  getgetPayouts(
+    pageNumber: number,
+    limitNumber: number,
+    filters: filter
+  ): Promise<IPayouts[]>;
+  updatePayout(id: string, data: any): Promise<IPayouts>;
 }

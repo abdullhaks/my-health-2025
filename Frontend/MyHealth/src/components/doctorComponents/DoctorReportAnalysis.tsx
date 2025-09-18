@@ -1,8 +1,24 @@
 import { useEffect, useState } from "react";
-import { getAnalysisReports, submitAnalysisReports, cancelAnalysisReports } from "../../api/doctor/doctorApi";
+import {
+  getAnalysisReports,
+  submitAnalysisReports,
+  cancelAnalysisReports,
+} from "../../api/doctor/doctorApi";
 import { useSelector } from "react-redux";
 import { message, Popconfirm } from "antd";
-import { FileText, Eye, X, User, AlertCircle, CheckCircle, Clock, XCircle, Send, Plus, Stethoscope } from "lucide-react";
+import {
+  FileText,
+  Eye,
+  X,
+  User,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  XCircle,
+  Send,
+  Plus,
+  Stethoscope,
+} from "lucide-react";
 import { IDoctorData } from "../../interfaces/doctor";
 
 type Report = {
@@ -18,7 +34,7 @@ type Report = {
   analysisStatus: string;
 };
 
-const DoctorReportAnalysis = ()=> {
+const DoctorReportAnalysis = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [resultText, setResultText] = useState("");
@@ -31,12 +47,12 @@ const DoctorReportAnalysis = ()=> {
     const analysisId = report._id;
     const userId = report.userId;
     const fee = report.fee;
-    
+
     if (!analysisId) {
       message.error("Invalid report ID.");
       return;
     }
-    
+
     setCancellingId(analysisId);
     try {
       const response = await cancelAnalysisReports(analysisId, userId, fee);
@@ -61,13 +77,13 @@ const DoctorReportAnalysis = ()=> {
       message.error("Result cannot be empty");
       return;
     }
-    
+
     const analysisId = selectedReport?._id;
     if (!analysisId) {
       message.error("Invalid report ID.");
       return;
     }
-    
+
     setSubmittingId(analysisId);
     try {
       const response = await submitAnalysisReports(analysisId, resultText);
@@ -154,8 +170,12 @@ const DoctorReportAnalysis = ()=> {
               <Stethoscope className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Patient Analysis Reports</h1>
-              <p className="text-gray-600 mt-1">Review and manage patient medical analysis requests</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Patient Analysis Reports
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Review and manage patient medical analysis requests
+              </p>
             </div>
           </div>
         </div>
@@ -166,9 +186,12 @@ const DoctorReportAnalysis = ()=> {
             <div className="p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full inline-block mb-4">
               <FileText className="w-12 h-12 text-purple-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Reports Available</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No Reports Available
+            </h3>
             <p className="text-gray-600 max-w-md mx-auto">
-              No patient analysis reports are currently pending. New requests will appear here for your review.
+              No patient analysis reports are currently pending. New requests
+              will appear here for your review.
             </p>
           </div>
         )}
@@ -189,22 +212,34 @@ const DoctorReportAnalysis = ()=> {
                         <User className="w-5 h-5 text-purple-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 text-lg">Patient Report</h3>
-                        <p className="text-purple-600 text-sm font-medium">Analysis Request</p>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          Patient Report
+                        </h3>
+                        <p className="text-purple-600 text-sm font-medium">
+                          Analysis Request
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Fee */}
                   <div className="flex items-center space-x-2 mb-3">
-                    <span className="text-lg font-semibold text-green-600">₹{report.fee}</span>
+                    <span className="text-lg font-semibold text-green-600">
+                      ₹{report.fee}
+                    </span>
                   </div>
 
                   {/* Status */}
                   <div className="mb-4">
-                    <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(report.analysisStatus)}`}>
+                    <div
+                      className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
+                        report.analysisStatus
+                      )}`}
+                    >
                       {getStatusIcon(report.analysisStatus)}
-                      <span className="capitalize">{report.analysisStatus}</span>
+                      <span className="capitalize">
+                        {report.analysisStatus}
+                      </span>
                     </div>
                   </div>
 
@@ -212,34 +247,30 @@ const DoctorReportAnalysis = ()=> {
                   <div className="flex space-x-2">
                     {report.analysisStatus === "pending" && (
                       <>
-                    <Popconfirm
+                        <Popconfirm
                           title="Cancel Report Analysis"
                           description="Are you sure to cancel this Analysis?"
                           onConfirm={() => handleCancel(report)}
                           okText="Yes"
-                          cancelText="No" 
-                          >
-
-
-                        <button
-
-                          disabled={cancellingId === report._id}
-                          className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                          cancelText="No"
                         >
-                          {cancellingId === report._id ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                              <span>Cancelling...</span>
-                            </>
-                          ) : (
-                            <>
-                              <X className="w-4 h-4" />
-                              <span>Cancel</span>
-                            </>
-                          )}
-                        </button>
-
-                       </Popconfirm>
+                          <button
+                            disabled={cancellingId === report._id}
+                            className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                          >
+                            {cancellingId === report._id ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                <span>Cancelling...</span>
+                              </>
+                            ) : (
+                              <>
+                                <X className="w-4 h-4" />
+                                <span>Cancel</span>
+                              </>
+                            )}
+                          </button>
+                        </Popconfirm>
 
                         <button
                           onClick={() => setSelectedReport(report)}
@@ -279,10 +310,14 @@ const DoctorReportAnalysis = ()=> {
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold">
-                        {selectedReport.analysisStatus === "pending" ? "Add Analysis Result" : "Patient Report Details"}
+                        {selectedReport.analysisStatus === "pending"
+                          ? "Add Analysis Result"
+                          : "Patient Report Details"}
                       </h2>
                       <p className="text-purple-100">
-                        {selectedReport.analysisStatus === "pending" ? "Provide your medical analysis" : "View completed analysis"}
+                        {selectedReport.analysisStatus === "pending"
+                          ? "Provide your medical analysis"
+                          : "View completed analysis"}
                       </p>
                     </div>
                   </div>
@@ -300,16 +335,22 @@ const DoctorReportAnalysis = ()=> {
                 <div className="space-y-6">
                   {/* Patient Concern */}
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Patient's Medical Concern</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      Patient's Medical Concern
+                    </h3>
                     <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                      <p className="text-gray-700 leading-relaxed">{selectedReport.concerns}</p>
+                      <p className="text-gray-700 leading-relaxed">
+                        {selectedReport.concerns}
+                      </p>
                     </div>
                   </div>
 
                   {/* Files */}
                   {selectedReport.files.length > 0 ? (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Patient Files</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                        Patient Files
+                      </h3>
                       <div className="grid gap-3">
                         {selectedReport.files.map((file, index) => (
                           <a
@@ -334,18 +375,24 @@ const DoctorReportAnalysis = ()=> {
                       <div className="p-3 bg-gray-100 rounded-full inline-block mb-3">
                         <FileText className="w-6 h-6 text-gray-400" />
                       </div>
-                      <p className="text-gray-500">No files attached by patient</p>
+                      <p className="text-gray-500">
+                        No files attached by patient
+                      </p>
                     </div>
                   )}
 
                   {/* Analysis Result */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                      {selectedReport.analysisStatus === "pending" ? "Your Analysis" : "Analysis Result"}
+                      {selectedReport.analysisStatus === "pending"
+                        ? "Your Analysis"
+                        : "Analysis Result"}
                     </h3>
                     {selectedReport.analysisStatus === "submited" ? (
                       <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{selectedReport.result}</p>
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                          {selectedReport.result}
+                        </p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -357,7 +404,8 @@ const DoctorReportAnalysis = ()=> {
                           placeholder="Enter your detailed medical analysis and recommendations here..."
                         />
                         <p className="text-sm text-gray-500">
-                          Provide a comprehensive analysis including diagnosis, recommendations, and follow-up instructions.
+                          Provide a comprehensive analysis including diagnosis,
+                          recommendations, and follow-up instructions.
                         </p>
                       </div>
                     )}
@@ -375,39 +423,35 @@ const DoctorReportAnalysis = ()=> {
                     Close
                   </button>
                   {selectedReport.analysisStatus === "pending" && (
-
-
-
-                      <Popconfirm
-                          title="Submiting Report Analysis"
-                          description="Are you sure to submit this Analysis Report?"
-                          onConfirm={() => {handleSubmitResult()}}
-                          okText="Yes"
-                          cancelText="No" 
-                          >
-
-
-                         
-                    <button
-                     
-                      disabled={submittingId === selectedReport._id || !resultText.trim()}
-                      className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    <Popconfirm
+                      title="Submiting Report Analysis"
+                      description="Are you sure to submit this Analysis Report?"
+                      onConfirm={() => {
+                        handleSubmitResult();
+                      }}
+                      okText="Yes"
+                      cancelText="No"
                     >
-                      {submittingId === selectedReport._id ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          <span>Submitting...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4" />
-                          <span>Submit Analysis</span>
-                        </>
-                      )}
-                    </button>
-
+                      <button
+                        disabled={
+                          submittingId === selectedReport._id ||
+                          !resultText.trim()
+                        }
+                        className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {submittingId === selectedReport._id ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            <span>Submitting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4" />
+                            <span>Submit Analysis</span>
+                          </>
+                        )}
+                      </button>
                     </Popconfirm>
-
                   )}
                 </div>
               </div>
@@ -419,4 +463,4 @@ const DoctorReportAnalysis = ()=> {
   );
 };
 
-export default DoctorReportAnalysis
+export default DoctorReportAnalysis;

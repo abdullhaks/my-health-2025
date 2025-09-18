@@ -43,9 +43,9 @@ export interface IDoctor {
 }
 
 export interface IDoctorData {
-  doctor:{
-    doctor:IDoctor;
-  } 
+  doctor: {
+    doctor: IDoctor;
+  };
 }
 
 export interface doctorProfileUpdate {
@@ -75,10 +75,8 @@ export interface payoutDetails {
   bankIfscCode?: string;
 }
 
-
-export interface doctorhCangePasswordDto{
+export interface doctorhCangePasswordDto {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
-
-};
+}

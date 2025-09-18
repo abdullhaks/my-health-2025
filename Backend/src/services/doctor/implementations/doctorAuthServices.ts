@@ -13,48 +13,52 @@ import OtpModel from "../../../models/otp";
 import RecoveryPasswordModel from "../../../models/recoveryPassword";
 import { generateOtpMail } from "../../../utils/generateOtpMail";
 import dotenv from "dotenv";
-import {generateAccessToken,generateRefreshToken,verifyRefreshToken,} from "../../../utils/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../../../utils/jwt";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
 import { IResponseDTO } from "../../../dto/commonDto";
-import {getSignedImageURL,uploadFileToS3,} from "../../../middlewares/common/uploadS3";
+import {
+  getSignedImageURL,
+  uploadFileToS3,
+} from "../../../middlewares/common/uploadS3";
 import { IDoctor } from "../../../dto/doctorDTO";
 
 dotenv.config();
-
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
 });
 
-
-
 interface IParsed {
-  title?:string;
-  certificate?:{
-      buffer: Buffer;
-      originalname: string;
-      mimetype: string;
-    };
+  title?: string;
+  certificate?: {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+  };
 }
 
-  interface ICertificates {
-    graduationCertificate: {
-      buffer: Buffer;
-      originalname: string;
-      mimetype: string;
-    };
-    registrationCertificate: {
-      buffer: Buffer;
-      originalname: string;
-      mimetype: string;
-    };
-    verificationId: {
-      buffer: Buffer;
-      originalname: string;
-      mimetype: string;
-    };
-  }
+interface ICertificates {
+  graduationCertificate: {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+  };
+  registrationCertificate: {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+  };
+  verificationId: {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+  };
+}
 
 @injectable()
 export default class DoctorAuthService implements IDoctorAuthService {
@@ -63,7 +67,15 @@ export default class DoctorAuthService implements IDoctorAuthService {
     @inject("IOtpRepository") private _otpRepository: IOtpRepository
   ) {}
 
-  async login(res: Response, doctorData: Partial<IDoctor>): Promise<{message:string,doctor:IDoctor,accessToken?:string,refreshToken?:string}> {
+  async login(
+    res: Response,
+    doctorData: Partial<IDoctor>
+  ): Promise<{
+    message: string;
+    doctor: IDoctor;
+    accessToken?: string;
+    refreshToken?: string;
+  }> {
     console.log("doctor data from service....", doctorData);
 
     if (!doctorData.email || !doctorData.password) {
@@ -105,9 +117,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
       };
     }
 
-    if (
-      existingDoctor.adminVerified == 0 ) {
-
+    if (existingDoctor.adminVerified == 0) {
       return {
         doctor: existingDoctor,
         message: `doctor credential not verified.`,
@@ -115,7 +125,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
     }
 
     if (existingDoctor.adminVerified == 3) {
-
       await this._doctorRepository.delete(existingDoctor._id.toString());
 
       return {
@@ -163,32 +172,26 @@ export default class DoctorAuthService implements IDoctorAuthService {
     };
   }
 
-
-
-
-async sendMail(email: string, otp: string): Promise<void> {
-
-  console.log("sending otp......")
+  async sendMail(email: string, otp: string): Promise<void> {
+    console.log("sending otp......");
     const otpRecord = new OtpModel({
-        email,
-        otp,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + 5 * 60 * 1000
+      email,
+      otp,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 5 * 60 * 1000,
     });
     await otpRecord.save();
 
     const expirationTime = "2 minutes";
     const mailOptions = generateOtpMail(email, otp, expirationTime);
     await transporter.sendMail(mailOptions);
-}
-
-
+  }
 
   async signup(
     doctor: Partial<IDoctor>,
     certificates: ICertificates,
     parsedSpecializations: IParsed[]
-  ): Promise<{message:string,email:string}> {
+  ): Promise<{ message: string; email: string }> {
     console.log("user data from service....", doctor);
 
     const existingUser = await this._doctorRepository.findOne({
@@ -256,9 +259,7 @@ async sendMail(email: string, otp: string): Promise<void> {
     };
   }
 
-
-
-  async verifyOtp(email: string, otp: string): Promise<{message:string}> {
+  async verifyOtp(email: string, otp: string): Promise<{ message: string }> {
     const otpRecord = await this._otpRepository.findLatestOtpByEmail(email);
     console.log("OTP record: ", otpRecord);
 
@@ -278,12 +279,7 @@ async sendMail(email: string, otp: string): Promise<void> {
     return { message: "OTP verified successfully" };
   }
 
-
-
-
-
-
-  async resentOtp(email: string): Promise<{message:string}> {
+  async resentOtp(email: string): Promise<{ message: string }> {
     if (!email) {
       throw new Error("Email is required");
     }
@@ -322,28 +318,28 @@ async sendMail(email: string, otp: string): Promise<void> {
     }
   }
 
-
   async refreshToken(refreshToken: string): Promise<IResponseDTO> {
-      
-            // console.log("Refresh token from service: ", refreshToken);
-              if (!refreshToken) {
-                 throw new Error("refresh token not found" );
-              }
-          
-              const verified = verifyRefreshToken(refreshToken);
-  
-              // console.log("is verified from refresh token auth service...",verified);
-  
-              if (!verified) {
-                 throw new Error("Invalid refresh token" );
-              }
-          
-              // console.log("verified is ", verified);
-              const accessToken = generateAccessToken({ id: verified.id, role: verified.role });
-  
-              // console.log("new access token is ...............",accessToken);
-          
-              return {accessToken} ;
-          };
+    // console.log("Refresh token from service: ", refreshToken);
+    if (!refreshToken) {
+      throw new Error("refresh token not found");
+    }
 
+    const verified = verifyRefreshToken(refreshToken);
+
+    // console.log("is verified from refresh token auth service...",verified);
+
+    if (!verified) {
+      throw new Error("Invalid refresh token");
+    }
+
+    // console.log("verified is ", verified);
+    const accessToken = generateAccessToken({
+      id: verified.id,
+      role: verified.role,
+    });
+
+    // console.log("new access token is ...............",accessToken);
+
+    return { accessToken };
+  }
 }

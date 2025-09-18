@@ -4,23 +4,27 @@ import { z } from "zod";
 import PasswordInput from "../../sharedComponents/PasswordInput";
 
 // Validation Schema
-const changeDoctorPasswordSchema = z.object({
-  currentPassword: z.string()
-    .min(8, "Invalid password")
-    .refine((val) => val.trim() === val, {
-      message: "No leading or trailing spaces allowed",
-    }),
-  newPassword: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[a-z]/, "Must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-    .regex(/\d/, "Must contain at least one number")
-    .regex(/[@$!%*?&#]/, "Include at least one special character"),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const changeDoctorPasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, "Invalid password")
+      .refine((val) => val.trim() === val, {
+        message: "No leading or trailing spaces allowed",
+      }),
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-z]/, "Must contain at least one lowercase letter")
+      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+      .regex(/\d/, "Must contain at least one number")
+      .regex(/[@$!%*?&#]/, "Include at least one special character"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 interface ChangeDoctorPasswordModalProps {
   isOpen: boolean;
@@ -36,15 +40,23 @@ interface DoctorPasswordData {
 
 type ChangeDoctorPasswordData = z.infer<typeof changeDoctorPasswordSchema>;
 
-const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordModalProps) => {
+const ChangeDoctorPassword = ({
+  isOpen,
+  onClose,
+  onSave,
+}: ChangeDoctorPasswordModalProps) => {
   const [formData, setFormData] = useState<ChangeDoctorPasswordData>({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof ChangeDoctorPasswordData, string>>>({});
-  const [touched, setTouched] = useState<Record<keyof ChangeDoctorPasswordData, boolean>>({
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ChangeDoctorPasswordData, string>>
+  >({});
+  const [touched, setTouched] = useState<
+    Record<keyof ChangeDoctorPasswordData, boolean>
+  >({
     currentPassword: false,
     newPassword: false,
     confirmPassword: false,
@@ -67,7 +79,9 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
   useEffect(() => {
     const result = changeDoctorPasswordSchema.safeParse(formData);
     if (!result.success) {
-      const fieldErrors: Partial<Record<keyof ChangeDoctorPasswordData, string>> = {};
+      const fieldErrors: Partial<
+        Record<keyof ChangeDoctorPasswordData, string>
+      > = {};
       result.error.errors.forEach((err) => {
         const field = err.path[0] as keyof ChangeDoctorPasswordData;
         fieldErrors[field] = err.message;
@@ -83,7 +97,9 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
 
     const result = changeDoctorPasswordSchema.safeParse(formData);
     if (!result.success) {
-      const fieldErrors: Partial<Record<keyof ChangeDoctorPasswordData, string>> = {};
+      const fieldErrors: Partial<
+        Record<keyof ChangeDoctorPasswordData, string>
+      > = {};
       result.error.errors.forEach((err) => {
         const field = err.path[0] as keyof ChangeDoctorPasswordData;
         fieldErrors[field] = err.message;
@@ -100,9 +116,9 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
     onSave(formData);
     onClose();
     setFormData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     });
     setTouched({
       currentPassword: false,
@@ -117,7 +133,9 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 sm:p-6">
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md sm:max-w-lg relative animate-fadeIn">
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">Change Password</h2>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+            Change Password
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-all duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
@@ -137,7 +155,6 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
               onChange={handleChange}
               error={touched.currentPassword ? errors.currentPassword : ""}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base"
-              
             />
 
             <PasswordInput
@@ -148,7 +165,6 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
               onChange={handleChange}
               error={touched.newPassword ? errors.newPassword : ""}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base"
-             
             />
 
             <PasswordInput
@@ -159,7 +175,6 @@ const ChangeDoctorPassword = ({ isOpen, onClose, onSave }: ChangeDoctorPasswordM
               onChange={handleChange}
               error={touched.confirmPassword ? errors.confirmPassword : ""}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base"
-             
             />
           </div>
 

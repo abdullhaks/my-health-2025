@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaCheckCircle, FaTimesCircle, FaLock, FaUnlock } from "react-icons/fa";
-import { doctorDetails, verifyDoctor, declineDoctor } from "../../api/admin/adminApi";
+import {
+  doctorDetails,
+  verifyDoctor,
+  declineDoctor,
+} from "../../api/admin/adminApi";
 import { Popconfirm, Input } from "antd";
 import toast from "react-hot-toast";
 import { ILocation } from "../../interfaces/doctor";
@@ -33,7 +37,7 @@ const AdminDoctorDetails = () => {
   const handleVerify = async (id: string) => {
     try {
       await verifyDoctor(id);
-      setDoctor(prev => (prev ? { ...prev, adminVerified: 1 } : prev));
+      setDoctor((prev) => (prev ? { ...prev, adminVerified: 1 } : prev));
       toast.success("Doctor verified successfully");
     } catch (err) {
       console.error("Verification failed:", err);
@@ -48,7 +52,7 @@ const AdminDoctorDetails = () => {
     }
     try {
       await declineDoctor(id, rejectReason);
-      setDoctor(prev => (prev ? { ...prev, adminVerified: 2 } : prev));
+      setDoctor((prev) => (prev ? { ...prev, adminVerified: 2 } : prev));
       toast.success("Doctor declined successfully");
       setRejectReason("");
     } catch (err) {
@@ -76,8 +80,18 @@ const AdminDoctorDetails = () => {
     fetchDoctor();
   }, [id]);
 
-  if (loading) return <p className="text-center mt-6 text-gray-600 text-sm sm:text-base">Loading...</p>;
-  if (!doctor) return <p className="text-center mt-6 text-red-600 text-sm sm:text-base">Doctor not found.</p>;
+  if (loading)
+    return (
+      <p className="text-center mt-6 text-gray-600 text-sm sm:text-base">
+        Loading...
+      </p>
+    );
+  if (!doctor)
+    return (
+      <p className="text-center mt-6 text-red-600 text-sm sm:text-base">
+        Doctor not found.
+      </p>
+    );
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8 py-6">
@@ -87,7 +101,11 @@ const AdminDoctorDetails = () => {
           <div className="w-full md:w-1/3 flex justify-center">
             <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-gray-200">
               <img
-                src={doctor.profile ? doctor.profile : "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"}
+                src={
+                  doctor.profile
+                    ? doctor.profile
+                    : "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                }
                 alt="Doctor profile"
                 className="w-full h-full object-cover"
               />
@@ -101,7 +119,8 @@ const AdminDoctorDetails = () => {
             </h2>
             <div className="space-y-2">
               <p className="text-sm sm:text-base text-gray-700">
-                <strong>Email:</strong> <span className="truncate">{doctor.email}</span>
+                <strong>Email:</strong>{" "}
+                <span className="truncate">{doctor.email}</span>
               </p>
               <p className="text-sm sm:text-base text-gray-700">
                 <strong>Graduation:</strong> {doctor.graduation}
@@ -115,11 +134,13 @@ const AdminDoctorDetails = () => {
                   <span className="text-blue-600 font-semibold">Pending</span>
                 ) : doctor.adminVerified === 1 ? (
                   <span className="text-green-600 font-semibold flex items-center">
-                    <FaCheckCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Verified
+                    <FaCheckCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                    Verified
                   </span>
                 ) : (
                   <span className="text-red-600 font-semibold flex items-center">
-                    <FaTimesCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Rejected
+                    <FaTimesCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                    Rejected
                   </span>
                 )}
               </p>
@@ -181,7 +202,9 @@ const AdminDoctorDetails = () => {
                   title="Decline Doctor"
                   description={
                     <div className="space-y-2">
-                      <p className="text-sm">Please provide a reason for rejection:</p>
+                      <p className="text-sm">
+                        Please provide a reason for rejection:
+                      </p>
                       <Input
                         value={rejectReason}
                         onChange={(e) => setRejectReason(e.target.value)}
@@ -195,9 +218,7 @@ const AdminDoctorDetails = () => {
                   okText="Submit"
                   cancelText="Cancel"
                 >
-                  <button
-                    className="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base font-medium"
-                  >
+                  <button className="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base font-medium">
                     Decline
                   </button>
                 </Popconfirm>
@@ -208,20 +229,20 @@ const AdminDoctorDetails = () => {
                   okText="Yes"
                   cancelText="No"
                 >
-                  <button
-                    className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base font-medium"
-                  >
+                  <button className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base font-medium">
                     Verify
                   </button>
                 </Popconfirm>
               </div>
             ) : doctor.adminVerified === 1 ? (
               <span className="text-green-600 font-semibold flex items-center text-sm sm:text-base">
-                <FaCheckCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Verified
+                <FaCheckCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                Verified
               </span>
             ) : (
               <span className="text-red-600 font-semibold flex items-center text-sm sm:text-base">
-                <FaTimesCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Rejected
+                <FaTimesCircle className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                Rejected
               </span>
             )}
           </div>

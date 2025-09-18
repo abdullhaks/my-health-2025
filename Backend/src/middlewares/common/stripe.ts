@@ -1,13 +1,10 @@
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-    apiVersion: '2025-04-30.basil',
+  apiVersion: "2025-04-30.basil",
 });
 
 export default stripe;
-
-
-
 
 export const makePayment = async ({
   priceId,
@@ -34,10 +31,6 @@ export const makePayment = async ({
   return session;
 };
 
-
-
-
-
 export const makeOneTimePayment = async ({
   amount,
   currency = "inr",
@@ -58,7 +51,10 @@ export const makeOneTimePayment = async ({
         price_data: {
           currency,
           product_data: {
-            name: metadata.type === "report_analysis" ? "Report Analysis" : "Doctor Appointment",
+            name:
+              metadata.type === "report_analysis"
+                ? "Report Analysis"
+                : "Doctor Appointment",
             description:
               metadata.type === "report_analysis"
                 ? `Health report analysis fee`
@@ -71,7 +67,7 @@ export const makeOneTimePayment = async ({
     ],
     mode: "payment",
     invoice_creation: {
-    enabled: true,
+      enabled: true,
     },
     success_url: `${process.env.CLIENT_URL}${successPath}?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.CLIENT_URL}${cancelPath}`,
@@ -80,8 +76,3 @@ export const makeOneTimePayment = async ({
 
   return session;
 };
-
-
-
-
-  

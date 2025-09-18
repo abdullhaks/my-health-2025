@@ -40,7 +40,14 @@ interface AppointmentSlot {
   end: Date;
   duration: number;
   fee: number;
-  status: "available" | "unavailable" | "pending" | "confirmed" | "completed" | "cancelled" | "booked";
+  status:
+    | "available"
+    | "unavailable"
+    | "pending"
+    | "confirmed"
+    | "completed"
+    | "cancelled"
+    | "booked";
   sessionId: string;
   appointmentId?: string;
 }
@@ -48,7 +55,14 @@ interface AppointmentSlot {
 interface Notification {
   userId: string;
   message: string;
-  type: "appointment" | "payment" | "blog" | "add" | "newConnection" | "common" | "reportAnalysis";
+  type:
+    | "appointment"
+    | "payment"
+    | "blog"
+    | "add"
+    | "newConnection"
+    | "common"
+    | "reportAnalysis";
   isRead: boolean;
   link?: string;
   mention?: string;
@@ -86,24 +100,32 @@ const DoctorSlots = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newSession, setNewSession] = useState<Session>(defaultSession);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [availableDaySessionSlots, setAvailableDaySessionSlots] = useState<DaySessionSlots[]>([]);
-  const [unavailableDaySessions, setUnavailableDaySessions] = useState<Session[]>([]);
+  const [availableDaySessionSlots, setAvailableDaySessionSlots] = useState<
+    DaySessionSlots[]
+  >([]);
+  const [unavailableDaySessions, setUnavailableDaySessions] = useState<
+    Session[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [validationError, setValidationError] = useState<string>("");
   const socketRef = useRef<Socket | null>(null);
   const [unAvailableDays, setUnAvailableDays] = useState<string[]>([]);
-  const [unAvailableSessions, setUnAvailableSessions] = useState<{ day: string; sessionId: string }[]>([]);
+  const [unAvailableSessions, setUnAvailableSessions] = useState<
+    { day: string; sessionId: string }[]
+  >([]);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const minDate = new Date();
 
-  const notify = async (cancels: {
-    appointmentId: string;
-    userId: string;
-    doctorName: string;
-    date: string;
-    start: Date;
-    end: Date;
-  }[]) => {
+  const notify = async (
+    cancels: {
+      appointmentId: string;
+      userId: string;
+      doctorName: string;
+      date: string;
+      start: Date;
+      end: Date;
+    }[]
+  ) => {
     if (!cancels.length) {
       return;
     }
@@ -119,9 +141,9 @@ const DoctorSlots = () => {
       }) => {
         const notification: Notification = {
           userId: item.userId,
-          message: `Your appointment with Dr.${
-            item.doctorName
-          } on ${new Date(item.date).toLocaleDateString("en-US", {
+          message: `Your appointment with Dr.${item.doctorName} on ${new Date(
+            item.date
+          ).toLocaleDateString("en-US", {
             weekday: "short",
             year: "numeric",
             month: "short",
@@ -168,7 +190,8 @@ const DoctorSlots = () => {
         token = await getAccessToken();
       }
       const socket = io(
-        import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online",
+        import.meta.env.VITE_REACT_APP_SOCKET_URL ||
+          "https://api.abdullhakalamban.online",
         {
           transports: ["websocket"],
           reconnection: true,
@@ -259,7 +282,12 @@ const DoctorSlots = () => {
 
       const isDayUnavailable = unAvailableDays.includes(localDateStr);
 
-      console.log("Generating slots for date:", localDateStr, "Day unavailable:", isDayUnavailable);
+      console.log(
+        "Generating slots for date:",
+        localDateStr,
+        "Day unavailable:",
+        isDayUnavailable
+      );
       if (isDayUnavailable) {
         setAvailableDaySessionSlots([]);
         setUnavailableDaySessions([]);
@@ -342,7 +370,13 @@ const DoctorSlots = () => {
     };
 
     generateSlotsForDate();
-  }, [sessions, selectedDate, bookedSlots, unAvailableDays, unAvailableSessions]);
+  }, [
+    sessions,
+    selectedDate,
+    bookedSlots,
+    unAvailableDays,
+    unAvailableSessions,
+  ]);
 
   const parseTimeToMinutes = (time: string): number => {
     const [h, m] = time.split(":").map(Number);
@@ -478,7 +512,8 @@ const DoctorSlots = () => {
     date: Date,
     action: "unavailable" | "available"
   ) => {
-    const session = "session" in sessionSlots ? sessionSlots.session : sessionSlots;
+    const session =
+      "session" in sessionSlots ? sessionSlots.session : sessionSlots;
     try {
       if (action === "unavailable") {
         const updatedUnavailableSessions = await makeSessionUnavailable(
@@ -489,14 +524,12 @@ const DoctorSlots = () => {
         notify(updatedUnavailableSessions.cancelledAppoitments);
         message.success("Session made unavailable for this date");
       } else {
-        await makeSessionAvailable(
-          doctorId,
-          date,
-          session._id || ''
-        );
+        await makeSessionAvailable(doctorId, date, session._id || "");
         message.success("Session made available for this date");
       }
-      const getUpdatedUnAvailableSessions = await getUnavailableSessions(doctorId);
+      const getUpdatedUnAvailableSessions = await getUnavailableSessions(
+        doctorId
+      );
       setUnAvailableSessions(getUpdatedUnAvailableSessions);
     } catch (error) {
       console.error("Error performing session action:", error);
@@ -504,7 +537,10 @@ const DoctorSlots = () => {
     }
   };
 
-  const handleDayAction = async (action: "unavailable" | "available", date: Date) => {
+  const handleDayAction = async (
+    action: "unavailable" | "available",
+    date: Date
+  ) => {
     try {
       if (action === "unavailable") {
         const updation = await makeDayUnavailable(doctorId, date);
@@ -545,14 +581,12 @@ const DoctorSlots = () => {
 
   const isPastSlot = (start: Date) => start < new Date();
 
-  const isDayUnavailable = unAvailableDays.some(
-    (ud) => {
-      const yyyy = selectedDate.getFullYear();
-      const mm = String(selectedDate.getMonth() + 1).padStart(2, "0");
-      const dd = String(selectedDate.getDate()).padStart(2, "0");
-      return ud === `${yyyy}-${mm}-${dd}`;
-    }
-  );
+  const isDayUnavailable = unAvailableDays.some((ud) => {
+    const yyyy = selectedDate.getFullYear();
+    const mm = String(selectedDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(selectedDate.getDate()).padStart(2, "0");
+    return ud === `${yyyy}-${mm}-${dd}`;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
@@ -732,8 +766,12 @@ const DoctorSlots = () => {
                                 Day
                               </label>
                               <select
-                                value={editingSession ? editingSession.dayOfWeek : ""}
-                                onChange={(e) => handleEditChange("dayOfWeek", e.target.value)}
+                                value={
+                                  editingSession ? editingSession.dayOfWeek : ""
+                                }
+                                onChange={(e) =>
+                                  handleEditChange("dayOfWeek", e.target.value)
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               >
                                 {weekdays.map((day) => (
@@ -749,8 +787,12 @@ const DoctorSlots = () => {
                               </label>
                               <input
                                 type="time"
-                                value={editingSession ? editingSession.startTime : ""}
-                                onChange={(e) => handleEditChange("startTime", e.target.value)}
+                                value={
+                                  editingSession ? editingSession.startTime : ""
+                                }
+                                onChange={(e) =>
+                                  handleEditChange("startTime", e.target.value)
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               />
                             </div>
@@ -760,8 +802,12 @@ const DoctorSlots = () => {
                               </label>
                               <input
                                 type="time"
-                                value={editingSession ? editingSession.endTime : ""}
-                                onChange={(e) => handleEditChange("endTime", e.target.value)}
+                                value={
+                                  editingSession ? editingSession.endTime : ""
+                                }
+                                onChange={(e) =>
+                                  handleEditChange("endTime", e.target.value)
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               />
                             </div>
@@ -770,8 +816,12 @@ const DoctorSlots = () => {
                                 Duration (mins)
                               </label>
                               <select
-                                value={editingSession ? editingSession.duration : ""}
-                                onChange={(e) => handleEditChange("duration", e.target.value)}
+                                value={
+                                  editingSession ? editingSession.duration : ""
+                                }
+                                onChange={(e) =>
+                                  handleEditChange("duration", e.target.value)
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               >
                                 <option value={10}>10</option>
@@ -789,7 +839,9 @@ const DoctorSlots = () => {
                               <input
                                 type="number"
                                 value={editingSession ? editingSession.fee : ""}
-                                onChange={(e) => handleEditChange("fee", e.target.value)}
+                                onChange={(e) =>
+                                  handleEditChange("fee", e.target.value)
+                                }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm"
                               />
                             </div>
@@ -824,7 +876,11 @@ const DoctorSlots = () => {
                                 Day
                               </label>
                               <p className="text-sm text-gray-800 font-medium">
-                                {weekdays.find((d) => d.value === session.dayOfWeek)?.name}
+                                {
+                                  weekdays.find(
+                                    (d) => d.value === session.dayOfWeek
+                                  )?.name
+                                }
                               </p>
                             </div>
                             <div className="space-y-1">
@@ -874,7 +930,9 @@ const DoctorSlots = () => {
                             <Popconfirm
                               title="Remove Session"
                               description="Are you sure you want to delete this session? All booked appointments in this session will be canceled."
-                              onConfirm={() => handleDeleteSession(session._id!)}
+                              onConfirm={() =>
+                                handleDeleteSession(session._id!)
+                              }
                               okText="Yes"
                               cancelText="No"
                             >
@@ -963,7 +1021,9 @@ const DoctorSlots = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleDayAction("unavailable", selectedDate)}
+                      onClick={() =>
+                        handleDayAction("unavailable", selectedDate)
+                      }
                       className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all duration-200 shadow-md min-h-[44px] w-full sm:w-auto"
                     >
                       <FaBan className="text-sm" />
@@ -983,10 +1043,12 @@ const DoctorSlots = () => {
                     <FaBan className="text-2xl text-gray-500" />
                   </div>
                   <p className="text-sm text-gray-600">
-                    This day is marked as unavailable. Click "Open Day" to make it available.
+                    This day is marked as unavailable. Click "Open Day" to make
+                    it available.
                   </p>
                 </div>
-              ) : availableDaySessionSlots.length === 0 && unavailableDaySessions.length === 0 ? (
+              ) : availableDaySessionSlots.length === 0 &&
+                unavailableDaySessions.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
                     <FaClock className="text-2xl text-gray-500" />
@@ -1009,7 +1071,13 @@ const DoctorSlots = () => {
                           </h4>
                           <div className="flex gap-2 mt-2 sm:mt-0">
                             <button
-                              onClick={() => handleSessionAction(ss, selectedDate, "unavailable")}
+                              onClick={() =>
+                                handleSessionAction(
+                                  ss,
+                                  selectedDate,
+                                  "unavailable"
+                                )
+                              }
                               className="flex items-center gap-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-all duration-200 text-sm min-h-[44px]"
                             >
                               <FaBan className="text-sm" />
@@ -1047,7 +1115,9 @@ const DoctorSlots = () => {
                                 bgClass: "bg-green-50",
                                 textClass: "text-green-800",
                                 borderClass: "border-green-200",
-                                icon: <FaCheckCircle className="text-green-600" />,
+                                icon: (
+                                  <FaCheckCircle className="text-green-600" />
+                                ),
                               };
                               break;
                             case "unavailable":
@@ -1063,7 +1133,9 @@ const DoctorSlots = () => {
                                 bgClass: "bg-purple-50",
                                 textClass: "text-purple-800",
                                 borderClass: "border-purple-200",
-                                icon: <FaCheckCircle className="text-purple-600" />,
+                                icon: (
+                                  <FaCheckCircle className="text-purple-600" />
+                                ),
                               };
                               break;
                             case "cancelled":
@@ -1071,7 +1143,9 @@ const DoctorSlots = () => {
                                 bgClass: "bg-red-50",
                                 textClass: "text-red-800",
                                 borderClass: "border-red-200",
-                                icon: <FaTimesCircle className="text-red-600" />,
+                                icon: (
+                                  <FaTimesCircle className="text-red-600" />
+                                ),
                               };
                               break;
                             default:
@@ -1086,7 +1160,11 @@ const DoctorSlots = () => {
                           return (
                             <div
                               key={slot.id}
-                              className={`border ${statusConfig.borderClass} ${statusConfig.bgClass} p-3 rounded-lg transition-all duration-200 hover:shadow-md ${slot.status === "cancelled" ? "opacity-75" : ""}`}
+                              className={`border ${statusConfig.borderClass} ${
+                                statusConfig.bgClass
+                              } p-3 rounded-lg transition-all duration-200 hover:shadow-md ${
+                                slot.status === "cancelled" ? "opacity-75" : ""
+                              }`}
                             >
                               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div className="flex items-center gap-3">
@@ -1142,7 +1220,13 @@ const DoctorSlots = () => {
                                 </p>
                               </div>
                               <button
-                                onClick={() => handleSessionAction(session, selectedDate, "available")}
+                                onClick={() =>
+                                  handleSessionAction(
+                                    session,
+                                    selectedDate,
+                                    "available"
+                                  )
+                                }
                                 className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-md text-sm min-h-[44px] mt-2 sm:mt-0 w-full sm:w-auto"
                               >
                                 <FaCheckCircle className="text-sm" />
@@ -1157,8 +1241,8 @@ const DoctorSlots = () => {
                               </span>
                               <span>Duration: {session.duration} mins</span>
                               <span className="flex items-center gap-1">
-                                <FaRupeeSign className="text-xs" />
-                                ₹{session.fee}
+                                <FaRupeeSign className="text-xs" />₹
+                                {session.fee}
                               </span>
                             </div>
                           </div>

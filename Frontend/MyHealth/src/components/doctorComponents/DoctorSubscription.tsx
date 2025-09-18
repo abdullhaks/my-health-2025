@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { FaCheckCircle } from 'react-icons/fa';
-import { loadStripe } from '@stripe/stripe-js';
-import { handlePayment, getSubscriptions } from '../../api/doctor/doctorApi';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store/store';
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { FaCheckCircle } from "react-icons/fa";
+import { loadStripe } from "@stripe/stripe-js";
+import { handlePayment, getSubscriptions } from "../../api/doctor/doctorApi";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
 
 type Plan = {
   id: string;
@@ -37,32 +37,35 @@ const DoctorSubscriptionPlans = () => {
     try {
       const response = await getSubscriptions();
       if (response.data.length) {
-        console.log("ksjfdsk jsoifjsdiofjjsjfoi lskfj----------------", response.data);
+        console.log(
+          "ksjfdsk jsoifjsdiofjjsjfoi lskfj----------------",
+          response.data
+        );
         let existingPlans = response.data.filter((plan: Plan) => plan.active);
         setPlans(existingPlans);
         setLoading(false);
       }
     } catch (error) {
-      toast.error('Failed to fetch subscription plans');
+      toast.error("Failed to fetch subscription plans");
       setLoading(false);
     }
   };
 
   const handleCheckout = async (priceId: string) => {
     if (isPremium) {
-      toast.info('You are already a premium member');
+      toast.info("You are already a premium member");
       return;
     }
 
     if (!doctor || !doctor._id) {
-      toast.info('Subscription failed');
+      toast.info("Subscription failed");
       return;
     }
     try {
       const data = await handlePayment(priceId, {
         doctorId: doctor?._id,
-        type: 'subscription',
-        role: 'doctor',
+        type: "subscription",
+        role: "doctor",
       });
       const stripe = await stripePromise;
       if (stripe && data.url) {
@@ -70,7 +73,7 @@ const DoctorSubscriptionPlans = () => {
         window.location.href = data.url;
       }
     } catch (error) {
-      toast.error('Failed to initiate payment');
+      toast.error("Failed to initiate payment");
     }
   };
 
@@ -83,11 +86,15 @@ const DoctorSubscriptionPlans = () => {
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-purple-500 border-t-transparent"></div>
-            <span className="ml-3 text-gray-600 text-sm sm:text-base">Loading plans...</span>
+            <span className="ml-3 text-gray-600 text-sm sm:text-base">
+              Loading plans...
+            </span>
           </div>
         ) : plans.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-sm sm:text-base">No plans available</p>
+            <p className="text-gray-600 text-sm sm:text-base">
+              No plans available
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -95,7 +102,7 @@ const DoctorSubscriptionPlans = () => {
               <div
                 key={plan.id}
                 className={`relative bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 p-4 sm:p-6 border ${
-                  idx === 1 ? 'border-purple-300' : 'border-gray-100'
+                  idx === 1 ? "border-purple-300" : "border-gray-100"
                 }`}
               >
                 {idx === 1 && (
@@ -105,20 +112,22 @@ const DoctorSubscriptionPlans = () => {
                 )}
                 <div className="text-center">
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mt-4 truncate">
-                    {plan.name || 'Unnamed Plan'}
+                    {plan.name || "Unnamed Plan"}
                   </h3>
                   <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
                     {plan.default_price
-                      ? `${(plan.default_price.unit_amount / 100).toFixed(2)} ${plan.default_price.currency.toUpperCase()}`
-                      : 'N/A'}
+                      ? `${(plan.default_price.unit_amount / 100).toFixed(
+                          2
+                        )} ${plan.default_price.currency.toUpperCase()}`
+                      : "N/A"}
                     <span className="text-xs sm:text-sm font-normal text-gray-600">
                       {plan.default_price?.recurring?.interval
                         ? ` / ${plan.default_price.recurring.interval}`
-                        : ' / one-time'}
+                        : " / one-time"}
                     </span>
                   </p>
                   <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                    {plan.description || 'No description available'}
+                    {plan.description || "No description available"}
                   </p>
                 </div>
                 <ul className="mt-4 space-y-2 text-sm sm:text-base text-gray-700">
@@ -139,12 +148,12 @@ const DoctorSubscriptionPlans = () => {
                   onClick={() => handleCheckout(plan.default_price?.id || "")}
                   className={`mt-4 sm:mt-6 w-full px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 min-h-[44px] ${
                     isPremium || !plan.default_price
-                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg'
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg"
                   }`}
                   disabled={isPremium || !plan.default_price}
                 >
-                  {isPremium ? 'Already Subscribed' : 'Buy Now'}
+                  {isPremium ? "Already Subscribed" : "Buy Now"}
                 </button>
               </div>
             ))}

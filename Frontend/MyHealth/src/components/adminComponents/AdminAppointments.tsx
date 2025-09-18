@@ -45,11 +45,15 @@ const AdminAppointments = () => {
     try {
       const response = await getAppointments(page, limit, {
         status: filters.status,
-        startDate: filters.dateRange ? filters.dateRange[0].toISOString() : undefined,
-        endDate: filters.dateRange ? filters.dateRange[1].toISOString() : undefined,
+        startDate: filters.dateRange
+          ? filters.dateRange[0].toISOString()
+          : undefined,
+        endDate: filters.dateRange
+          ? filters.dateRange[1].toISOString()
+          : undefined,
       });
 
-      console.log("appo resp is ",response);
+      console.log("appo resp is ", response);
       setAppointments(response.appointments);
       setTotalPages(response.totalPages);
     } catch (err) {
@@ -63,7 +67,10 @@ const AdminAppointments = () => {
     fetchAppointments(currentPage);
   }, [currentPage, filters]);
 
-  const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
+  const handleFilterChange = (
+    key: string,
+    value: string | [moment.Moment, moment.Moment] | null
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -74,7 +81,9 @@ const AdminAppointments = () => {
       dataIndex: "userName",
       key: "userName",
       render: (userName: string) => (
-        <span className="text-sm sm:text-base text-gray-700 truncate">{userName}</span>
+        <span className="text-sm sm:text-base text-gray-700 truncate">
+          {userName}
+        </span>
       ),
     },
     {
@@ -82,16 +91,19 @@ const AdminAppointments = () => {
       dataIndex: "doctorName",
       key: "doctorName",
       render: (doctorName: string) => (
-        <span className="text-sm sm:text-base text-gray-700 truncate">Dr. {doctorName}</span>
+        <span className="text-sm sm:text-base text-gray-700 truncate">
+          Dr. {doctorName}
+        </span>
       ),
     },
     {
       title: "Date & Time",
       dataIndex: "date",
       key: "date",
-      render: (date: string,record:Appointment) => (
+      render: (date: string, record: Appointment) => (
         <span className="text-sm sm:text-base text-gray-700">
-          {moment(date).format("MMM DD, YYYY")} {moment(record.start).format("h:mm A")}
+          {moment(date).format("MMM DD, YYYY")}{" "}
+          {moment(record.start).format("h:mm A")}
         </span>
       ),
     },
@@ -100,7 +112,9 @@ const AdminAppointments = () => {
       dataIndex: "duration",
       key: "duration",
       render: (duration: number) => (
-        <span className="text-sm sm:text-base text-gray-700">{duration} mins</span>
+        <span className="text-sm sm:text-base text-gray-700">
+          {duration} mins
+        </span>
       ),
     },
     {
@@ -193,7 +207,10 @@ const AdminAppointments = () => {
             <RangePicker
               onChange={(dates) => {
                 if (dates && dates[0] && dates[1]) {
-                  handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                  handleFilterChange("dateRange", [
+                    moment(dates[0].toDate()),
+                    moment(dates[1].toDate()),
+                  ]);
                 } else {
                   handleFilterChange("dateRange", null);
                 }

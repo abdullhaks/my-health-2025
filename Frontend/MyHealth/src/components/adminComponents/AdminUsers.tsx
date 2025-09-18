@@ -93,28 +93,44 @@ const AdminUsers = () => {
 
       {/* Table */}
       {loading ? (
-        <p className="text-center text-gray-600 text-sm sm:text-base">Loading...</p>
+        <p className="text-center text-gray-600 text-sm sm:text-base">
+          Loading...
+        </p>
       ) : (
         <div className="bg-white rounded-xl shadow-md overflow-x-auto">
           <table className="min-w-[600px] w-full">
             <thead className="bg-green-50">
               <tr>
-                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Name</th>
-                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Email</th>
-                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">Status</th>
-                <th className="py-3 px-4 text-center text-sm sm:text-base font-semibold text-gray-700">Action</th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">
+                  Name
+                </th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">
+                  Email
+                </th>
+                <th className="py-3 px-4 text-left text-sm sm:text-base font-semibold text-gray-700">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-center text-sm sm:text-base font-semibold text-gray-700">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-6 text-gray-500 text-sm sm:text-base">
+                  <td
+                    colSpan={4}
+                    className="text-center py-6 text-gray-500 text-sm sm:text-base"
+                  >
                     No users found.
                   </td>
                 </tr>
               ) : (
                 users.map((user) => (
-                  <tr key={user._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={user._id}
+                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                  >
                     <td className="py-3 px-4 text-sm sm:text-base text-gray-700 truncate">
                       {user.fullName}
                     </td>
@@ -133,8 +149,12 @@ const AdminUsers = () => {
                     <td className="py-3 px-4 text-center">
                       <Popconfirm
                         title="Manage user"
-                        description={`Are you sure to ${user.isBlocked ? "unblock" : "block"} this user?`}
-                        onConfirm={() => handleBlockUnblock(user._id, user.isBlocked)}
+                        description={`Are you sure to ${
+                          user.isBlocked ? "unblock" : "block"
+                        } this user?`}
+                        onConfirm={() =>
+                          handleBlockUnblock(user._id, user.isBlocked)
+                        }
                         okText="Yes"
                         cancelText="No"
                       >
@@ -147,11 +167,13 @@ const AdminUsers = () => {
                         >
                           {user.isBlocked ? (
                             <span className="flex items-center justify-center">
-                              <FaUnlock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Unblock
+                              <FaUnlock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                              Unblock
                             </span>
                           ) : (
                             <span className="flex items-center justify-center">
-                              <FaLock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" /> Block
+                              <FaLock className="mr-1 w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                              Block
                             </span>
                           )}
                         </button>

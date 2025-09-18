@@ -1,4 +1,4 @@
-import { inject , injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import IUserAppointmentService from "../interfaces/IUserAppointmentServices";
 import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import IAppointmentsRepository from "../../../repositories/interfaces/IAppointmentsRepository";
@@ -8,13 +8,12 @@ import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRep
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IUser } from "../../../dto/userDTO";
-import {IDoctor} from "../../../dto/doctorDTO";
+import { IDoctor } from "../../../dto/doctorDTO";
 import appointmentModel from "../../../models/appointment";
 
 @injectable()
 export default class UserAppointmentService implements IUserAppointmentService {
   constructor(
- 
     @inject("IAppointmentsRepository")
     private _appointmentsRepository: IAppointmentsRepository,
     @inject("IUserRepository") private _userRepository: IUserRepository,
@@ -32,10 +31,12 @@ export default class UserAppointmentService implements IUserAppointmentService {
     sort: string,
     page: number,
     limit: number
-  ): Promise<{doctors:IDoctor[] | null ,
-              total:number,
-              page:number,
-              totalPages:number}> {
+  ): Promise<{
+    doctors: IDoctor[] | null;
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
     const response = await this._doctorRepository.fetchingDoctors(
       search,
       location,
@@ -57,26 +58,25 @@ export default class UserAppointmentService implements IUserAppointmentService {
           return userWithoutPassword;
         })
       );
-    
+
       console.log("doctors list from backend.......", result);
 
-     
       response.doctors = result;
-
     }
 
-      return response;
-   
+    return response;
   }
-
-
 
   async getUserAppointments(
     userId: string,
     page: number,
     limit: number,
-    filters: { appointmentStatus?: string; startDate?: string; endDate?: string }
-  ): Promise<{ appointments: IAppointmentDTO[]|null; totalPages: number }> {
+    filters: {
+      appointmentStatus?: string;
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<{ appointments: IAppointmentDTO[] | null; totalPages: number }> {
     console.log("userid from service...", userId);
 
     const query: any = { userId };
@@ -94,72 +94,76 @@ export default class UserAppointmentService implements IUserAppointmentService {
     const expiredAppointments = await this._appointmentsRepository.findAll({
       userId: userId,
       appointmentStatus: "booked",
-      end: { $lt: new Date() }
+      end: { $lt: new Date() },
     });
 
     // Then, update their status
     if (expiredAppointments && expiredAppointments.length > 0) {
       await this._appointmentsRepository.updateMany(
-        { userId: userId, appointmentStatus: "booked", end: { $lt: new Date() } },
+        {
+          userId: userId,
+          appointmentStatus: "booked",
+          end: { $lt: new Date() },
+        },
         { appointmentStatus: "cancelled", paymentStatus: "refunded" }
       );
 
-      await Promise.all(expiredAppointments.map(async (appointment: any) => {
-        await this._userRepository.update(appointment.userId, {
-          $inc: { walletBalance: appointment.fee },
-        });
-        // Optionally update analytics here if needed
-        await this._transactionRepository.create({
-          from: "admin",
-          to: "user",
-          method: "wallet",
-          amount: appointment.fee,
-          paymentFor: "refund",
-          userId: appointment.userId,
-          doctorId: appointment.doctorId
-        });
-      }));
+      await Promise.all(
+        expiredAppointments.map(async (appointment: any) => {
+          await this._userRepository.update(appointment.userId, {
+            $inc: { walletBalance: appointment.fee },
+          });
+          // Optionally update analytics here if needed
+          await this._transactionRepository.create({
+            from: "admin",
+            to: "user",
+            method: "wallet",
+            amount: appointment.fee,
+            paymentFor: "refund",
+            userId: appointment.userId,
+            doctorId: appointment.doctorId,
+          });
+        })
+      );
     }
 
-    let {appointments,totalPages} = await this._appointmentsRepository.getAllAppointments(page, limit, query);
+    let { appointments, totalPages } =
+      await this._appointmentsRepository.getAllAppointments(page, limit, query);
 
-
-    if(appointments){
-    const profile = new Map();
-  const updatedAppointments = await Promise.all(
-    appointments.map(async (item: any) => {
-      if (profile.has(item.doctorId)) {
-        item.profile = profile.get(item.doctorId);
-        return item;
-      } else {
-        const doctor = await this._doctorRepository.findOne({ _id: item.doctorId });
-        if (doctor) {
-          const url = await getSignedImageURL(doctor.profile);
-          if (url) {
-            profile.set(item.doctorId, url);
-            item.profile = url;
-          }else{
-            item.profile = ""
+    if (appointments) {
+      const profile = new Map();
+      const updatedAppointments = await Promise.all(
+        appointments.map(async (item: any) => {
+          if (profile.has(item.doctorId)) {
+            item.profile = profile.get(item.doctorId);
+            return item;
+          } else {
+            const doctor = await this._doctorRepository.findOne({
+              _id: item.doctorId,
+            });
+            if (doctor) {
+              const url = await getSignedImageURL(doctor.profile);
+              if (url) {
+                profile.set(item.doctorId, url);
+                item.profile = url;
+              } else {
+                item.profile = "";
+              }
+            }
+            return item;
           }
-        }
-        return item;
+        })
+      );
+
+      if (updatedAppointments) {
+        appointments = updatedAppointments;
       }
-    })
-  );
+    }
 
-  if(updatedAppointments){
-    appointments = updatedAppointments
+    return { appointments, totalPages };
   }
 
-    };
-
-
-    return {appointments,totalPages};
-  }
- 
-  async cancelAppointment(
-    appointmentId: string 
-  ): Promise<{
+  async cancelAppointment(appointmentId: string): Promise<{
     status: boolean;
     message: string;
     updatedUser: Partial<IUser>;
@@ -185,8 +189,8 @@ export default class UserAppointmentService implements IUserAppointmentService {
         amount: response.fee,
         paymentFor: "refund",
         userId: response.userId,
-        doctorId:response.doctorId
-      }); 
+        doctorId: response.doctorId,
+      });
 
       if (updateWalet) {
         const { password, ...userWithoutPassword } = updateWalet.toObject();
@@ -233,7 +237,9 @@ export default class UserAppointmentService implements IUserAppointmentService {
     }
 
     // Generate a unique transactionId for wallet payment
-    let transactionId = `wallet_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    let transactionId = `wallet_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
 
     const userUpdate = await this._userRepository.update(data.userId, {
       $inc: { walletBalance: -data.fee },
@@ -250,7 +256,7 @@ export default class UserAppointmentService implements IUserAppointmentService {
       paymentFor: "appointment",
       userId: userUpdate?._id.toString(),
       doctorId: data.doctorId,
-      transactionId
+      transactionId,
     });
 
     console.log("updated user is ......", userUpdate);
@@ -262,36 +268,22 @@ export default class UserAppointmentService implements IUserAppointmentService {
     console.log("Appointment created:", appointment);
 
     return appointment;
-  };
+  }
 
+  async activeBooking(
+    userId: string,
+    doctorId: string
+  ): Promise<{ status: boolean }> {
+    const existingAppointment = await appointmentModel.findOne({
+      userId: userId,
+      doctorId: doctorId,
+      appointmentStatus: "booked",
+    });
 
-
-async activeBooking(userId: string, doctorId: string): Promise<{ status: boolean; }> {
-  
- 
-
-  const existingAppointment = await appointmentModel.findOne({
-    userId: userId,
-    doctorId: doctorId,
-    appointmentStatus: "booked",
-  });
-
-  if (existingAppointment) {
-    return { status: true };
-  } else {
-    return { status: false };
+    if (existingAppointment) {
+      return { status: true };
+    } else {
+      return { status: false };
+    }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-};

@@ -1,78 +1,96 @@
-import { useEffect, useState, useCallback, memo } from 'react';
-import { FaEdit, FaTrash, FaEye, FaPlus } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { 
-    getAdds,
-  //  deleteAdd 
-  } from '../../api/doctor/doctorApi';
-import { useSelector } from 'react-redux';
-import { advertisement } from '../../interfaces/advertisement';
-import { IDoctorData } from '../../interfaces/doctor';
+import { useEffect, useState, useCallback, memo } from "react";
+import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import {
+  getAdds,
+  //  deleteAdd
+} from "../../api/doctor/doctorApi";
+import { useSelector } from "react-redux";
+import { advertisement } from "../../interfaces/advertisement";
+import { IDoctorData } from "../../interfaces/doctor";
 
 // Blog Card Component
-const AddCard = memo(({ add,onEdit, onDelete }: {
-  add: advertisement;
-  onView: (add: advertisement) => void;
-  onEdit: (add: advertisement) => void;
-  onDelete: (addId: string) => void;
-}) => (
-  <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
-    <video
+const AddCard = memo(
+  ({
+    add,
+    onEdit,
+    onDelete,
+  }: {
+    add: advertisement;
+    onView: (add: advertisement) => void;
+    onEdit: (add: advertisement) => void;
+    onDelete: (addId: string) => void;
+  }) => (
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+      <video
         src={add.videoUrl}
         className="w-full h-48 object-cover rounded-t-xl"
         controls
-        preload="metadata">
-    </video>
+        preload="metadata"
+      ></video>
 
-    <div className="p-4 space-y-2">
-      <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">{add.title}</h3>
-      
-      <div className="flex flex-wrap gap-1">
-        {add.tags.slice(0, 3).map((tag: string, index: number) => (
-          <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-            {tag}
-          </span>
-        ))}
-        {add.tags.length > 3 && <span className="text-gray-400 text-xs">+{add.tags.length - 3}</span>}
-      </div>
-      <div className="flex justify-between items-center pt-2">
-        <div className="flex items-center gap-4 text-gray-500 text-sm">
-          <span className="flex items-center gap-1">
-            <FaEye className="text-red-400" aria-label="Likes" />
-            {add.views}
-          </span>
-          <span>{add.createdAt ? new Date(add.createdAt).toLocaleDateString() : 'N/A'}</span>
+      <div className="p-4 space-y-2">
+        <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
+          {add.title}
+        </h3>
+
+        <div className="flex flex-wrap gap-1">
+          {add.tags.slice(0, 3).map((tag: string, index: number) => (
+            <span
+              key={index}
+              className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+            >
+              {tag}
+            </span>
+          ))}
+          {add.tags.length > 3 && (
+            <span className="text-gray-400 text-xs">
+              +{add.tags.length - 3}
+            </span>
+          )}
         </div>
-        <div className="flex gap-2">
-          {/* <button
+        <div className="flex justify-between items-center pt-2">
+          <div className="flex items-center gap-4 text-gray-500 text-sm">
+            <span className="flex items-center gap-1">
+              <FaEye className="text-red-400" aria-label="Likes" />
+              {add.views}
+            </span>
+            <span>
+              {add.createdAt
+                ? new Date(add.createdAt).toLocaleDateString()
+                : "N/A"}
+            </span>
+          </div>
+          <div className="flex gap-2">
+            {/* <button
             onClick={() => onView(add)}
             className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
             aria-label={`View ${add.title}`}
           >
             <FaEye />
           </button> */}
-          <button
-            onClick={() => onEdit(add)}
-            className="text-green-500 hover:bg-green-50 p-2 rounded-lg transition-colors"
-            aria-label={`Edit ${add.title}`}
-          >
-            <FaEdit />
-          </button>
-          <button
-            onClick={() => onDelete(add._id || '')}
-            className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-            aria-label={`Delete ${add.title}`}
-          >
-            <FaTrash />
-          </button>
+            <button
+              onClick={() => onEdit(add)}
+              className="text-green-500 hover:bg-green-50 p-2 rounded-lg transition-colors"
+              aria-label={`Edit ${add.title}`}
+            >
+              <FaEdit />
+            </button>
+            <button
+              onClick={() => onDelete(add._id || "")}
+              className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
+              aria-label={`Delete ${add.title}`}
+            >
+              <FaTrash />
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-));
+  )
+);
 
 const DoctorAdds = () => {
-
   const Doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
   const [adds, setAdds] = useState<advertisement[]>([]);
   const [page, setPage] = useState(1);
@@ -85,13 +103,13 @@ const DoctorAdds = () => {
   const fetchAdds = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await getAdds(Doctor._id,page, limit);
-      console.log("response........... response..........",response.data.adds);
+      const response = await getAdds(Doctor._id, page, limit);
+      console.log("response........... response..........", response.data.adds);
       setAdds(response.data.adds);
       setTotalPages(response.totalPages || 1);
       setError(null);
     } catch (err) {
-      setError('Failed to fetch adds. Please try again.');
+      setError("Failed to fetch adds. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -101,30 +119,35 @@ const DoctorAdds = () => {
     fetchAdds();
   }, [fetchAdds]);
 
-  const handleViewAdd = useCallback((add: advertisement) => {
-    navigate('/doctor/add', { state: { add } });
-  }, [navigate]);
+  const handleViewAdd = useCallback(
+    (add: advertisement) => {
+      navigate("/doctor/add", { state: { add } });
+    },
+    [navigate]
+  );
 
-  const handleEditAdd = useCallback((add: advertisement) => {
-    navigate('/doctor/advertisement-create', { state: { add } });
-  }, [navigate]);
+  const handleEditAdd = useCallback(
+    (add: advertisement) => {
+      navigate("/doctor/advertisement-create", { state: { add } });
+    },
+    [navigate]
+  );
 
   const handleDeleteAdd = useCallback(async () => {
-    if (window.confirm('Are you sure you want to delete this add?')) {
+    if (window.confirm("Are you sure you want to delete this add?")) {
       try {
         // await deleteAdd(addId);
         // setAdds(prev => prev.filter(add => add._id !== addId));
         setError(null);
       } catch (err) {
-        setError('Failed to delete add. Please try again.');
+        setError("Failed to delete add. Please try again.");
       }
     }
   }, []);
 
   const handleCreateAdd = useCallback(() => {
-    navigate('/doctor/advertisement-create', { state: { add: null } });
+    navigate("/doctor/advertisement-create", { state: { add: null } });
   }, [navigate]);
-
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -153,7 +176,7 @@ const DoctorAdds = () => {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {adds.map(add => (
+            {adds.map((add) => (
               <AddCard
                 key={add._id}
                 add={add}
@@ -172,7 +195,9 @@ const DoctorAdds = () => {
             >
               Previous
             </button>
-            <span className="text-gray-700">Page {page} of {totalPages}</span>
+            <span className="text-gray-700">
+              Page {page} of {totalPages}
+            </span>
             <button
               onClick={() => handlePageChange(page + 1)}
               disabled={page === totalPages}

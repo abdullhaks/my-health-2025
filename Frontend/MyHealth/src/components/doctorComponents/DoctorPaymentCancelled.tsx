@@ -1,6 +1,5 @@
-
-import { useNavigate } from 'react-router-dom';
-import { XCircle } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+import { XCircle } from "lucide-react";
 
 const DoctorPaymentCancelled = () => {
   const navigate = useNavigate();
@@ -16,7 +15,7 @@ const DoctorPaymentCancelled = () => {
           Your payment was not completed. Please try again or contact support.
         </p>
         <button
-          onClick={() => navigate('/doctor/subscriptions')} // Or wherever plans are shown
+          onClick={() => navigate("/doctor/subscriptions")} // Or wherever plans are shown
           className="mt-6 w-full py-3 cursor-pointer text-white font-semibold rounded-xl bg-gradient-to-r from-purple-700 to-pink-500 hover:opacity-90 transition"
         >
           Try Again

@@ -1,15 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
-import { FaSave, FaTimes, FaTag, FaImage, FaUpload } from 'react-icons/fa';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { 
+import { useEffect, useState, useCallback } from "react";
+import { FaSave, FaTimes, FaTag, FaImage, FaUpload } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import {
   createBlog,
-  directFileUpload, 
-  updateBlog 
-} from '../../api/doctor/doctorApi';
-import { message } from 'antd';
-import { IDoctorData } from '../../interfaces/doctor';
-import { ApiError } from '../../interfaces/error';
+  directFileUpload,
+  updateBlog,
+} from "../../api/doctor/doctorApi";
+import { message } from "antd";
+import { IDoctorData } from "../../interfaces/doctor";
+import { ApiError } from "../../interfaces/error";
 
 const DoctorBlogEditAndCreate = () => {
   const location = useLocation();
@@ -18,214 +18,271 @@ const DoctorBlogEditAndCreate = () => {
   const Doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
 
   const [formData, setFormData] = useState({
-    title: blog?.title || '',
-    thumbnail: blog?.thumbnail || '',
-    newthumbnail: '',
-    content: blog?.content || '',
-    img1: blog?.img1 || '',
-    newimg1: '',
-    img2: blog?.img2 || '',
-    newimg2: '',
-    img3: blog?.img3 || '',
-    newimg3: '',
+    title: blog?.title || "",
+    thumbnail: blog?.thumbnail || "",
+    newthumbnail: "",
+    content: blog?.content || "",
+    img1: blog?.img1 || "",
+    newimg1: "",
+    img2: blog?.img2 || "",
+    newimg2: "",
+    img3: blog?.img3 || "",
+    newimg3: "",
     tags: blog?.tags || [],
   });
-  
-  const [newTag, setNewTag] = useState('');
+
+  const [newTag, setNewTag] = useState("");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [img1File, setImg1File] = useState<File | null>(null);
   const [img2File, setImg2File] = useState<File | null>(null);
   const [img3File, setImg3File] = useState<File | null>(null);
   const [originalImages, setOriginalImages] = useState({
-    thumbnail: blog?.thumbnail || '',
-    img1: blog?.img1 || '',
-    img2: blog?.img2 || '',
-    img3: blog?.img3 || '',
+    thumbnail: blog?.thumbnail || "",
+    img1: blog?.img1 || "",
+    img2: blog?.img2 || "",
+    img3: blog?.img3 || "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: boolean }>({});
+  const [uploadProgress, setUploadProgress] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   useEffect(() => {
     if (blog) {
       setFormData({
-        title: blog.title || '',
-        thumbnail: blog.thumbnail || '',
-        newthumbnail: '',
-        content: blog.content || '',
-        img1: blog.img1 || '',
-        newimg1: '',
-        img2: blog.img2 || '',
-        newimg2: '',
-        img3: blog.img3 || '',
-        newimg3: '',
+        title: blog.title || "",
+        thumbnail: blog.thumbnail || "",
+        newthumbnail: "",
+        content: blog.content || "",
+        img1: blog.img1 || "",
+        newimg1: "",
+        img2: blog.img2 || "",
+        newimg2: "",
+        img3: blog.img3 || "",
+        newimg3: "",
         tags: blog.tags || [],
       });
       setOriginalImages({
-        thumbnail: blog.thumbnail || '',
-        img1: blog.img1 || '',
-        img2: blog.img2 || '',
-        img3: blog.img3 || '',
+        thumbnail: blog.thumbnail || "",
+        img1: blog.img1 || "",
+        img2: blog.img2 || "",
+        img3: blog.img3 || "",
       });
     }
   }, [blog]);
 
   const validateForm = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
-    
+
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = "Title is required";
     } else if (formData.title.length < 3) {
-      newErrors.title = 'Title must be at least 3 characters long';
+      newErrors.title = "Title must be at least 3 characters long";
     } else if (formData.title.length > 100) {
-      newErrors.title = 'Title must be less than 100 characters';
+      newErrors.title = "Title must be less than 100 characters";
     }
-    
+
     if (!formData.content.trim()) {
-      newErrors.content = 'Content is required';
+      newErrors.content = "Content is required";
     } else if (formData.content.length < 50) {
-      newErrors.content = 'Content must be at least 50 characters long';
+      newErrors.content = "Content must be at least 50 characters long";
     } else if (formData.content.length > 2000) {
-      newErrors.content = 'Content must be less than 2000 characters';
+      newErrors.content = "Content must be less than 2000 characters";
     }
-    
+
     if (!formData.thumbnail && !thumbnailFile) {
-      newErrors.thumbnail = 'Thumbnail is required';
+      newErrors.thumbnail = "Thumbnail is required";
     }
-    
+
     if (formData.tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
+      newErrors.tags = "At least one tag is required";
     } else if (formData.tags.length > 10) {
-      newErrors.tags = 'Maximum 10 tags allowed';
+      newErrors.tags = "Maximum 10 tags allowed";
     }
 
     const validateFile = (file: File | null, fieldName: string) => {
       if (file) {
         if (file.size > 5 * 1024 * 1024) {
-          newErrors[fieldName] = `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} file size exceeds 5MB`;
+          newErrors[fieldName] = `${
+            fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+          } file size exceeds 5MB`;
         }
-        if (!file.type.startsWith('image/')) {
-          newErrors[fieldName] = `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} must be an image file`;
+        if (!file.type.startsWith("image/")) {
+          newErrors[fieldName] = `${
+            fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+          } must be an image file`;
         }
       }
     };
 
-    validateFile(thumbnailFile, 'thumbnail');
-    validateFile(img1File, 'img1');
-    validateFile(img2File, 'img2');
-    validateFile(img3File, 'img3');
+    validateFile(thumbnailFile, "thumbnail");
+    validateFile(img1File, "img1");
+    validateFile(img2File, "img2");
+    validateFile(img3File, "img3");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [formData, thumbnailFile, img1File, img2File, img3File]);
 
-  const handleInputChange = useCallback((field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  }, [errors]);
+  const handleInputChange = useCallback(
+    (field: string, value: string) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: "" }));
+      }
+    },
+    [errors]
+  );
 
   const addTag = useCallback(() => {
     const trimmedTag = newTag.trim();
-    if (trimmedTag && formData.tags.length < 10 && !formData.tags.includes(trimmedTag)) {
-      setFormData(prev => ({ ...prev, tags: [...prev.tags, trimmedTag] }));
-      setNewTag('');
+    if (
+      trimmedTag &&
+      formData.tags.length < 10 &&
+      !formData.tags.includes(trimmedTag)
+    ) {
+      setFormData((prev) => ({ ...prev, tags: [...prev.tags, trimmedTag] }));
+      setNewTag("");
       if (errors.tags) {
-        setErrors(prev => ({ ...prev, tags: '' }));
+        setErrors((prev) => ({ ...prev, tags: "" }));
       }
     }
   }, [newTag, formData.tags, errors.tags]);
 
-  const handleTagKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag();
-    }
-  }, [addTag]);
+  const handleTagKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addTag();
+      }
+    },
+    [addTag]
+  );
 
   const removeTag = useCallback((tagToRemove: string) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      tags: prev.tags.filter((tag: string) => tag !== tagToRemove) 
+    setFormData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag: string) => tag !== tagToRemove),
     }));
   }, []);
 
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, type: 'thumbnail' | 'img1' | 'img2' | 'img3') => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileChange = useCallback(
+    (
+      e: React.ChangeEvent<HTMLInputElement>,
+      type: "thumbnail" | "img1" | "img2" | "img3"
+    ) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setErrors(prev => ({ ...prev, [type]: 'Please select a valid image file' }));
-      return;
-    }
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({
+          ...prev,
+          [type]: "Please select a valid image file",
+        }));
+        return;
+      }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors(prev => ({ ...prev, [type]: 'File size must be less than 5MB' }));
-      return;
-    }
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors((prev) => ({
+          ...prev,
+          [type]: "File size must be less than 5MB",
+        }));
+        return;
+      }
 
-    const previewUrl = URL.createObjectURL(file);
+      const previewUrl = URL.createObjectURL(file);
 
-    const updates: {newthumbnail?:string;newimg1?:string;newimg2?:string;newimg3?:string} = {};
-    if (type === 'thumbnail') {
-      setThumbnailFile(file);
-      updates.newthumbnail = previewUrl;
-    } else if (type === 'img1') {
-      setImg1File(file);
-      updates.newimg1 = previewUrl;
-    } else if (type === 'img2') {
-      setImg2File(file);
-      updates.newimg2 = previewUrl;
-    } else if (type === 'img3') {
-      setImg3File(file);
-      updates.newimg3 = previewUrl;
-    }
+      const updates: {
+        newthumbnail?: string;
+        newimg1?: string;
+        newimg2?: string;
+        newimg3?: string;
+      } = {};
+      if (type === "thumbnail") {
+        setThumbnailFile(file);
+        updates.newthumbnail = previewUrl;
+      } else if (type === "img1") {
+        setImg1File(file);
+        updates.newimg1 = previewUrl;
+      } else if (type === "img2") {
+        setImg2File(file);
+        updates.newimg2 = previewUrl;
+      } else if (type === "img3") {
+        setImg3File(file);
+        updates.newimg3 = previewUrl;
+      }
 
-    setFormData(prev => ({ ...prev, ...updates }));
-    if (errors[type]) {
-      setErrors(prev => ({ ...prev, [type]: '' }));
-    }
-  }, [errors]);
+      setFormData((prev) => ({ ...prev, ...updates }));
+      if (errors[type]) {
+        setErrors((prev) => ({ ...prev, [type]: "" }));
+      }
+    },
+    [errors]
+  );
 
-  const cancelImage = useCallback((type: 'thumbnail' | 'img1' | 'img2' | 'img3') => {
-    const currentPreview = type === 'thumbnail' ? formData.newthumbnail : 
-                          type === 'img1' ? formData.newimg1 :
-                          type === 'img2' ? formData.newimg2 : formData.newimg3;
-    
-    if (currentPreview && currentPreview.startsWith('blob:')) {
-      URL.revokeObjectURL(currentPreview);
-    }
+  const cancelImage = useCallback(
+    (type: "thumbnail" | "img1" | "img2" | "img3") => {
+      const currentPreview =
+        type === "thumbnail"
+          ? formData.newthumbnail
+          : type === "img1"
+          ? formData.newimg1
+          : type === "img2"
+          ? formData.newimg2
+          : formData.newimg3;
 
-    if (type === 'thumbnail') {
-      setThumbnailFile(null);
-      setFormData(prev => ({ ...prev, newthumbnail: '', thumbnail: originalImages.thumbnail }));
-    } else if (type === 'img1') {
-      setImg1File(null);
-      setFormData(prev => ({ ...prev, newimg1: '', img1: originalImages.img1 }));
-    } else if (type === 'img2') {
-      setImg2File(null);
-      setFormData(prev => ({ ...prev, newimg2: '', img2: originalImages.img2 }));
-    } else if (type === 'img3') {
-      setImg3File(null);
-      setFormData(prev => ({ ...prev, newimg3: '', img3: originalImages.img3 }));
-    }
-  }, [formData, originalImages]);
+      if (currentPreview && currentPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(currentPreview);
+      }
+
+      if (type === "thumbnail") {
+        setThumbnailFile(null);
+        setFormData((prev) => ({
+          ...prev,
+          newthumbnail: "",
+          thumbnail: originalImages.thumbnail,
+        }));
+      } else if (type === "img1") {
+        setImg1File(null);
+        setFormData((prev) => ({
+          ...prev,
+          newimg1: "",
+          img1: originalImages.img1,
+        }));
+      } else if (type === "img2") {
+        setImg2File(null);
+        setFormData((prev) => ({
+          ...prev,
+          newimg2: "",
+          img2: originalImages.img2,
+        }));
+      } else if (type === "img3") {
+        setImg3File(null);
+        setFormData((prev) => ({
+          ...prev,
+          newimg3: "",
+          img3: originalImages.img3,
+        }));
+      }
+    },
+    [formData, originalImages]
+  );
 
   const uploadFile = async (file: File, type: string): Promise<string> => {
-    setUploadProgress(prev => ({ ...prev, [type]: true }));
+    setUploadProgress((prev) => ({ ...prev, [type]: true }));
     try {
       const uploadFormData = new FormData();
       uploadFormData.append("doc", file);
       uploadFormData.append("location", "blog-images");
-      
+
       const uploadResult = await directFileUpload(uploadFormData);
       if (!uploadResult?.url) {
         throw new Error(`Failed to upload ${type}`);
       }
       return uploadResult.url;
     } finally {
-      setUploadProgress(prev => ({ ...prev, [type]: false }));
+      setUploadProgress((prev) => ({ ...prev, [type]: false }));
     }
   };
 
@@ -234,38 +291,38 @@ const DoctorBlogEditAndCreate = () => {
       message.error("Please fix the errors before saving");
       return;
     }
-    
+
     setLoading(true);
     const hideLoading = message.loading("Preparing to save blog...", 0);
 
     try {
-      let newThumbUrl = '';
-      let newImg1Url = '';
-      let newImg2Url = '';
-      let newImg3Url = '';
+      let newThumbUrl = "";
+      let newImg1Url = "";
+      let newImg2Url = "";
+      let newImg3Url = "";
 
       if (thumbnailFile) {
         hideLoading();
         message.loading("Uploading thumbnail...");
-        newThumbUrl = await uploadFile(thumbnailFile, 'thumbnail');
+        newThumbUrl = await uploadFile(thumbnailFile, "thumbnail");
       }
-      
+
       if (img1File) {
         hideLoading();
         message.loading("Uploading image 1...");
-        newImg1Url = await uploadFile(img1File, 'img1');
+        newImg1Url = await uploadFile(img1File, "img1");
       }
-      
+
       if (img2File) {
         hideLoading();
         message.loading("Uploading image 2...");
-        newImg2Url = await uploadFile(img2File, 'img2');
+        newImg2Url = await uploadFile(img2File, "img2");
       }
-      
+
       if (img3File) {
         hideLoading();
         message.loading("Uploading image 3...");
-        newImg3Url = await uploadFile(img3File, 'img3');
+        newImg3Url = await uploadFile(img3File, "img3");
       }
 
       hideLoading();
@@ -274,7 +331,7 @@ const DoctorBlogEditAndCreate = () => {
       const blogPayload = {
         title: formData.title.trim(),
         content: formData.content.trim(),
-        author: blog?.author || Doctor?.fullName || 'Unknown Author',
+        author: blog?.author || Doctor?.fullName || "Unknown Author",
         authorId: Doctor?._id,
         thumbnail: newThumbUrl || formData.thumbnail,
         img1: newImg1Url || formData.img1,
@@ -285,49 +342,66 @@ const DoctorBlogEditAndCreate = () => {
 
       if (blog) {
         await updateBlog(blog._id, blogPayload);
-        message.success('Blog updated successfully!');
+        message.success("Blog updated successfully!");
       } else {
         await createBlog(blogPayload);
-        message.success('Blog created successfully!');
+        message.success("Blog created successfully!");
       }
-      
+
       hideLoading();
-      navigate('/doctor/blogs');
+      navigate("/doctor/blogs");
     } catch (err) {
       hideLoading();
-      const errorMessage = (err as ApiError)?.response?.data?.message ?? 'Failed to save blog. Please try again.';
+      const errorMessage =
+        (err as ApiError)?.response?.data?.message ??
+        "Failed to save blog. Please try again.";
       setErrors({ form: errorMessage });
       message.error(errorMessage);
     } finally {
       setLoading(false);
     }
-  }, [formData, thumbnailFile, img1File, img2File, img3File, blog, navigate, validateForm, Doctor]);
+  }, [
+    formData,
+    thumbnailFile,
+    img1File,
+    img2File,
+    img3File,
+    blog,
+    navigate,
+    validateForm,
+    Doctor,
+  ]);
 
   const onCancel = useCallback(() => {
-    [formData.newthumbnail, formData.newimg1, formData.newimg2, formData.newimg3].forEach(url => {
-      if (url && url.startsWith('blob:')) {
+    [
+      formData.newthumbnail,
+      formData.newimg1,
+      formData.newimg2,
+      formData.newimg3,
+    ].forEach((url) => {
+      if (url && url.startsWith("blob:")) {
         URL.revokeObjectURL(url);
       }
     });
-    navigate('/doctor/blogs');
+    navigate("/doctor/blogs");
   }, [navigate, formData]);
 
-  const ImageUploadSection = ({ 
-    type, 
-    label, 
-    currentImage, 
-    newImage, 
-    file, 
-    error, 
-    required = false 
+  const ImageUploadSection = ({
+    type,
+    label,
+    currentImage,
+    newImage,
+    file,
+    error,
+    required = false,
   }: {
-    type: 'thumbnail' | 'img1' | 'img2' | 'img3',
-    label: string,
-    currentImage: string,
-    newImage: string,
-    file: File | null,
-    error?: string,
-    required?: boolean
+    type: "thumbnail" | "img1" | "img2" | "img3";
+    label: string;
+    currentImage: string;
+    newImage: string;
+    file: File | null;
+    error?: string;
+    required?: boolean;
   }) => (
     <div className="group">
       <label className="block text-sm sm:text-base font-semibold text-gray-800 mb-2 sm:mb-3  items-center gap-2">
@@ -335,7 +409,7 @@ const DoctorBlogEditAndCreate = () => {
         {label}
         {required && <span className="text-red-500">*</span>}
       </label>
-      
+
       <div className="relative">
         <input
           type="file"
@@ -345,15 +419,19 @@ const DoctorBlogEditAndCreate = () => {
           id={`${type}-upload`}
           disabled={loading}
         />
-        
+
         {!(newImage || currentImage) ? (
           <label
             htmlFor={`${type}-upload`}
             className="flex flex-col items-center justify-center w-full h-40 sm:h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 bg-gray-50"
           >
             <FaUpload className="text-gray-400 text-2xl sm:text-3xl mb-2" />
-            <span className="text-gray-600 text-sm font-medium">Click to upload {label.toLowerCase()}</span>
-            <span className="text-gray-400 text-xs mt-1">PNG, JPG up to 5MB</span>
+            <span className="text-gray-600 text-sm font-medium">
+              Click to upload {label.toLowerCase()}
+            </span>
+            <span className="text-gray-400 text-xs mt-1">
+              PNG, JPG up to 5MB
+            </span>
           </label>
         ) : (
           <div className="relative rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm">
@@ -390,7 +468,7 @@ const DoctorBlogEditAndCreate = () => {
           </div>
         )}
       </div>
-      
+
       {error && (
         <div className="mt-2 text-red-500 text-xs sm:text-sm flex items-center gap-1">
           <FaTimes className="text-xs" />
@@ -408,10 +486,12 @@ const DoctorBlogEditAndCreate = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
-                {blog ? 'Edit Blog Post' : 'Create New Blog Post'}
+                {blog ? "Edit Blog Post" : "Create New Blog Post"}
               </h1>
               <p className="text-gray-600 text-sm sm:text-base">
-                {blog ? 'Update your existing blog post' : 'Share your knowledge with the world'}
+                {blog
+                  ? "Update your existing blog post"
+                  : "Share your knowledge with the world"}
               </p>
             </div>
             <div className="flex gap-2 sm:gap-3">
@@ -427,7 +507,7 @@ const DoctorBlogEditAndCreate = () => {
                 className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 disabled={loading}
               >
-                <FaSave size={16} /> {loading ? 'Saving...' : 'Save Blog'}
+                <FaSave size={16} /> {loading ? "Saving..." : "Save Blog"}
               </button>
             </div>
           </div>
@@ -450,9 +530,11 @@ const DoctorBlogEditAndCreate = () => {
             <input
               type="text"
               value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
+              onChange={(e) => handleInputChange("title", e.target.value)}
               className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-sm sm:text-base ${
-                errors.title ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                errors.title
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-200 hover:border-gray-300"
               }`}
               placeholder="Enter an engaging title for your blog post..."
               disabled={loading}
@@ -483,10 +565,12 @@ const DoctorBlogEditAndCreate = () => {
             </label>
             <textarea
               value={formData.content}
-              onChange={(e) => handleInputChange('content', e.target.value)}
+              onChange={(e) => handleInputChange("content", e.target.value)}
               rows={8}
               className={`w-full px-3 sm:px-4 py-2 sm:py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 resize-none text-sm sm:text-base ${
-                errors.content ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-gray-300'
+                errors.content
+                  ? "border-red-300 bg-red-50"
+                  : "border-gray-200 hover:border-gray-300"
               }`}
               placeholder="Write your blog content here. Share your expertise, insights, and valuable information..."
               disabled={loading}
@@ -538,9 +622,11 @@ const DoctorBlogEditAndCreate = () => {
             <label className="block text-sm sm:text-base font-semibold text-gray-800 mb-2 sm:mb-3  items-center gap-2">
               <FaTag className="text-blue-500" />
               Tags <span className="text-red-500">*</span>
-              <span className="text-gray-500 font-normal">({formData.tags.length}/10)</span>
+              <span className="text-gray-500 font-normal">
+                ({formData.tags.length}/10)
+              </span>
             </label>
-            
+
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-3 sm:mb-4">
               <input
                 type="text"
@@ -553,7 +639,9 @@ const DoctorBlogEditAndCreate = () => {
               />
               <button
                 onClick={addTag}
-                disabled={formData.tags.length >= 10 || loading || !newTag.trim()}
+                disabled={
+                  formData.tags.length >= 10 || loading || !newTag.trim()
+                }
                 className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl flex items-center gap-2 transition-all duration-200 shadow-md hover:shadow-lg focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 <FaTag size={16} /> Add

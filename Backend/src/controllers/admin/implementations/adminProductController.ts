@@ -3,20 +3,22 @@ import { inject, injectable } from "inversify";
 import IAdminProductCtrl from "../interfaces/IAdminProductCtrl";
 import stripe from "../../../middlewares/common/stripe";
 import { HttpStatusCode } from "../../../utils/enum";
+import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
 export default class AdminProductController implements IAdminProductCtrl {
-
-  async getProducts(req:Request, res: Response): Promise<void> {
+  async getProducts(req: Request, res: Response): Promise<void> {
     try {
       const products = await stripe.products.list({
-        expand: ['data.default_price'], // Expand the default_price field to include full price details
+        expand: ["data.default_price"], // Expand the default_price field to include full price details
       });
       console.log("products from stripe is ", products);
       res.status(HttpStatusCode.OK).json({ data: products.data });
     } catch (error) {
       console.error("Error fetching products:", error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to fetch products" });
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -35,7 +37,7 @@ export default class AdminProductController implements IAdminProductCtrl {
         product: product.id,
         unit_amount: price,
         currency,
-        recurring: interval !== 'one_time' ? { interval } : undefined,
+        recurring: interval !== "one_time" ? { interval } : undefined,
       });
 
       // Set the default price for the product
@@ -45,20 +47,21 @@ export default class AdminProductController implements IAdminProductCtrl {
 
       // Fetch the updated product with expanded default_price
       const updatedProduct = await stripe.products.retrieve(product.id, {
-        expand: ['default_price'],
+        expand: ["default_price"],
       });
 
       res.status(HttpStatusCode.CREATED).json({ data: updatedProduct });
     } catch (error) {
       console.error("Error creating product:", error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to create product" });
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
   async updateProduct(req: Request, res: Response): Promise<void> {
     try {
-      
-      const { name, description, price, currency, interval ,id } = req.body;
+      const { name, description, price, currency, interval, id } = req.body;
 
       // Update product
       const product = await stripe.products.update(id, {
@@ -71,7 +74,7 @@ export default class AdminProductController implements IAdminProductCtrl {
         product: id,
         unit_amount: price,
         currency,
-        recurring: interval !== 'one_time' ? { interval } : undefined,
+        recurring: interval !== "one_time" ? { interval } : undefined,
       });
 
       // Update product's default price
@@ -81,13 +84,15 @@ export default class AdminProductController implements IAdminProductCtrl {
 
       // Fetch the updated product with expanded default_price
       const updatedProduct = await stripe.products.retrieve(id, {
-        expand: ['default_price'],
+        expand: ["default_price"],
       });
 
       res.status(HttpStatusCode.OK).json({ data: updatedProduct });
     } catch (error) {
       console.error("Error updating product:", error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to update product" });
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -95,29 +100,35 @@ export default class AdminProductController implements IAdminProductCtrl {
     try {
       const { id } = req.params;
 
-      console.log("id is .......:",id);
-      await stripe.products.update(id,{ active: false });
+      console.log("id is .......:", id);
+      await stripe.products.update(id, { active: false });
 
-      res.status(HttpStatusCode.OK).json({ message: "Product deleted successfully" });
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: "Product deleted successfully" });
     } catch (error) {
       console.error("Error deleting product:", error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to delete product" });
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
-  };
+  }
 
-  
-
-   async activateProduct(req: Request, res: Response): Promise<void> {
+  async activateProduct(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
-      console.log("id is .......:",id);
-      await stripe.products.update(id,{ active: true });
+      console.log("id is .......:", id);
+      await stripe.products.update(id, { active: true });
 
-      res.status(HttpStatusCode.OK).json({ message: "Product deleted successfully" });
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: "Product deleted successfully" });
     } catch (error) {
       console.error("Error deleting product:", error);
-      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to delete product" });
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
-  };
+  }
 }

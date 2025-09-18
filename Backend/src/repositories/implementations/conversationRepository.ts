@@ -17,10 +17,15 @@ export default class ConversationRepository
     if (!members || members.length !== 2) {
       throw new Error("Exactly two members are required");
     }
-    return await this._conversationModel.create({ members, updatedAt: new Date() });
+    return await this._conversationModel.create({
+      members,
+      updatedAt: new Date(),
+    });
   }
 
-  async findConversationByMembers(members: string[]): Promise<IConversationDocument | null> {
+  async findConversationByMembers(
+    members: string[]
+  ): Promise<IConversationDocument | null> {
     if (!members || members.length !== 2) {
       throw new Error("Exactly two members are required");
     }
@@ -29,7 +34,7 @@ export default class ConversationRepository
     });
   }
 
-  async getUserConversations(userId: string,from:string): Promise<any[]> {
+  async getUserConversations(userId: string, from: string): Promise<any[]> {
     if (!userId) {
       throw new Error("User ID is required");
     }
@@ -55,13 +60,5 @@ export default class ConversationRepository
         ),
       }))
     );
-  };
-
-
-  
-
-
-
-
-
+  }
 }

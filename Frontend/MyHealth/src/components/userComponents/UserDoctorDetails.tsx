@@ -1,5 +1,5 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from 'antd';
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "antd";
 
 interface Doctor {
   _id: string;
@@ -37,15 +37,17 @@ const UserDoctorDetails = () => {
   }
 
   const handleBookAppointment = () => {
-    navigate('/user/doctor-appointment-slots', { state: { doctorId: doctor._id } });
+    navigate("/user/doctor-appointment-slots", {
+      state: { doctorId: doctor._id },
+    });
   };
 
   const handleChatClick = () => {
-    navigate('/chat', { state: { doctorId: doctor._id } });
+    navigate("/chat", { state: { doctorId: doctor._id } });
   };
 
   const handleReportAnalysis = () => {
-    navigate('/user/health-report-analysis', { state: { doctor } });
+    navigate("/user/health-report-analysis", { state: { doctor } });
   };
 
   return (
@@ -67,7 +69,10 @@ const UserDoctorDetails = () => {
         {/* Doctor Profile */}
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
           <img
-            src={doctor.profile || 'https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png'}
+            src={
+              doctor.profile ||
+              "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+            }
             alt={doctor.fullName}
             className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full object-cover flex-shrink-0"
           />
@@ -94,25 +99,36 @@ const UserDoctorDetails = () => {
             </h4>
             <div className="space-y-3 text-sm sm:text-base text-gray-600">
               <p>
-                <span className="font-medium text-gray-800">Experience:</span> {doctor.experience} years
+                <span className="font-medium text-gray-800">Experience:</span>{" "}
+                {doctor.experience} years
               </p>
               <p>
-                <span className="font-medium text-gray-800">Location:</span> {doctor.location.text}
+                <span className="font-medium text-gray-800">Location:</span>{" "}
+                {doctor.location.text}
               </p>
               <p>
-                <span className="font-medium text-gray-800">Qualification:</span> {doctor.graduation.toUpperCase()}
+                <span className="font-medium text-gray-800">
+                  Qualification:
+                </span>{" "}
+                {doctor.graduation.toUpperCase()}
               </p>
               <p>
-                <span className="font-medium text-gray-800">Registration No:</span> {doctor.registerNo}
+                <span className="font-medium text-gray-800">
+                  Registration No:
+                </span>{" "}
+                {doctor.registerNo}
               </p>
               <p>
-                <span className="font-medium text-gray-800">Gender:</span> {doctor.gender}
+                <span className="font-medium text-gray-800">Gender:</span>{" "}
+                {doctor.gender}
               </p>
               <p>
-                <span className="font-medium text-gray-800">Contact:</span> {doctor.phone}
+                <span className="font-medium text-gray-800">Contact:</span>{" "}
+                {doctor.phone}
               </p>
               <p>
-                <span className="font-medium text-gray-800">Email:</span> {doctor.email}
+                <span className="font-medium text-gray-800">Email:</span>{" "}
+                {doctor.email}
               </p>
             </div>
           </div>
@@ -123,11 +139,11 @@ const UserDoctorDetails = () => {
               </h4>
               <div className="space-y-3 text-sm sm:text-base text-gray-600">
                 <p>
-                  <span className="font-medium text-gray-800">Location:</span>{' '}
+                  <span className="font-medium text-gray-800">Location:</span>{" "}
                   {doctor.offlineAvailability.offlineLocation}
                 </p>
                 <p>
-                  <span className="font-medium text-gray-800">Google Map:</span>{' '}
+                  <span className="font-medium text-gray-800">Google Map:</span>{" "}
                   <a
                     href={doctor.offlineAvailability.googleMapLink}
                     target="_blank"
@@ -138,7 +154,9 @@ const UserDoctorDetails = () => {
                   </a>
                 </p>
                 <p>
-                  <span className="font-medium text-gray-800">Booking Number:</span>{' '}
+                  <span className="font-medium text-gray-800">
+                    Booking Number:
+                  </span>{" "}
                   {doctor.offlineAvailability.bookingNumber}
                 </p>
               </div>

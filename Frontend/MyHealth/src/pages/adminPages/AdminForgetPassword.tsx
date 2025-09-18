@@ -97,7 +97,10 @@ function AdminForgetPassword() {
       navigate("/admin/resetPassword");
     } catch (error) {
       console.error("Forgot password failed:", error);
-      toast.error((error as ApiError).response?.data?.msg || "Something went wrong. Please try again later.");
+      toast.error(
+        (error as ApiError).response?.data?.msg ||
+          "Something went wrong. Please try again later."
+      );
       setErrors({ ...errors, email: "Invalid email address" });
     }
   };
@@ -108,8 +111,19 @@ function AdminForgetPassword() {
       <div className="absolute inset-0 opacity-70">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="forgetPasswordGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#3B82F6" strokeWidth="0.5" opacity="0.8" />
+            <pattern
+              id="forgetPasswordGrid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 60 0 L 0 0 0 60"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="0.5"
+                opacity="0.8"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#forgetPasswordGrid)" />
@@ -188,7 +202,10 @@ function AdminForgetPassword() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5 sm:space-y-6"
+                >
                   <div className="space-y-4 sm:space-y-5">
                     <Input
                       id="email"

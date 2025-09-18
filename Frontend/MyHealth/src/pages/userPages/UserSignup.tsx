@@ -45,7 +45,9 @@ function UserSignup() {
     confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof SignupData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof SignupData, string>>
+  >({});
   const [touched, setTouched] = useState<Record<keyof SignupData, boolean>>({
     email: false,
     fullName: false,
@@ -123,8 +125,19 @@ function UserSignup() {
       <div className="absolute inset-0 opacity-70">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="signupGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#3B82F6" strokeWidth="0.5" opacity="0.8"/>
+            <pattern
+              id="signupGrid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 40 0 L 0 0 0 40"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="0.5"
+                opacity="0.8"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#signupGrid)" />
@@ -141,9 +154,9 @@ function UserSignup() {
         <div className="container mx-auto flex justify-start items-center">
           <div className="flex items-center space-x-2 sm:space-x-3">
             <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 bg-blue-300 backdrop-blur-sm rounded-lg shadow-md overflow-hidden border border-white/20">
-              <img 
-                src={applogoWhite} 
-                alt="MyHealth Logo" 
+              <img
+                src={applogoWhite}
+                alt="MyHealth Logo"
                 className="w-full h-full object-contain p-1"
               />
             </div>
@@ -158,14 +171,13 @@ function UserSignup() {
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative z-10">
         <div className="w-full max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-2xl border border-white/30 overflow-hidden min-h-[500px] sm:min-h-[600px]">
-            
             {/* Left Side - Illustration (Hidden on mobile) */}
             <div className="hidden lg:flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-white p-6 lg:p-8 xl:p-12 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
               <div className="relative z-10 max-w-md w-full">
-                <img 
-                  src={userLogin} 
-                  alt="Signup Illustration" 
+                <img
+                  src={userLogin}
+                  alt="Signup Illustration"
                   className="w-full h-auto object-contain drop-shadow-lg"
                 />
                 <div className="text-center mt-4 sm:mt-6">
@@ -173,7 +185,8 @@ function UserSignup() {
                     Join MyHealth
                   </h3>
                   <p className="text-sm sm:text-base xl:text-base text-gray-600 leading-relaxed">
-                    Create an account to connect with healthcare professionals and manage your wellness journey
+                    Create an account to connect with healthcare professionals
+                    and manage your wellness journey
                   </p>
                 </div>
               </div>
@@ -182,13 +195,12 @@ function UserSignup() {
             {/* Right Side - Signup Form */}
             <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10 xl:p-12 bg-white">
               <div className="w-full max-w-md mx-auto">
-                
                 {/* Mobile Logo (shown only on mobile) */}
                 <div className="lg:hidden flex justify-center mb-6 sm:mb-8">
                   <div className="h-14 w-14 sm:h-16 sm:w-16 bg-gradient-to-br from-blue-300 to-blue-600 rounded-xl shadow-lg overflow-hidden p-2">
-                    <img 
-                      src={applogoWhite} 
-                      alt="MyHealth Logo" 
+                    <img
+                      src={applogoWhite}
+                      alt="MyHealth Logo"
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -205,7 +217,10 @@ function UserSignup() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5 sm:space-y-6"
+                >
                   <div className="space-y-4 sm:space-y-5">
                     <Input
                       id="email"
@@ -217,8 +232,8 @@ function UserSignup() {
                       onChange={handleChange}
                       required
                       className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
-                        touched.email && errors.email 
-                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                        touched.email && errors.email
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                           : "focus:border-blue-500 focus:ring-blue-500/20"
                       }`}
                       error={touched.email ? errors.email : ""}
@@ -235,8 +250,8 @@ function UserSignup() {
                       onChange={handleChange}
                       required
                       className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
-                        touched.fullName && errors.fullName 
-                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                        touched.fullName && errors.fullName
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                           : "focus:border-blue-500 focus:ring-blue-500/20"
                       }`}
                       error={touched.fullName ? errors.fullName : ""}
@@ -251,8 +266,8 @@ function UserSignup() {
                       value={formData.password}
                       onChange={handleChange}
                       className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
-                        touched.password && errors.password 
-                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                        touched.password && errors.password
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                           : "focus:border-blue-500 focus:ring-blue-500/20"
                       }`}
                       error={touched.password ? errors.password : ""}
@@ -267,12 +282,16 @@ function UserSignup() {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
-                        touched.confirmPassword && errors.confirmPassword 
-                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                        touched.confirmPassword && errors.confirmPassword
+                          ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                           : "focus:border-blue-500 focus:ring-blue-500/20"
                       }`}
-                      error={touched.confirmPassword ? errors.confirmPassword : ""}
-                      aria-invalid={touched.confirmPassword && !!errors.confirmPassword}
+                      error={
+                        touched.confirmPassword ? errors.confirmPassword : ""
+                      }
+                      aria-invalid={
+                        touched.confirmPassword && !!errors.confirmPassword
+                      }
                     />
                   </div>
 
@@ -291,7 +310,9 @@ function UserSignup() {
                       <div className="w-full border-t border-gray-200"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-3 bg-white text-gray-500 font-medium">Or continue with</span>
+                      <span className="px-3 bg-white text-gray-500 font-medium">
+                        Or continue with
+                      </span>
                     </div>
                   </div>
 
@@ -303,7 +324,8 @@ function UserSignup() {
                       icon={<FcGoogle className="text-lg sm:text-xl" />}
                       className="w-full min-h-[48px] sm:min-h-[52px] bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md transition-all duration-300 text-sm sm:text-base font-semibold rounded-xl transform hover:scale-[1.02] active:scale-[0.98]"
                       onClick={() => {
-                        window.location.href = "https://api.abdullhakalamban.online/api/user/google";
+                        window.location.href =
+                          "https://api.abdullhakalamban.online/api/user/google";
                       }}
                     />
                   </div>

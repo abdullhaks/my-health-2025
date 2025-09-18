@@ -1,21 +1,14 @@
 import BaseRepository from "./baseRepository";
-import { inject,injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { IPayoutDocument } from "../../entities/payoutEntities";
-
-
 
 @injectable()
 export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
+  constructor(@inject("payoutModel") private _payoutModel: any) {
+    super(_payoutModel);
+  }
 
-    constructor(
-        @inject("payoutModel") private _payoutModel:any
-    ){
-
-        super(_payoutModel)
-
-    }
-
-    async getPayouts(page: number, limit: number, query: any = {}): Promise<any> {
+  async getPayouts(page: number, limit: number, query: any = {}): Promise<any> {
     try {
       const skip = (page - 1) * limit;
       const payouts = await this._payoutModel
@@ -36,8 +29,8 @@ export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
           bankIfscCode: payout.bankIfscCode,
           totalAmount: payout.totalAmount,
           paid: payout.paid || 0,
-          serviceAmount: payout.serviceAmount||0,
-          status:payout.status,
+          serviceAmount: payout.serviceAmount || 0,
+          status: payout.status,
           transactionId: payout.transactionId,
           invoiceLink: payout.invoiceLink || "",
           createdAt: payout.createdAt,
@@ -50,7 +43,4 @@ export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
       throw new Error("Failed to fetch transactions");
     }
   }
-
-
-
 }

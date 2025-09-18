@@ -1,21 +1,13 @@
 export const MESSAGES = {
-server: {
-    serverError:"internal server error"
+  server: {
+    serverError: "internal server error",
   },
 
   analytics: {
-    failedTofetch:"Failed to fetch analytics"
+    failedTofetch: "Failed to fetch analytics",
   },
 
+  doctor: {},
 
-  doctor: {
-   
-  },
-
-
-  admin: {
-   
-    
-  },
-  
+  admin: {},
 };

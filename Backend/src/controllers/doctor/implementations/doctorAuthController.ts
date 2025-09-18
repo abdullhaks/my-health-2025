@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import IDoctorAuthCtrl from "../interfaces/IDoctorAuthCtrl";
 import { inject, injectable } from "inversify";
 import IDoctorAuthService from "../../../services/doctor/interfaces/IDoctorAuthServices";
-import {HttpStatusCode} from "../../../utils/enum"
-
+import { HttpStatusCode } from "../../../utils/enum";
+import { MESSAGES } from "../../../utils/messages";
 
 interface MulterFile {
   fieldname: string;
@@ -20,56 +20,64 @@ type MulterFiles = {
 
 @injectable()
 export default class DoctorAuthController implements IDoctorAuthCtrl {
+  constructor(
+    @inject("IDoctorAuthService") private _doctorAuthService: IDoctorAuthService
+  ) {}
 
-
-  constructor(@inject("IDoctorAuthService")   private _doctorAuthService: IDoctorAuthService
-) { }
-
-  async doctorLogin(req: Request, res:Response): Promise<void> {
+  async doctorLogin(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
 
-      const result = await this._doctorAuthService.login(res, { email, password });
+      const result = await this._doctorAuthService.login(res, {
+        email,
+        password,
+      });
 
       console.log("result is ", result);
 
       if (!result) {
-         res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "Envalid credentials" });
-         return
-      };
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ msg: "Envalid credentials" });
+        return;
+      }
 
       res.cookie("doctorRefreshToken", result.refreshToken, {
-      httpOnly: true,
-      sameSite: "none",   // allow cross-site
-      secure: true,       // only over HTTPS
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+        httpOnly: true,
+        sameSite: "none", // allow cross-site
+        secure: true, // only over HTTPS
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
-    res.cookie("doctorAccessToken", result.accessToken, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+      res.cookie("doctorAccessToken", result.accessToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
-    res.cookie("doctorEmail", result.doctor.email, {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
+      res.cookie("doctorEmail", result.doctor.email, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
-       res.status(HttpStatusCode.OK).json({message:result.message,doctor:result.doctor});
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: result.message, doctor: result.doctor });
     } catch (error) {
       console.log(error);
-       res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ msg: "Envalid credentials" });
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
-  };
-
+  }
 
   async doctorSignup(req: Request, res: Response): Promise<void> {
     try {
-      const { fullName, email, password, graduation, category, registerNo } = req.body;
+      const { fullName, email, password, graduation, category, registerNo } =
+        req.body;
 
       const parsedSpecializations: {
         title: string;
@@ -80,19 +88,28 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
       while (req.body[`specializations[${i}][title]`]) {
         parsedSpecializations.push({
           title: req.body[`specializations[${i}][title]`],
-          certificate: (req.files as MulterFiles)?.[`specializations[${i}][certificate]`]?.[0],
+          certificate: (req.files as MulterFiles)?.[
+            `specializations[${i}][certificate]`
+          ]?.[0],
         });
         i++;
       }
 
-      const doctor = { fullName, email, password, graduation, category, registerNo };
+      const doctor = {
+        fullName,
+        email,
+        password,
+        graduation,
+        category,
+        registerNo,
+      };
 
-      const registrationCertificateFile =
-        (req.files as MulterFiles)?.registrationCertificate?.[0];
-      const graduationCertificateFile =
-        (req.files as MulterFiles)?.graduationCertificate?.[0];
-      const verificationIdFile =
-        (req.files as MulterFiles)?.verificationId?.[0];
+      const registrationCertificateFile = (req.files as MulterFiles)
+        ?.registrationCertificate?.[0];
+      const graduationCertificateFile = (req.files as MulterFiles)
+        ?.graduationCertificate?.[0];
+      const verificationIdFile = (req.files as MulterFiles)
+        ?.verificationId?.[0];
 
       const certificates = {
         registrationCertificate: registrationCertificateFile
@@ -138,91 +155,101 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
       console.log(error);
       res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "internal server error" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
-
   async verifyOtp(req: Request, res: Response): Promise<void> {
-      try {
-        const { otp, email } = req.body;
-  
-        console.log(`otp is ${otp} & email is ${email}`);
-  
-        const otpRecord = await this._doctorAuthService.verifyOtp(email, otp);
-         res.status(HttpStatusCode.OK).json({ otp, email });
-      } catch (error) {
-        console.log(error);
-         res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ msg: "internal server error" });
-      }
+    try {
+      const { otp, email } = req.body;
+
+      console.log(`otp is ${otp} & email is ${email}`);
+
+      const otpRecord = await this._doctorAuthService.verifyOtp(email, otp);
+      res.status(HttpStatusCode.OK).json({ otp, email });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
     }
-  
-    async resentOtp(req: Request, res: Response): Promise<void> {
-      try {
-        const { email } = req.query;
-        if (!email || typeof email !== "string") {
-           res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "Email is required" });
-           throw new Error("Email is required")
-        }
-  
-        const result = await this._doctorAuthService.resentOtp(email);
-         res.status(HttpStatusCode.OK).json(result);
-      } catch (error) {
-        console.error(error);
-         res
-          .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-          .json({ msg: "Internal server error" });
-      }
-    };
+  }
 
-
-
-      async refreshToken(req: Request, res: Response): Promise<void> {
-        try {
-          const { doctorRefreshToken } = req.cookies;
-    
-          if (!doctorRefreshToken) {
-             res.status(HttpStatusCode.UNAUTHORIZED).json({ msg: "refresh token not found" });
-          }
-    
-          const result = await this._doctorAuthService.refreshToken(doctorRefreshToken);
-    
-          console.log("result from ctrl is ...", result);
-    
-          if (!result) {
-             res.status(HttpStatusCode.UNAUTHORIZED).json({ msg: "Refresh token expired" });
-          }
-    
-          const {accessToken} = result
-    
-          console.log("result from ctrl is afrt destructr...", accessToken);
-    
-          res.cookie("doctorAccessToken", accessToken, {
-            httpOnly: true,
-            sameSite: "none",
-            secure: true, 
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-          });
-    
-           res.status(HttpStatusCode.OK).json(result);
-        } catch (error) {
-          console.log(error);
-           res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ msg: "internal server error" });
-        }
-      };
-
-
-      async getRefreshToken(req:Request , res:Response , next:NextFunction):Promise<void>{
-
-        try{
-        const doctorRefreshToken = req.cookies.doctorRefreshToken
-         res.status(HttpStatusCode.OK).json(doctorRefreshToken);
-
-        }catch(error){
-          console.log(error);
-           res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ msg: "internal server error" });
-        }
-
+  async resentOtp(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.query;
+      if (!email || typeof email !== "string") {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ msg: "Email is required" });
+        throw new Error("Email is required");
       }
 
+      const result = await this._doctorAuthService.resentOtp(email);
+      res.status(HttpStatusCode.OK).json(result);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
+    }
+  }
+
+  async refreshToken(req: Request, res: Response): Promise<void> {
+    try {
+      const { doctorRefreshToken } = req.cookies;
+
+      if (!doctorRefreshToken) {
+        res
+          .status(HttpStatusCode.UNAUTHORIZED)
+          .json({ msg: "refresh token not found" });
+      }
+
+      const result = await this._doctorAuthService.refreshToken(
+        doctorRefreshToken
+      );
+
+      console.log("result from ctrl is ...", result);
+
+      if (!result) {
+        res
+          .status(HttpStatusCode.UNAUTHORIZED)
+          .json({ msg: "Refresh token expired" });
+      }
+
+      const { accessToken } = result;
+
+      console.log("result from ctrl is afrt destructr...", accessToken);
+
+      res.cookie("doctorAccessToken", accessToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.status(HttpStatusCode.OK).json(result);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
+    }
+  }
+
+  async getRefreshToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const doctorRefreshToken = req.cookies.doctorRefreshToken;
+      res.status(HttpStatusCode.OK).json(doctorRefreshToken);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
+    }
+  }
 }

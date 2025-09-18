@@ -20,11 +20,11 @@ const otpSchema: Schema<IOtpDocument> = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      expires: 120, 
+      expires: 120,
     },
   },
   {
-    timestamps: { createdAt: true, updatedAt: true }, 
+    timestamps: { createdAt: true, updatedAt: true },
   }
 );
 

@@ -51,8 +51,12 @@ function DoctorSignup() {
     registrationCertificate: null,
     verificationId: null,
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof DoctorSignupData, string>>>({});
-  const [touched, setTouched] = useState<Record<keyof DoctorSignupData, boolean>>(
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof DoctorSignupData, string>>
+  >({});
+  const [touched, setTouched] = useState<
+    Record<keyof DoctorSignupData, boolean>
+  >(
     Object.keys(formData).reduce(
       (acc, key) => ({ ...acc, [key as keyof DoctorSignupData]: false }),
       {} as Record<keyof DoctorSignupData, boolean>
@@ -182,8 +186,19 @@ function DoctorSignup() {
       <div className="absolute inset-0 opacity-70">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="signupGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#3B82F6" strokeWidth="0.5" opacity="0.8" />
+            <pattern
+              id="signupGrid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 60 0 L 0 0 0 60"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="0.5"
+                opacity="0.8"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#signupGrid)" />
@@ -262,7 +277,10 @@ function DoctorSignup() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5 sm:space-y-6"
+                >
                   {step === 1 && (
                     <div className="space-y-4 sm:space-y-5">
                       <Input
@@ -322,7 +340,9 @@ function DoctorSignup() {
                             ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                             : "focus:border-blue-500 focus:ring-blue-500/20"
                         }`}
-                        error={touched.confirmPassword ? errors.confirmPassword : ""}
+                        error={
+                          touched.confirmPassword ? errors.confirmPassword : ""
+                        }
                       />
                     </div>
                   )}
@@ -352,14 +372,22 @@ function DoctorSignup() {
                         onChange={handleChange}
                         required
                         className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
-                          touched.graduationCertificate && errors.graduationCertificate
+                          touched.graduationCertificate &&
+                          errors.graduationCertificate
                             ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                             : "focus:border-blue-500 focus:ring-blue-500/20"
                         }`}
-                        error={touched.graduationCertificate ? errors.graduationCertificate : ""}
+                        error={
+                          touched.graduationCertificate
+                            ? errors.graduationCertificate
+                            : ""
+                        }
                       />
                       <div className="flex flex-col">
-                        <label htmlFor="category" className="mb-1 text-sm sm:text-base text-gray-700 font-medium">
+                        <label
+                          htmlFor="category"
+                          className="mb-1 text-sm sm:text-base text-gray-700 font-medium"
+                        >
                           Category
                         </label>
                         <select
@@ -375,15 +403,23 @@ function DoctorSignup() {
                           required
                         >
                           <option value="">Select Category</option>
-                          <option value="General Physician">General Physician</option>
+                          <option value="General Physician">
+                            General Physician
+                          </option>
                           <option value="Cardiologist">Cardiologist</option>
                           <option value="Dermatologist">Dermatologist</option>
-                          <option value="Endocrinologist">Endocrinologist</option>
-                          <option value="Gastroenterologist">Gastroenterologist</option>
+                          <option value="Endocrinologist">
+                            Endocrinologist
+                          </option>
+                          <option value="Gastroenterologist">
+                            Gastroenterologist
+                          </option>
                           <option value="Neurologist">Neurologist</option>
                           <option value="Nephrologist">Nephrologist</option>
                           <option value="Oncologist">Oncologist</option>
-                          <option value="Orthopedic Surgeon">Orthopedic Surgeon</option>
+                          <option value="Orthopedic Surgeon">
+                            Orthopedic Surgeon
+                          </option>
                           <option value="Pediatrician">Pediatrician</option>
                           <option value="Psychiatrist">Psychiatrist</option>
                           <option value="Pulmonologist">Pulmonologist</option>
@@ -392,22 +428,40 @@ function DoctorSignup() {
                           <option value="Surgeon">Surgeon</option>
                           <option value="Urologist">Urologist</option>
                           <option value="ENT Specialist">ENT Specialist</option>
-                          <option value="Ophthalmologist">Ophthalmologist</option>
+                          <option value="Ophthalmologist">
+                            Ophthalmologist
+                          </option>
                           <option value="Gynecologist">Gynecologist</option>
                           <option value="Dentist">Dentist</option>
-                          <option value="Physiotherapist">Physiotherapist</option>
-                          <option value="Dietitian/Nutritionist">Dietitian/Nutritionist</option>
-                          <option value="Emergency Medicine">Emergency Medicine</option>
+                          <option value="Physiotherapist">
+                            Physiotherapist
+                          </option>
+                          <option value="Dietitian/Nutritionist">
+                            Dietitian/Nutritionist
+                          </option>
+                          <option value="Emergency Medicine">
+                            Emergency Medicine
+                          </option>
                           <option value="Pathologist">Pathologist</option>
-                          <option value="Family Medicine">Family Medicine</option>
+                          <option value="Family Medicine">
+                            Family Medicine
+                          </option>
                           <option value="Hematologist">Hematologist</option>
-                          <option value="Plastic Surgeon">Plastic Surgeon</option>
-                          <option value="Anesthesiologist">Anesthesiologist</option>
-                          <option value="Sports Medicine">Sports Medicine</option>
+                          <option value="Plastic Surgeon">
+                            Plastic Surgeon
+                          </option>
+                          <option value="Anesthesiologist">
+                            Anesthesiologist
+                          </option>
+                          <option value="Sports Medicine">
+                            Sports Medicine
+                          </option>
                           <option value="Other">Other</option>
                         </select>
                         {touched.category && errors.category && (
-                          <span className="text-sm text-red-500 mt-1">{errors.category}</span>
+                          <span className="text-sm text-red-500 mt-1">
+                            {errors.category}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -438,11 +492,16 @@ function DoctorSignup() {
                         onChange={handleChange}
                         required
                         className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
-                          touched.registrationCertificate && errors.registrationCertificate
+                          touched.registrationCertificate &&
+                          errors.registrationCertificate
                             ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                             : "focus:border-blue-500 focus:ring-blue-500/20"
                         }`}
-                        error={touched.registrationCertificate ? errors.registrationCertificate : ""}
+                        error={
+                          touched.registrationCertificate
+                            ? errors.registrationCertificate
+                            : ""
+                        }
                       />
                       <Input
                         id="verificationId"
@@ -456,7 +515,9 @@ function DoctorSignup() {
                             ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                             : "focus:border-blue-500 focus:ring-blue-500/20"
                         }`}
-                        error={touched.verificationId ? errors.verificationId : ""}
+                        error={
+                          touched.verificationId ? errors.verificationId : ""
+                        }
                       />
                     </div>
                   )}

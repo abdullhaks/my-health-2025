@@ -42,8 +42,12 @@ const DoctorRevenue = () => {
     try {
       const response = await getRevenues(doctorId, page, limit, {
         status: filters.status,
-        startDate: filters.dateRange ? filters.dateRange[0].toISOString() : undefined,
-        endDate: filters.dateRange ? filters.dateRange[1].toISOString() : undefined,
+        startDate: filters.dateRange
+          ? filters.dateRange[0].toISOString()
+          : undefined,
+        endDate: filters.dateRange
+          ? filters.dateRange[1].toISOString()
+          : undefined,
       });
       setTransactions(response.payouts);
       setTotalPages(response.totalPages);
@@ -58,7 +62,10 @@ const DoctorRevenue = () => {
     fetchTransactions(currentPage);
   }, [currentPage, filters]);
 
-  const handleFilterChange = (key: string, value: string | [moment.Moment, moment.Moment] | null) => {
+  const handleFilterChange = (
+    key: string,
+    value: string | [moment.Moment, moment.Moment] | null
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -75,16 +82,16 @@ const DoctorRevenue = () => {
       dataIndex: "_id",
       key: "_id",
       render: (text: string) => (
-        <span className="truncate block max-w-[100px] sm:max-w-[150px]">{text}</span>
+        <span className="truncate block max-w-[100px] sm:max-w-[150px]">
+          {text}
+        </span>
       ),
     },
     {
       title: "Payment For",
       dataIndex: "status",
       key: "paymentFor",
-      render: (text: string) => (
-        <span className="capitalize">{text}</span>
-      ),
+      render: (text: string) => <span className="capitalize">{text}</span>,
     },
     {
       title: "Amount",
@@ -120,7 +127,10 @@ const DoctorRevenue = () => {
           <RangePicker
             onChange={(dates) => {
               if (dates && dates[0] && dates[1]) {
-                handleFilterChange("dateRange", [moment(dates[0].toDate()), moment(dates[1].toDate())]);
+                handleFilterChange("dateRange", [
+                  moment(dates[0].toDate()),
+                  moment(dates[1].toDate()),
+                ]);
               } else {
                 handleFilterChange("dateRange", null);
               }
@@ -157,29 +167,49 @@ const DoctorRevenue = () => {
             <div key={transaction._id} className="p-4 sm:p-5">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Date</span>
-                  <span className="text-sm text-gray-900">{moment(transaction.createdAt).format("DD-MM-YYYY, hh:mm A")}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Date
+                  </span>
+                  <span className="text-sm text-gray-900">
+                    {moment(transaction.createdAt).format(
+                      "DD-MM-YYYY, hh:mm A"
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm font-medium text-gray-700">ID</span>
-                  <span className="text-sm text-gray-900 truncate max-w-[150px]">{transaction._id}</span>
+                  <span className="text-sm text-gray-900 truncate max-w-[150px]">
+                    {transaction._id}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Payment For</span>
-                  <span className="text-sm text-gray-900 capitalize">{transaction.status}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Payment For
+                  </span>
+                  <span className="text-sm text-gray-900 capitalize">
+                    {transaction.status}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-700">Amount</span>
-                  <span className="text-sm text-gray-900">Rs {transaction.totalAmount}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Amount
+                  </span>
+                  <span className="text-sm text-gray-900">
+                    Rs {transaction.totalAmount}
+                  </span>
                 </div>
               </div>
             </div>
           ))}
           {loading && (
-            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">Loading...</div>
+            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">
+              Loading...
+            </div>
           )}
           {!loading && transactions.length === 0 && (
-            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">No transactions found</div>
+            <div className="p-4 sm:p-5 text-center text-gray-500 text-sm">
+              No transactions found
+            </div>
           )}
         </div>
       </div>
@@ -193,7 +223,6 @@ const DoctorRevenue = () => {
           onChange={(page) => setCurrentPage(page)}
           showSizeChanger={false}
           className="flex items-center gap-2"
-         
         />
       </div>
     </div>

@@ -15,9 +15,9 @@ const appointmentSchema = new Schema<IAppointmentDocument>(
       type: String,
       required: true,
     },
-    sessionId:{
-      type:String,
-      required:true,
+    sessionId: {
+      type: String,
+      required: true,
     },
     date: {
       type: String,
@@ -44,9 +44,9 @@ const appointmentSchema = new Schema<IAppointmentDocument>(
       enum: ["booked", "cancelled", "completed", "pending"],
       default: "booked",
     },
-    paymentType:{
-      type:String,
-      enum:["stripe","wallet"],
+    paymentType: {
+      type: String,
+      enum: ["stripe", "wallet"],
     },
     paymentStatus: {
       type: String,
@@ -57,8 +57,8 @@ const appointmentSchema = new Schema<IAppointmentDocument>(
       type: String,
       required: false,
     },
-    invoice:{
-      type:String
+    invoice: {
+      type: String,
     },
     userName: {
       type: String,
@@ -80,17 +80,16 @@ const appointmentSchema = new Schema<IAppointmentDocument>(
       type: String,
       required: false,
     },
-    callStartTime:{
-    type:Date,
-    reuired:false
+    callStartTime: {
+      type: Date,
+      reuired: false,
     },
-    callEndTime:{
-      type:Date,
-      required:false
+    callEndTime: {
+      type: Date,
+      required: false,
     },
-
   },
-  
+
   {
     timestamps: true,
   }

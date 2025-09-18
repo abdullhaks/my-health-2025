@@ -1,10 +1,25 @@
 import { FaVideo } from "react-icons/fa";
 import { FaNotesMedical } from "react-icons/fa6";
 import adminimg from "../../assets/doctorLogin.png";
-import { getDashboardContent, getDoctorAppointmentsStats, getDoctorReportsStats, getDoctorPayouts } from "../../api/doctor/doctorApi";
+import {
+  getDashboardContent,
+  getDoctorAppointmentsStats,
+  getDoctorReportsStats,
+  getDoctorPayouts,
+} from "../../api/doctor/doctorApi";
 import { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 import { IDoctorData } from "../../interfaces/doctor";
 
 const DoctorDashboard = () => {
@@ -19,9 +34,15 @@ const DoctorDashboard = () => {
   } | null>(null);
 
   // Graph & tables data
-  const [appointmentsStats, setAppointmentsStats] = useState<{ day: string; appointments: number }[]>([]);
-  const [reportsStats, setReportsStats] = useState<{ day: string; pending: number; submitted: number }[]>([]);
-  const [payouts, setPayouts] = useState<{ on: string; totalAmount: number; status: string; transactionId: string }[]>([]);
+  const [appointmentsStats, setAppointmentsStats] = useState<
+    { day: string; appointments: number }[]
+  >([]);
+  const [reportsStats, setReportsStats] = useState<
+    { day: string; pending: number; submitted: number }[]
+  >([]);
+  const [payouts, setPayouts] = useState<
+    { on: string; totalAmount: number; status: string; transactionId: string }[]
+  >([]);
   const [filter, setFilter] = useState<"day" | "month" | "year">("day");
   const [isMobile, setIsMobile] = useState(false);
 
@@ -71,9 +92,14 @@ const DoctorDashboard = () => {
     for (let i = 0; i < appointmentsStats.length; i += 2) {
       const first = appointmentsStats[i];
       const second = appointmentsStats[i + 1];
-      const month1 = new Date(first.day + "-01").toLocaleDateString("en-GB", { month: "short" });
+      const month1 = new Date(first.day + "-01").toLocaleDateString("en-GB", {
+        month: "short",
+      });
       if (second) {
-        const month2 = new Date(second.day + "-01").toLocaleDateString("en-GB", { month: "short" });
+        const month2 = new Date(second.day + "-01").toLocaleDateString(
+          "en-GB",
+          { month: "short" }
+        );
         grouped.push({
           day: `${month1}-${month2}`,
           appointments: first.appointments + (second.appointments || 0),
@@ -113,11 +139,16 @@ const DoctorDashboard = () => {
   // Format axis label based on filter
   const formatAxisLabel = (value: string) => {
     if (filter === "day") {
-      return new Date(value).toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+      return new Date(value).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+      });
     } else if (filter === "month" && isMobile) {
       return value; // Use grouped month labels (e.g., "Jan-Feb")
     } else if (filter === "month") {
-      return new Date(value + "-01").toLocaleDateString("en-GB", { month: "short" });
+      return new Date(value + "-01").toLocaleDateString("en-GB", {
+        month: "short",
+      });
     } else {
       return value;
     }
@@ -169,29 +200,31 @@ const DoctorDashboard = () => {
             Upcoming Appointments
           </h3>
           <div className="space-y-3 max-h-64 sm:max-h-80 overflow-y-auto">
-            {dashboardData?.upcomingAppointmentsCount.map(([date, count], index) => {
-              const isToday = date === new Date().toISOString().split("T")[0];
-              return (
-                <div
-                  key={date || index}
-                  className={`rounded-lg px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center ${
-                    isToday ? "bg-red-50" : "bg-gray-50"
-                  } hover:bg-gray-100 transition-colors`}
-                >
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-700">
-                      {formatDate(date).split(" ")[1]}
-                    </p>
-                    <p className="text-lg sm:text-xl font-bold text-gray-900">
-                      {formatDate(date).split("-")[0]}
-                    </p>
+            {dashboardData?.upcomingAppointmentsCount.map(
+              ([date, count], index) => {
+                const isToday = date === new Date().toISOString().split("T")[0];
+                return (
+                  <div
+                    key={date || index}
+                    className={`rounded-lg px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center ${
+                      isToday ? "bg-red-50" : "bg-gray-50"
+                    } hover:bg-gray-100 transition-colors`}
+                  >
+                    <div>
+                      <p className="text-xs sm:text-sm font-medium text-gray-700">
+                        {formatDate(date).split(" ")[1]}
+                      </p>
+                      <p className="text-lg sm:text-xl font-bold text-gray-900">
+                        {formatDate(date).split("-")[0]}
+                      </p>
+                    </div>
+                    <div className="text-gray-600 text-xs sm:text-sm font-medium">
+                      {count}
+                    </div>
                   </div>
-                  <div className="text-gray-600 text-xs sm:text-sm font-medium">
-                    {count}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              }
+            )}
           </div>
         </div>
       </div>
@@ -207,12 +240,15 @@ const DoctorDashboard = () => {
             <div className="flex items-center gap-3 sm:gap-4">
               <FaVideo className="text-xl sm:text-2xl" />
               <div>
-                <p className="text-sm sm:text-base font-medium">Online Consultations</p>
+                <p className="text-sm sm:text-base font-medium">
+                  Online Consultations
+                </p>
                 <p className="text-xl sm:text-2xl font-bold">
                   {dashboardData?.todayAppointmentsCount || 0}
                 </p>
                 <p className="text-xs sm:text-sm mt-1">
-                  Start from: {dashboardData?.todaysFirstAppointmentTime
+                  Start from:{" "}
+                  {dashboardData?.todaysFirstAppointmentTime
                     ? formatTime(dashboardData.todaysFirstAppointmentTime)
                     : "N/A"}
                 </p>
@@ -223,7 +259,9 @@ const DoctorDashboard = () => {
             <div className="flex items-center gap-3 sm:gap-4">
               <FaNotesMedical className="text-xl sm:text-2xl" />
               <div>
-                <p className="text-sm sm:text-base font-medium">Report Analysis</p>
+                <p className="text-sm sm:text-base font-medium">
+                  Report Analysis
+                </p>
                 <p className="text-xl sm:text-2xl font-bold">
                   {dashboardData?.pendingReportsCount || 0}
                 </p>
@@ -258,12 +296,17 @@ const DoctorDashboard = () => {
             <h3 className="text-base sm:text-lg font-semibold text-gray-800">
               Appointments Overview
             </h3>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">Track your appointment trends</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Track your appointment trends
+            </p>
           </div>
           <div className="p-4 sm:p-5 overflow-x-auto snap-x snap-mandatory">
             <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
               <ResponsiveContainer width="100%" height={chartHeight}>
-                <BarChart data={groupedAppointmentsStats} margin={{ top: 20, right: 10, left: 0, bottom: 20 }}>
+                <BarChart
+                  data={groupedAppointmentsStats}
+                  margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
+                >
                   <XAxis
                     dataKey="day"
                     tickFormatter={formatAxisLabel}
@@ -290,7 +333,13 @@ const DoctorDashboard = () => {
                     maxBarSize={isMobile ? 40 : 60}
                   />
                   <defs>
-                    <linearGradient id="appointmentsGradient" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="appointmentsGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="0%" stopColor="#3b82f6" />
                       <stop offset="100%" stopColor="#1d4ed8" />
                     </linearGradient>
@@ -307,58 +356,17 @@ const DoctorDashboard = () => {
             <h3 className="text-base sm:text-lg font-semibold text-gray-800">
               Appointments Trend
             </h3>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">Monitor appointment patterns over time</p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Monitor appointment patterns over time
+            </p>
           </div>
           <div className="p-4 sm:p-5 overflow-x-auto snap-x snap-mandatory">
             <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
               <ResponsiveContainer width="100%" height={chartHeight}>
-                <LineChart data={groupedAppointmentsStats} margin={{ top: 20, right: 10, left: 0, bottom: 20 }}>
-                  <XAxis
-                    dataKey="day"
-                    tickFormatter={formatAxisLabel}
-                    stroke="#64748b"
-                    fontSize={axisFontSize}
-                    tick={{ fontSize: axisFontSize }}
-                    interval={isMobile ? 0 :undefined}
-                  />
-                  <YAxis stroke="#64748b" fontSize={axisFontSize} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#fff",
-                      border: "none",
-                      borderRadius: "8px",
-                      fontSize: tooltipFontSize,
-                      padding: isMobile ? "8px" : "10px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    }}
-                  />
-                  <Legend wrapperStyle={{ paddingTop: isMobile ? 10 : 20, fontSize: axisFontSize }} />
-                  <Line
-                    type="monotone"
-                    dataKey="appointments"
-                    stroke="#3b82f6"
-                    strokeWidth={isMobile ? 2 : 3}
-                    dot={{ r: isMobile ? 3 : 4, fill: "#3b82f6", strokeWidth: 1, stroke: "#fff" }}
-                    activeDot={{ r: isMobile ? 5 : 6, fill: "#1d4ed8", strokeWidth: 1, stroke: "#fff" }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {/* Reports Analysis */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-gray-100">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
-              Reports Analysis
-            </h3>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">Compare pending vs submitted reports</p>
-          </div>
-          <div className="p-4 sm:p-5 overflow-x-auto snap-x snap-mandatory">
-            <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
-              <ResponsiveContainer width="100%" height={chartHeight}>
-                <BarChart data={reportsStats} margin={{ top: 20, right: 10, left: 0, bottom: 20 }}>
+                <LineChart
+                  data={groupedAppointmentsStats}
+                  margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
+                >
                   <XAxis
                     dataKey="day"
                     tickFormatter={formatAxisLabel}
@@ -378,7 +386,78 @@ const DoctorDashboard = () => {
                       boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                     }}
                   />
-                  <Legend wrapperStyle={{ paddingTop: isMobile ? 10 : 20, fontSize: axisFontSize }} />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: isMobile ? 10 : 20,
+                      fontSize: axisFontSize,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="appointments"
+                    stroke="#3b82f6"
+                    strokeWidth={isMobile ? 2 : 3}
+                    dot={{
+                      r: isMobile ? 3 : 4,
+                      fill: "#3b82f6",
+                      strokeWidth: 1,
+                      stroke: "#fff",
+                    }}
+                    activeDot={{
+                      r: isMobile ? 5 : 6,
+                      fill: "#1d4ed8",
+                      strokeWidth: 1,
+                      stroke: "#fff",
+                    }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Reports Analysis */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-gray-100">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
+              Reports Analysis
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Compare pending vs submitted reports
+            </p>
+          </div>
+          <div className="p-4 sm:p-5 overflow-x-auto snap-x snap-mandatory">
+            <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <BarChart
+                  data={reportsStats}
+                  margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
+                >
+                  <XAxis
+                    dataKey="day"
+                    tickFormatter={formatAxisLabel}
+                    stroke="#64748b"
+                    fontSize={axisFontSize}
+                    tick={{ fontSize: axisFontSize }}
+                    interval={isMobile ? 0 : undefined}
+                  />
+                  <YAxis stroke="#64748b" fontSize={axisFontSize} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: tooltipFontSize,
+                      padding: isMobile ? "8px" : "10px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: isMobile ? 10 : 20,
+                      fontSize: axisFontSize,
+                    }}
+                  />
                   <Bar
                     dataKey="pending"
                     fill="#f97316"
@@ -412,22 +491,33 @@ const DoctorDashboard = () => {
                 <th className="p-3 sm:p-4 text-left font-semibold">Date</th>
                 <th className="p-3 sm:p-4 text-left font-semibold">Amount</th>
                 <th className="p-3 sm:p-4 text-left font-semibold">Status</th>
-                <th className="p-3 sm:p-4 text-left font-semibold">Transaction Id</th>
+                <th className="p-3 sm:p-4 text-left font-semibold">
+                  Transaction Id
+                </th>
               </tr>
             </thead>
             <tbody>
               {payouts.map((p, idx) => (
-                <tr key={idx} className="border-t border-gray-200 hover:bg-gray-50 transition-colors">
-                  <td className="p-3 sm:p-4 text-gray-700">{formatDate(p.on)}</td>
-                  <td className="p-3 sm:p-4 text-gray-700">₹{p.totalAmount.toLocaleString()}</td>
+                <tr
+                  key={idx}
+                  className="border-t border-gray-200 hover:bg-gray-50 transition-colors"
+                >
                   <td className="p-3 sm:p-4 text-gray-700">
-                    <span className={`inline-flex px-2 py-1 text-xs sm:text-sm font-semibold rounded-full ${
-                      p.status === 'completed' 
-                        ? 'bg-green-100 text-green-800' 
-                        : p.status === 'pending' 
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
+                    {formatDate(p.on)}
+                  </td>
+                  <td className="p-3 sm:p-4 text-gray-700">
+                    ₹{p.totalAmount.toLocaleString()}
+                  </td>
+                  <td className="p-3 sm:p-4 text-gray-700">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs sm:text-sm font-semibold rounded-full ${
+                        p.status === "completed"
+                          ? "bg-green-100 text-green-800"
+                          : p.status === "pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
                       {p.status}
                     </span>
                   </td>

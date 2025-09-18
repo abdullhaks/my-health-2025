@@ -9,7 +9,10 @@ import { z } from "zod";
 import { useEffect, useState } from "react";
 import { loginAdmin } from "../../api/admin/adminApi";
 import { useDispatch } from "react-redux";
-import { loginAdmin as login, logoutAdmin } from "../../redux/slices/adminSlices";
+import {
+  loginAdmin as login,
+  logoutAdmin,
+} from "../../redux/slices/adminSlices";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ApiError } from "../../interfaces/error";
@@ -101,7 +104,9 @@ function AdminLogin() {
       navigate("/admin/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
-      toast.error((error as ApiError).response?.data?.msg || "Invalid credentials!");
+      toast.error(
+        (error as ApiError).response?.data?.msg || "Invalid credentials!"
+      );
 
       if (
         typeof error === "object" &&
@@ -123,8 +128,19 @@ function AdminLogin() {
       <div className="absolute inset-0 opacity-70">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="adminLoginGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#3B82F6" strokeWidth="0.5" opacity="0.8" />
+            <pattern
+              id="adminLoginGrid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 60 0 L 0 0 0 60"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="0.5"
+                opacity="0.8"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#adminLoginGrid)" />
@@ -203,7 +219,10 @@ function AdminLogin() {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5 sm:space-y-6"
+                >
                   <div className="space-y-4 sm:space-y-5">
                     <Input
                       id="email"

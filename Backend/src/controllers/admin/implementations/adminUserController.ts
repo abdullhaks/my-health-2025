@@ -3,14 +3,13 @@ import IAdminUserCtrl from "../interfaces/IAdminUserCtrl";
 import { inject, injectable } from "inversify";
 import IAdminUserService from "../../../services/admin/interfaces/IAdminUserService";
 import { HttpStatusCode } from "../../../utils/enum";
+import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
 export default class AdminUserController implements IAdminUserCtrl {
-
-
   constructor(
-    @inject("IAdminUserService")   private _adminUserService: IAdminUserService
-  ) { }
+    @inject("IAdminUserService") private _adminUserService: IAdminUserService
+  ) {}
 
   async getUsers(req: Request, res: Response): Promise<void> {
     try {
@@ -27,14 +26,16 @@ export default class AdminUserController implements IAdminUserCtrl {
       );
 
       if (!result) {
-         res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "fetching users has been fialed " });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ msg: "fetching users has been fialed " });
       }
-       res.status(HttpStatusCode.OK).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -49,14 +50,16 @@ export default class AdminUserController implements IAdminUserCtrl {
       console.log("resposne form user blocking ctrl..", result);
 
       if (!result) {
-         res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "blocking users has been fialed " });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ msg: "blocking users has been fialed " });
       }
-       res.status(HttpStatusCode.OK).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -71,14 +74,16 @@ export default class AdminUserController implements IAdminUserCtrl {
       console.log("resposne form user blocking ctrl..", result);
 
       if (!result) {
-         res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "blocking users has been fialed " });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ msg: "blocking users has been fialed " });
       }
-       res.status(HttpStatusCode.OK).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 }

@@ -1,22 +1,22 @@
-import {inject , injectable} from "inversify";
-import { ITransactionDocument } from "../../entities/transactionsEntities"; 
+import { inject, injectable } from "inversify";
+import { ITransactionDocument } from "../../entities/transactionsEntities";
 import ITransactionRepository from "../interfaces/ITransactionRepository";
 import BaseRepository from "./baseRepository";
 
-
-
 @injectable()
-export default class TransactionRepository extends BaseRepository<ITransactionDocument> implements ITransactionRepository{
+export default class TransactionRepository
+  extends BaseRepository<ITransactionDocument>
+  implements ITransactionRepository
+{
+  constructor(@inject("transactionModel") private _transactionModel: any) {
+    super(_transactionModel);
+  }
 
-constructor(
-
-    @inject("transactionModel") private _transactionModel : any,
-){
-    super(_transactionModel)
-};
-
-
- async getAllTransactions(page: number, limit: number, query: any = {}): Promise<any> {
+  async getAllTransactions(
+    page: number,
+    limit: number,
+    query: any = {}
+  ): Promise<any> {
     try {
       const skip = (page - 1) * limit;
       const transactions = await this._transactionModel
@@ -38,7 +38,7 @@ constructor(
           amount: transaction.amount,
           paymentFor: transaction.paymentFor,
           transactionId: transaction.transactionId,
-          invoice:transaction.invoice,
+          invoice: transaction.invoice,
           userId: transaction.userId,
           doctorId: transaction.doctorId,
           date: transaction.date,
@@ -52,8 +52,4 @@ constructor(
       throw new Error("Failed to fetch transactions");
     }
   }
-
-
-
 }
-

@@ -4,7 +4,13 @@ import { FiSend, FiCheck, FiCheckCircle, FiX } from "react-icons/fi";
 import { IoDocumentAttachOutline } from "react-icons/io5";
 import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
-import { getUserConversations, getUserMessages, directFileUpload, checkActiveBooking, getLatestDoctorPrescription } from "../../api/user/userApi";
+import {
+  getUserConversations,
+  getUserMessages,
+  directFileUpload,
+  checkActiveBooking,
+  getLatestDoctorPrescription,
+} from "../../api/user/userApi";
 import { message } from "antd";
 import axios from "axios";
 import doodle from "../../assets/bg_print.png";
@@ -38,7 +44,7 @@ interface User {
 const UserChat = () => {
   const user = useSelector((state: IUserData) => state.user.user);
   const userId = user?._id;
-  const [doctorId, setDoctorId] = useState('');
+  const [doctorId, setDoctorId] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentChat, setCurrentChat] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -55,7 +61,8 @@ const UserChat = () => {
   const navigate = useNavigate();
   const hasInitializedConversation = useRef(false);
   const [activeAppointment, setActiveAppointment] = useState<boolean>(false);
-  const [isConversationListVisible, setIsConversationListVisible] = useState(true);
+  const [isConversationListVisible, setIsConversationListVisible] =
+    useState(true);
 
   const apiUrl = import.meta.env.VITE_API_URL as string;
 
@@ -77,7 +84,10 @@ const UserChat = () => {
   const settingCurrentChat = (c: Conversation) => {
     setCurrentChat(c);
     setIsConversationListVisible(false); // Hide conversation list on mobile
-    const doctor = c.members.find((m: { _id: string; userId: string; name: string; avatar: string }) => m._id !== userId);
+    const doctor = c.members.find(
+      (m: { _id: string; userId: string; name: string; avatar: string }) =>
+        m._id !== userId
+    );
     if (doctor) {
       setDoctorId(doctor._id || doctor.userId);
     } else {
@@ -142,11 +152,15 @@ const UserChat = () => {
         token = await getAccessToken();
       }
 
-      const socket = io(import.meta.env.VITE_REACT_APP_SOCKET_URL || "https://api.abdullhakalamban.online", {
-        transports: ["websocket"],
-        reconnection: true,
-        auth: { token },
-      });
+      const socket = io(
+        import.meta.env.VITE_REACT_APP_SOCKET_URL ||
+          "https://api.abdullhakalamban.online",
+        {
+          transports: ["websocket"],
+          reconnection: true,
+          auth: { token },
+        }
+      );
 
       socketRef.current = socket;
 
@@ -218,7 +232,11 @@ const UserChat = () => {
         const latestPres = await getLatestDoctorPrescription(userId, doctorId);
 
         let medicationPeriod = null;
-        if (latestPres && typeof latestPres.medicationPeriod === 'number' && latestPres.medicationPeriod > 0) {
+        if (
+          latestPres &&
+          typeof latestPres.medicationPeriod === "number" &&
+          latestPres.medicationPeriod > 0
+        ) {
           const dy = new Date(latestPres.createdAt);
           dy.setDate(dy.getDate() + latestPres.medicationPeriod);
           medicationPeriod = dy;
@@ -226,7 +244,9 @@ const UserChat = () => {
 
         setMessages(res);
         setActiveAppointment(
-          (medicationPeriod && medicationPeriod > new Date()) || active?.status || false
+          (medicationPeriod && medicationPeriod > new Date()) ||
+            active?.status ||
+            false
         );
       } catch (err) {
         console.error("Failed to fetch messages:", err);
@@ -292,7 +312,11 @@ const UserChat = () => {
       }
     };
 
-    const handleStopTyping = ({ conversationId }: { conversationId: string }) => {
+    const handleStopTyping = ({
+      conversationId,
+    }: {
+      conversationId: string;
+    }) => {
       if (currentChat._id === conversationId) {
         setTypingUser(null);
       }
@@ -334,11 +358,11 @@ const UserChat = () => {
     if (!currentChat || (!newMessage.trim() && !docMessage)) return;
 
     let messageData: {
-      senderId: string,
-      conversationId: string,
-      type: string,
-      content: string,
-      fileName?: string,
+      senderId: string;
+      conversationId: string;
+      type: string;
+      content: string;
+      fileName?: string;
     };
     let tempMessage: Message;
 
@@ -397,10 +421,15 @@ const UserChat = () => {
         fileInputRef.current.value = "";
       }
 
-      socketRef.current?.emit("sendMessage", { ...messageData, _id: tempMessage._id });
+      socketRef.current?.emit("sendMessage", {
+        ...messageData,
+        _id: tempMessage._id,
+      });
     } catch (error) {
       console.error("Message send failed:", error);
-      message.error((error as ApiError).response?.data?.message || "Failed to send message");
+      message.error(
+        (error as ApiError).response?.data?.message || "Failed to send message"
+      );
       setMessages((prev) => prev.filter((msg) => msg._id !== tempMessage._id));
     }
   };
@@ -410,7 +439,9 @@ const UserChat = () => {
     socketRef.current.emit("typing", { conversationId: currentChat._id });
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
-      socketRef.current?.emit("stopTyping", { conversationId: currentChat._id });
+      socketRef.current?.emit("stopTyping", {
+        conversationId: currentChat._id,
+      });
     }, 3000);
   };
 
@@ -466,11 +497,15 @@ const UserChat = () => {
       {/* Conversation List */}
       <div
         className={`w-full md:w-80 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 md:transition-none ${
-          isConversationListVisible ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          isConversationListVisible
+            ? "translate-x-0"
+            : "-translate-x-full md:translate-x-0"
         } md:flex fixed md:static top-0 left-0 h-full z-20`}
       >
         <div className="p-4 sm:p-5 border-b border-gray-200">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Conversations</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">
+            Conversations
+          </h2>
           {/* Uncomment if search and user selection are needed */}
           {/*
           <input
@@ -505,7 +540,9 @@ const UserChat = () => {
         </div>
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="p-4 sm:p-5 text-gray-500 text-sm sm:text-base">Loading conversations...</div>
+            <div className="p-4 sm:p-5 text-gray-500 text-sm sm:text-base">
+              Loading conversations...
+            </div>
           ) : (
             <ul className="divide-y divide-gray-200">
               {conversations.map((c) =>
@@ -523,7 +560,9 @@ const UserChat = () => {
                       className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm sm:text-base font-medium text-gray-900 truncate">{m.name}</p>
+                      <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                        {m.name}
+                      </p>
                     </div>
                   </li>
                 ))
@@ -536,7 +575,9 @@ const UserChat = () => {
       {/* Chat Interface */}
       <div
         className={`flex-1 flex flex-col transition-transform duration-300 md:transition-none ${
-          isConversationListVisible && currentChat ? "-translate-x-full md:translate-x-0" : "translate-x-0"
+          isConversationListVisible && currentChat
+            ? "-translate-x-full md:translate-x-0"
+            : "translate-x-0"
         } md:flex fixed md:static top-0 left-0 w-full h-full z-10 bg-gray-50`}
       >
         {currentChat ? (
@@ -555,8 +596,14 @@ const UserChat = () => {
                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200"
               />
               <div className="flex-1">
-                <p className="text-sm sm:text-base font-medium text-gray-900">{currentChat.members[0].name}</p>
-                {typingUser && <p className="text-xs sm:text-sm text-green-600">{typingUser}</p>}
+                <p className="text-sm sm:text-base font-medium text-gray-900">
+                  {currentChat.members[0].name}
+                </p>
+                {typingUser && (
+                  <p className="text-xs sm:text-sm text-green-600">
+                    {typingUser}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -571,7 +618,9 @@ const UserChat = () => {
               }}
             >
               {loading ? (
-                <div className="text-center text-gray-500 text-sm sm:text-base">Loading messages...</div>
+                <div className="text-center text-gray-500 text-sm sm:text-base">
+                  Loading messages...
+                </div>
               ) : (
                 <div className="space-y-3 sm:space-y-4">
                   {messages.map((msg, index) => (
@@ -584,7 +633,11 @@ const UserChat = () => {
                         </div>
                       )}
                       <div
-                        className={`flex ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
+                        className={`flex ${
+                          msg.senderId === userId
+                            ? "justify-end"
+                            : "justify-start"
+                        }`}
                       >
                         <div
                           className={`relative max-w-[70%] sm:max-w-[60%] p-3 sm:p-4 rounded-lg shadow-md ${
@@ -615,18 +668,31 @@ const UserChat = () => {
                               </a>
                             </div>
                           ) : (
-                            <p className="text-sm sm:text-base break-words">{msg.content}</p>
+                            <p className="text-sm sm:text-base break-words">
+                              {msg.content}
+                            </p>
                           )}
                           <div className="flex items-center justify-end mt-1 sm:mt-2 gap-1 sm:gap-2">
-                            <span className="text-xs sm:text-sm text-gray-300">{formatMessageTime(msg.timestamp)}</span>
+                            <span className="text-xs sm:text-sm text-gray-300">
+                              {formatMessageTime(msg.timestamp)}
+                            </span>
                             {msg.senderId === userId && (
                               <span className="flex items-center">
                                 {msg.status === "read" ? (
-                                  <FiCheckCircle className="text-blue-500" size={14} />
+                                  <FiCheckCircle
+                                    className="text-blue-500"
+                                    size={14}
+                                  />
                                 ) : msg.status === "delivered" ? (
-                                  <FiCheck className="text-gray-300" size={14} />
+                                  <FiCheck
+                                    className="text-gray-300"
+                                    size={14}
+                                  />
                                 ) : (
-                                  <FiCheck className="text-gray-300" size={14} />
+                                  <FiCheck
+                                    className="text-gray-300"
+                                    size={14}
+                                  />
                                 )}
                               </span>
                             )}
@@ -675,7 +741,9 @@ const UserChat = () => {
                     <button
                       onClick={handleSendMessage}
                       className={`p-2 sm:p-3 rounded-full ${
-                        loading ? "text-gray-400" : "text-green-600 hover:text-green-700 hover:bg-green-50"
+                        loading
+                          ? "text-gray-400"
+                          : "text-green-600 hover:text-green-700 hover:bg-green-50"
                       } transition-all disabled:opacity-50 min-w-[44px] min-h-[44px]`}
                       disabled={loading}
                     >
@@ -691,7 +759,9 @@ const UserChat = () => {
                         setNewMessage(e.target.value);
                         handleTyping();
                       }}
-                      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleSendMessage()
+                      }
                       placeholder="Type a message..."
                       className="flex-1 p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
                       disabled={loading}
@@ -713,7 +783,8 @@ const UserChat = () => {
             ) : (
               <div className="bg-white border-t border-gray-200 p-4 sm:p-5 sticky bottom-0 z-10">
                 <p className="text-xs sm:text-sm text-gray-500 text-center">
-                  You can send messages only for active appointments or if you are in medication period.
+                  You can send messages only for active appointments or if you
+                  are in medication period.
                 </p>
               </div>
             )}
@@ -729,30 +800,3 @@ const UserChat = () => {
 };
 
 export default UserChat;
-
-
-{/* <div className="bg-white border-t border-gray-200 p-4 flex items-center space-x-3 sticky bottom-0 z-5">
-  <BsEmojiSmile className="text-xl text-gray-500 cursor-pointer hover:text-gray-700" />
-  <textarea
-    value={newMessage}
-    onChange={(e) => {
-      setNewMessage(e.target.value);
-      handleTyping();
-    }}
-    onKeyDown={(e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault(); // Prevent default Enter behavior (form submission or newline)
-        handleSendMessage();
-      }
-      // Shift+Enter will automatically add a newline in textarea, no additional logic needed
-    }}
-    placeholder="Type a message..."
-    className="flex-1 p-2.5 text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all resize-none min-h-[40px] max-h-[100px] overflow-y-auto"
-  />
-  <button
-    onClick={handleSendMessage}
-    className="text-xl text-green-600 hover:text-green-700 transition-colors"
-  >
-    <FiSend />
-  </button>
-</div>; */}

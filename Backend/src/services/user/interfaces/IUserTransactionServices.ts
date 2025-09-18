@@ -1,6 +1,5 @@
 import { ITransactions } from "../../../dto/transactionDto";
 
-
 interface filter {
   method?: string;
   paymentFor?: string;
@@ -8,14 +7,11 @@ interface filter {
   endDate?: string;
 }
 
-
-
 export default interface IUserTransactionsService {
-
-getTransactions(userId:string, pageNumber:number, limitNumber:number,filters: filter):Promise<ITransactions[]>,
-
-};
-
-
-
-
+  getTransactions(
+    userId: string,
+    pageNumber: number,
+    limitNumber: number,
+    filters: filter
+  ): Promise<ITransactions[]>;
+}

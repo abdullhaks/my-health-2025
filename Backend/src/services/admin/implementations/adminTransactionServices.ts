@@ -1,9 +1,8 @@
-import { inject , injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import IAdminTransactionsService from "../interfaces/IAdminTransactionServices";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import { ITransactions } from "../../../dto/transactionDto";
 import { FilterQuery } from "mongoose";
-
 
 interface filter {
   method?: string;
@@ -13,18 +12,19 @@ interface filter {
 }
 
 @injectable()
+export default class AdminTransactionsService
+  implements IAdminTransactionsService
+{
+  constructor(
+    @inject("ITransactionRepository")
+    private _transactionRepository: ITransactionRepository
+  ) {}
 
-export default class AdminTransactionsService implements IAdminTransactionsService {
-
-    constructor(
-     
-      @inject("ITransactionRepository") private _transactionRepository:ITransactionRepository,
-      
-    ){
-    
-    }
-
-  async getTransactions(pageNumber: number, limitNumber: number, filters: filter = {}): Promise<ITransactions[]> {
+  async getTransactions(
+    pageNumber: number,
+    limitNumber: number,
+    filters: filter = {}
+  ): Promise<ITransactions[]> {
     const query: FilterQuery<ITransactions> = {};
 
     if (filters.method) {
@@ -40,10 +40,13 @@ export default class AdminTransactionsService implements IAdminTransactionsServi
       };
     }
 
-    const transactions = await this._transactionRepository.getAllTransactions(pageNumber, limitNumber, query);
+    const transactions = await this._transactionRepository.getAllTransactions(
+      pageNumber,
+      limitNumber,
+      query
+    );
     console.log("transactions from service...", transactions);
 
     return transactions;
   }
-
 }

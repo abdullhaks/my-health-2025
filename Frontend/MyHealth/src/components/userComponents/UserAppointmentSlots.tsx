@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { getSessions, getBookedSlots, getUnavailableDays, getUnavailableSessions } from "../../api/user/userApi";
+import {
+  getSessions,
+  getBookedSlots,
+  getUnavailableDays,
+  getUnavailableSessions,
+} from "../../api/user/userApi";
 import { IAppointmentData } from "../../interfaces/appointment";
 
 interface Session {
@@ -32,13 +37,19 @@ const UserAppointmentSlots = () => {
   const doctorId = location.state?.doctorId;
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [appointmentSlots, setAppointmentSlots] = useState<AppointmentSlot[]>([]);
+  const [appointmentSlots, setAppointmentSlots] = useState<AppointmentSlot[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [bookingStatus, /*setBookingStatus*/] = useState<"idle" | "booking" | "success" | "error">("idle");
+  const [bookingStatus /*setBookingStatus*/] = useState<
+    "idle" | "booking" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [bookedSlots, setBookedSlots] = useState<string[]>([]); 
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [unAvailableDays, setUnAvailableDays] = useState<string[]>([]);
-  const [unAvailableSessions, setUnAvailableSessions] = useState<{ day: string; sessionId: string }[]>([]);
+  const [unAvailableSessions, setUnAvailableSessions] = useState<
+    { day: string; sessionId: string }[]
+  >([]);
 
   const minDate = new Date();
   const maxDate = new Date();
@@ -47,7 +58,9 @@ const UserAppointmentSlots = () => {
   // Fetch sessions for the doctor
   useEffect(() => {
     if (!doctorId) {
-      setErrorMessage("No doctor selected. Please go back and select a doctor.");
+      setErrorMessage(
+        "No doctor selected. Please go back and select a doctor."
+      );
       return;
     }
 
@@ -77,24 +90,32 @@ const UserAppointmentSlots = () => {
         console.log("selected date is >>>>>>>", selectedDate);
         setIsLoading(true);
         setErrorMessage("");
-       
+
         const yyyy = selectedDate.getFullYear();
         const mm = String(selectedDate.getMonth() + 1).padStart(2, "0");
         const dd = String(selectedDate.getDate()).padStart(2, "0");
         const localDate = `${yyyy}-${mm}-${dd}`;
-        
-        const [bookedResponse, unavailableDaysResponse, unavailableSessionsResponse] = await Promise.all([
+
+        const [
+          bookedResponse,
+          unavailableDaysResponse,
+          unavailableSessionsResponse,
+        ] = await Promise.all([
           getBookedSlots(doctorId, localDate),
           getUnavailableDays(doctorId),
           getUnavailableSessions(doctorId),
         ]);
-        
+
         console.log("unAvailableDays are/......", unavailableDaysResponse);
-        console.log("unAvailableSessions are/......", unavailableSessionsResponse);
+        console.log(
+          "unAvailableSessions are/......",
+          unavailableSessionsResponse
+        );
         setUnAvailableDays(unavailableDaysResponse || []);
         setUnAvailableSessions(unavailableSessionsResponse || []);
-        setBookedSlots(bookedResponse.map((slot: IAppointmentData) => slot.slotId) || []);
-     
+        setBookedSlots(
+          bookedResponse.map((slot: IAppointmentData) => slot.slotId) || []
+        );
       } catch (error) {
         console.error("Error fetching data:", error);
         setErrorMessage("Failed to load data. Please try again.");
@@ -122,14 +143,19 @@ const UserAppointmentSlots = () => {
       const mm = String(date.getMonth() + 1).padStart(2, "0");
       const dd = String(date.getDate()).padStart(2, "0");
       const formattedDate = `${yyyy}-${mm}-${dd}`;
-      
+
       // Check if the selected date is unavailable
       if (unAvailableDays.includes(formattedDate)) {
         console.log("Date is unavailable:", formattedDate);
         return daySlots;
       }
 
-      console.log("Generating slots for date:", date, "Day of week:", dayOfWeek);
+      console.log(
+        "Generating slots for date:",
+        date,
+        "Day of week:",
+        dayOfWeek
+      );
 
       const daySessions = sessions.filter((s) => s.dayOfWeek === dayOfWeek);
       console.log("Day sessions:", daySessions);
@@ -137,11 +163,15 @@ const UserAppointmentSlots = () => {
       daySessions.forEach((session) => {
         // Check if the session is unavailable for the selected date
         const isSessionUnavailable = unAvailableSessions.some(
-          (unavailable) => unavailable.day === formattedDate && unavailable.sessionId === session._id
+          (unavailable) =>
+            unavailable.day === formattedDate &&
+            unavailable.sessionId === session._id
         );
 
         if (isSessionUnavailable) {
-          console.log(`Session ${session._id} is unavailable for date: ${formattedDate}`);
+          console.log(
+            `Session ${session._id} is unavailable for date: ${formattedDate}`
+          );
           return;
         }
 
@@ -166,7 +196,9 @@ const UserAppointmentSlots = () => {
 
         if (!shouldGenerateSlots) return;
 
-        const [startHours, startMinutes] = session.startTime.split(":").map(Number);
+        const [startHours, startMinutes] = session.startTime
+          .split(":")
+          .map(Number);
         const [endHours, endMinutes] = session.endTime.split(":").map(Number);
 
         const slotStart = new Date(date);
@@ -179,7 +211,9 @@ const UserAppointmentSlots = () => {
 
         while (currentSlotStart < slotEnd) {
           const currentSlotEnd = new Date(currentSlotStart);
-          currentSlotEnd.setMinutes(currentSlotEnd.getMinutes() + session.duration);
+          currentSlotEnd.setMinutes(
+            currentSlotEnd.getMinutes() + session.duration
+          );
 
           if (currentSlotEnd > slotEnd) break;
 
@@ -206,7 +240,13 @@ const UserAppointmentSlots = () => {
 
     const slots = generateSlotsForDate(selectedDate);
     setAppointmentSlots(slots);
-  }, [sessions, selectedDate, bookedSlots, unAvailableDays, unAvailableSessions]);
+  }, [
+    sessions,
+    selectedDate,
+    bookedSlots,
+    unAvailableDays,
+    unAvailableSessions,
+  ]);
 
   const handleBookSlot = (slot: AppointmentSlot) => {
     navigate("/user/appointment-confirmation", { state: { doctorId, slot } });
@@ -218,10 +258,14 @@ const UserAppointmentSlots = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Appointment</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          Book Appointment
+        </h2>
 
         {errorMessage && (
-          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">{errorMessage}</div>
+          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
+            {errorMessage}
+          </div>
         )}
         {bookingStatus === "success" && (
           <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg">
@@ -236,7 +280,9 @@ const UserAppointmentSlots = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">Select Date</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+              Select Date
+            </h3>
             <Calendar
               onChange={(value) => value && setSelectedDate(value as Date)}
               value={selectedDate}
@@ -269,7 +315,9 @@ const UserAppointmentSlots = () => {
               })}
             </h3>
             {isLoading ? (
-              <div className="text-center text-gray-500 py-4">Loading slots...</div>
+              <div className="text-center text-gray-500 py-4">
+                Loading slots...
+              </div>
             ) : appointmentSlots.length === 0 ? (
               <div className="text-center text-gray-500 py-4">
                 No appointment slots available for this day.
@@ -279,10 +327,22 @@ const UserAppointmentSlots = () => {
                 {appointmentSlots.map((slot) => (
                   <div
                     key={slot.id}
-                    onClick={() => slot.status !== "booked" && bookingStatus !== "booking" && handleBookSlot(slot)}
+                    onClick={() =>
+                      slot.status !== "booked" &&
+                      bookingStatus !== "booking" &&
+                      handleBookSlot(slot)
+                    }
                     className={`p-3 rounded-xl shadow-lg border border-gray-300 transition-all duration-300 cursor-pointer
-                      ${slot.status === "booked" ? "bg-gray-100 opacity-70 cursor-not-allowed" : "bg-white hover:bg-blue-200 hover:shadow-md"}
-                      ${bookingStatus === "booking" && slot.status !== "booked" ? "animate-pulse" : ""}`}
+                      ${
+                        slot.status === "booked"
+                          ? "bg-gray-100 opacity-70 cursor-not-allowed"
+                          : "bg-white hover:bg-blue-200 hover:shadow-md"
+                      }
+                      ${
+                        bookingStatus === "booking" && slot.status !== "booked"
+                          ? "animate-pulse"
+                          : ""
+                      }`}
                   >
                     <div className="flex flex-col space-y-1">
                       <p className="text-base font-semibold text-gray-900">
@@ -293,11 +353,16 @@ const UserAppointmentSlots = () => {
                         <span>₹{slot.fee}</span>
                       </div>
                       {slot.status === "booked" && (
-                        <p className="text-xs text-red-500 font-medium">Booked</p>
+                        <p className="text-xs text-red-500 font-medium">
+                          Booked
+                        </p>
                       )}
-                      {bookingStatus === "booking" && slot.status !== "booked" && (
-                        <p className="text-xs text-blue-500 font-medium">Booking...</p>
-                      )}
+                      {bookingStatus === "booking" &&
+                        slot.status !== "booked" && (
+                          <p className="text-xs text-blue-500 font-medium">
+                            Booking...
+                          </p>
+                        )}
                     </div>
                   </div>
                 ))}

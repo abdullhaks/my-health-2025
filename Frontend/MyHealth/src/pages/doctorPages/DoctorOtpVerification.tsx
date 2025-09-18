@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import doctorLogin from "../../assets/doctorLogin.png"; 
+import doctorLogin from "../../assets/doctorLogin.png";
 import applogoWhite from "../../assets/applogoWhite.png";
 import Button from "../../sharedComponents/Button";
-import { verifyDoctorOtp, resendDoctorOtp } from "../../api/doctor/doctorApi"; 
+import { verifyDoctorOtp, resendDoctorOtp } from "../../api/doctor/doctorApi";
 import { toast } from "react-toastify";
 
 function DoctorOtpVerification() {
@@ -54,7 +54,10 @@ function DoctorOtpVerification() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     if (e.key === "Backspace") {
       if (otp[index] !== "") {
         const newOtp = [...otp];
@@ -96,8 +99,19 @@ function DoctorOtpVerification() {
       <div className="absolute inset-0 opacity-70">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="otpGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#3B82F6" strokeWidth="0.5" opacity="0.8" />
+            <pattern
+              id="otpGrid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 60 0 L 0 0 0 60"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="0.5"
+                opacity="0.8"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#otpGrid)" />
@@ -199,7 +213,9 @@ function DoctorOtpVerification() {
 
                 {/* Error Message */}
                 {error && (
-                  <p className="text-sm text-red-500 text-center mb-4 sm:mb-6">{error}</p>
+                  <p className="text-sm text-red-500 text-center mb-4 sm:mb-6">
+                    {error}
+                  </p>
                 )}
 
                 {/* Verify Button */}
@@ -216,7 +232,11 @@ function DoctorOtpVerification() {
                   <p className="text-sm sm:text-base text-gray-600">
                     Didn't receive the code?{" "}
                     <Button
-                      text={resendDisabled ? `Resend OTP in ${timer}s` : "Resend OTP"}
+                      text={
+                        resendDisabled
+                          ? `Resend OTP in ${timer}s`
+                          : "Resend OTP"
+                      }
                       onClick={handleResendOTP}
                       disabled={resendDisabled}
                       className={`min-h-[44px] text-sm sm:text-base font-medium inline-flex items-center justify-center transition-all duration-300 ${

@@ -1,16 +1,13 @@
-import { Document,Types } from "mongoose";
+import { Document, Types } from "mongoose";
 
-
-export interface IAdminDocument extends Document{
-
-    _id:Types.ObjectId;
-    fullName:string;
-    email:string;
-    password:string;
-    profile:string;
-    createdAt:Date;
-    updatedAt:Date
-
+export interface IAdminDocument extends Document {
+  _id: Types.ObjectId;
+  fullName: string;
+  email: string;
+  password: string;
+  profile: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface IAdmin extends IAdminDocument{}; 
+export interface IAdmin extends IAdminDocument {}

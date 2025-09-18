@@ -1,8 +1,7 @@
-import { inject , injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import IUserTransactionsService from "../interfaces/IUserTransactionServices";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import { ITransactions } from "../../../dto/transactionDto";
-
 
 interface filter {
   method?: string;
@@ -11,21 +10,22 @@ interface filter {
   endDate?: string;
 }
 
-
 @injectable()
+export default class UserTransactionsService
+  implements IUserTransactionsService
+{
+  constructor(
+    @inject("ITransactionRepository")
+    private _transactionRepository: ITransactionRepository
+  ) {}
 
-export default class UserTransactionsService implements IUserTransactionsService {
-
-    constructor(
-     
-      @inject("ITransactionRepository") private _transactionRepository:ITransactionRepository,
-      
-    ){
-    
-    }
-
-  async getTransactions(userId:string, pageNumber: number, limitNumber: number, filters: filter = {}): Promise<ITransactions[]> {
-    const query: any = {userId:userId};
+  async getTransactions(
+    userId: string,
+    pageNumber: number,
+    limitNumber: number,
+    filters: filter = {}
+  ): Promise<ITransactions[]> {
+    const query: any = { userId: userId };
 
     if (filters.method) {
       query.method = filters.method;
@@ -40,10 +40,13 @@ export default class UserTransactionsService implements IUserTransactionsService
       };
     }
 
-    const transactions = await this._transactionRepository.getAllTransactions(pageNumber, limitNumber, query);
+    const transactions = await this._transactionRepository.getAllTransactions(
+      pageNumber,
+      limitNumber,
+      query
+    );
     console.log("transactions from service...", transactions);
 
     return transactions;
   }
-
 }

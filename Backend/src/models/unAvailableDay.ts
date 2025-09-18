@@ -17,10 +17,13 @@ const unAvailableDaySchema: Schema<IUnAvailableDayDocument> = new Schema(
     },
   },
   {
-    timestamps: { createdAt: true, updatedAt: true }, 
+    timestamps: { createdAt: true, updatedAt: true },
   }
 );
 
-const unAvailableDayModel = mongoose.model<IUnAvailableDayDocument>("UnAvailableDay", unAvailableDaySchema);
+const unAvailableDayModel = mongoose.model<IUnAvailableDayDocument>(
+  "UnAvailableDay",
+  unAvailableDaySchema
+);
 
 export default unAvailableDayModel;

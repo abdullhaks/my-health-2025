@@ -1,8 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
-  FaHome, FaUserMd, FaUsers, FaSignOutAlt, FaBars, FaTimes, FaChevronLeft,
-  FaChevronRight, FaStar, FaCalendarAlt,
+  FaHome,
+  FaUserMd,
+  FaUsers,
+  FaSignOutAlt,
+  FaBars,
+  FaTimes,
+  FaChevronLeft,
+  FaChevronRight,
+  FaStar,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { MdAttachMoney } from "react-icons/md";
 import applogoBlue from "../../assets/applogoblue.png";
@@ -45,7 +53,10 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
         setShowProfileDropdown(false);
       }
     };
@@ -78,12 +89,24 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
     { name: "Users", path: "/admin/users", icon: <FaUsers /> },
     { name: "Doctors", path: "/admin/doctors", icon: <FaUserMd /> },
     { name: "Plans", path: "/admin/subscriptionPlans", icon: <FaStar /> },
-    { name: "Appointments", path: "/admin/appointments", icon: <FaCalendarAlt /> },
+    {
+      name: "Appointments",
+      path: "/admin/appointments",
+      icon: <FaCalendarAlt />,
+    },
     { name: "Payouts", path: "/admin/payout", icon: <MdAttachMoney /> },
-    { name: "Revenue", path: "/admin/transactions", icon: <FaMoneyBillTransfer /> },
+    {
+      name: "Revenue",
+      path: "/admin/transactions",
+      icon: <FaMoneyBillTransfer />,
+    },
   ];
 
-  interface IMenuItem { name: string; path: string; icon: React.ReactNode }
+  interface IMenuItem {
+    name: string;
+    path: string;
+    icon: React.ReactNode;
+  }
   const renderMenuItems = (items: IMenuItem[]) => {
     return items.map((item: IMenuItem, index: number) => {
       const isActive = location.pathname === item.path;
@@ -98,7 +121,13 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
           } focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-1`}
           onClick={handleMobileLinkClick}
         >
-          <span className={`text-lg sm:text-xl ${isActive ? "text-white" : "text-green-600"}`}>{item.icon}</span>
+          <span
+            className={`text-lg sm:text-xl ${
+              isActive ? "text-white" : "text-green-600"
+            }`}
+          >
+            {item.icon}
+          </span>
           {!collapsed && <span className="ml-3 truncate">{item.name}</span>}
           {collapsed && isActive && (
             <div className="absolute left-0 w-1 h-8 bg-green-400 rounded-r-full"></div>
@@ -121,7 +150,11 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-full z-50 bg-white shadow-xl transition-all duration-300
-          ${mobileOpen ? "translate-x-0 w-30" : "-translate-x-full sm:translate-x-0"}
+          ${
+            mobileOpen
+              ? "translate-x-0 w-30"
+              : "-translate-x-full sm:translate-x-0"
+          }
           ${collapsed ? "sm:w-16" : "sm:w-64"}`}
       >
         {/* Sidebar Header */}
@@ -133,7 +166,9 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
               className="h-8 w-auto object-contain sm:h-10"
             />
             {!collapsed && (
-              <h1 className="ml-3 text-lg font-semibold text-gray-800 sm:text-xl">Admin</h1>
+              <h1 className="ml-3 text-lg font-semibold text-gray-800 sm:text-xl">
+                Admin
+              </h1>
             )}
           </div>
           <button
@@ -151,7 +186,10 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
             {renderMenuItems(menuItems)}
             <div className="border-t border-gray-200 pt-4">
               <button
-                onClick={() => { handleMobileLinkClick(); setShowConfirm(true); }}
+                onClick={() => {
+                  handleMobileLinkClick();
+                  setShowConfirm(true);
+                }}
                 className="w-full flex items-center px-4 py-3 rounded-xl text-sm sm:text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-1"
               >
                 <span className="text-lg sm:text-xl text-red-600">
@@ -169,13 +207,20 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
           className="absolute bottom-4 -right-3 hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-white text-green-600 border border-green-200 hover:bg-green-50 hover:text-green-700 transition-colors shadow-md"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <FaChevronRight size={12} /> : <FaChevronLeft size={12} />}
+          {collapsed ? (
+            <FaChevronRight size={12} />
+          ) : (
+            <FaChevronLeft size={12} />
+          )}
         </button>
       </aside>
 
       {/* Main Content */}
-      <div className={`flex flex-col flex-1 min-h-screen transition-all duration-300 ${
-        collapsed ? "sm:ml-16" : "sm:ml-64"}`}>
+      <div
+        className={`flex flex-col flex-1 min-h-screen transition-all duration-300 ${
+          collapsed ? "sm:ml-16" : "sm:ml-64"
+        }`}
+      >
         {/* Header */}
         <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-sm shadow-lg sm:h-20">
           <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8">
@@ -236,9 +281,7 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
 
         {/* Main Content Area */}
         <main className="flex-1 py-6 sm:py-8 px-4 sm:px-6 lg:px-8 overflow-x-hidden overflow-y-auto bg-gray-50">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+          <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
 

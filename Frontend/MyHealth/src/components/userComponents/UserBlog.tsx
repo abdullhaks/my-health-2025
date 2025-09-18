@@ -1,6 +1,6 @@
-import { Heart, ArrowLeft, Bookmark, Share2 } from 'lucide-react';
-import { JSX } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Heart, ArrowLeft, Bookmark, Share2 } from "lucide-react";
+import { JSX } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const UserBlogDetails = () => {
   const navigate = useNavigate();
@@ -8,8 +8,10 @@ const UserBlogDetails = () => {
   const { blog } = location.state || { blog: null };
 
   // Split content into paragraphs and insert images strategically
-  const contentParagraphs = blog.content.split('\n\n').filter((p: string) => p.trim());
-  const images = [blog.img1, blog.img2, blog.img3].filter(img => img);
+  const contentParagraphs = blog.content
+    .split("\n\n")
+    .filter((p: string) => p.trim());
+  const images = [blog.img1, blog.img2, blog.img3].filter((img) => img);
 
   const renderContentWithImages = () => {
     const elements: JSX.Element[] = [];
@@ -17,7 +19,10 @@ const UserBlogDetails = () => {
     contentParagraphs.forEach((paragraph: string, index: number) => {
       // Add paragraph
       elements.push(
-        <p key={`p-${index}`} className="text-gray-800 leading-7 text-sm sm:text-base md:text-lg mb-4 sm:mb-6 font-serif">
+        <p
+          key={`p-${index}`}
+          className="text-gray-800 leading-7 text-sm sm:text-base md:text-lg mb-4 sm:mb-6 font-serif"
+        >
           {paragraph}
         </p>
       );
@@ -30,8 +35,12 @@ const UserBlogDetails = () => {
           (index === Math.floor(contentParagraphs.length * 0.8) && images[2]);
 
         if (shouldInsertImage) {
-          const imageIndex = index === Math.floor(contentParagraphs.length * 0.3) ? 0 :
-                            index === Math.floor(contentParagraphs.length * 0.6) ? 1 : 2;
+          const imageIndex =
+            index === Math.floor(contentParagraphs.length * 0.3)
+              ? 0
+              : index === Math.floor(contentParagraphs.length * 0.6)
+              ? 1
+              : 2;
 
           if (images[imageIndex]) {
             elements.push(
@@ -90,15 +99,21 @@ const UserBlogDetails = () => {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                <span className="font-medium text-gray-900 text-base sm:text-lg">Dr. {blog.author}</span>
-                <button className="text-emerald-600 text-sm font-medium hover:text-emerald-700 transition-colors">• Follow</button>
+                <span className="font-medium text-gray-900 text-base sm:text-lg">
+                  Dr. {blog.author}
+                </span>
+                <button className="text-emerald-600 text-sm font-medium hover:text-emerald-700 transition-colors">
+                  • Follow
+                </button>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500">
-                <span>{new Date(blog.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}</span>
+                <span>
+                  {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
                 <span className="hidden sm:inline">•</span>
                 <span>8 min read</span>
                 <span className="hidden sm:inline">•</span>
@@ -144,8 +159,13 @@ const UserBlogDetails = () => {
           <div className="flex items-center justify-between py-4 sm:py-6 border-t border-b border-gray-200">
             <div className="flex items-center gap-4 sm:gap-6">
               <button className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors duration-200 group">
-                <Heart size={18}  className="group-hover:scale-110 transition-transform" />
-                <span className="font-medium text-sm sm:text-base">{blog.likes}</span>
+                <Heart
+                  size={18}
+                  className="group-hover:scale-110 transition-transform"
+                />
+                <span className="font-medium text-sm sm:text-base">
+                  {blog.likes}
+                </span>
               </button>
               <button className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
                 <Share2 size={18} />
@@ -164,7 +184,9 @@ const UserBlogDetails = () => {
               {blog.author.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">Dr. {blog.author}</h3>
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">
+                Dr. {blog.author}
+              </h3>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
                 <button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 active:scale-95">
                   Follow
@@ -179,8 +201,13 @@ const UserBlogDetails = () => {
 
         {/* Related Articles Suggestion */}
         <div className="mt-6 sm:mt-8 lg:mt-12 pt-6 sm:pt-8 border-t border-gray-200">
-          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">More from Dr. {blog.author}</h3>
-          <p className="text-sm sm:text-base text-gray-600">Discover more insights on healthcare innovation and medical technology</p>
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">
+            More from Dr. {blog.author}
+          </h3>
+          <p className="text-sm sm:text-base text-gray-600">
+            Discover more insights on healthcare innovation and medical
+            technology
+          </p>
         </div>
       </article>
     </div>

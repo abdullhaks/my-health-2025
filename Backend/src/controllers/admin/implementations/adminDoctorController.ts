@@ -3,14 +3,14 @@ import IAdminDoctorCtrl from "../interfaces/IAdminDoctorCtrl";
 import { inject, injectable } from "inversify";
 import IAdminDoctorService from "../../../services/admin/interfaces/IAdminDoctorService";
 import { HttpStatusCode } from "../../../utils/enum";
+import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
 export default class AdminDoctorController implements IAdminDoctorCtrl {
-
-
   constructor(
-    @inject("IAdminDoctorService")  private _adminDoctorService: IAdminDoctorService
-  ) { }
+    @inject("IAdminDoctorService")
+    private _adminDoctorService: IAdminDoctorService
+  ) {}
 
   async getDoctors(req: Request, res: Response): Promise<void> {
     try {
@@ -29,16 +29,16 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
       );
 
       if (!result) {
-         res
+        res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ msg: "fetching doctors has been fialed " });
       }
-       res.status(HttpStatusCode.OK).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -48,17 +48,17 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
       const response = await this._adminDoctorService.getDoctor(id);
 
       if (!response) {
-         res
+        res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ msg: "fetching doctor has been fialed " });
       }
 
-       res.status(HttpStatusCode.OK).json(response);
+      res.status(HttpStatusCode.OK).json(response);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -67,17 +67,17 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
       const { id } = req.params;
       const response = await this._adminDoctorService.verifyDoctor(id);
       if (!response) {
-         res
+        res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ msg: "verifying doctor has been failed " });
       }
 
-       res.status(HttpStatusCode.OK).json(response);
+      res.status(HttpStatusCode.OK).json(response);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -89,17 +89,17 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
       console.log("reson is..........", reason);
       const response = await this._adminDoctorService.declineDoctor(id, reason);
       if (!response) {
-         res
+        res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ msg: "declining doctor has been failed " });
       }
 
-       res.status(HttpStatusCode.OK).json(response);
+      res.status(HttpStatusCode.OK).json(response);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -114,16 +114,16 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
       console.log("resposne form doctor blocking ctrl..", result);
 
       if (!result) {
-         res
+        res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ msg: "blocking doctors has been fialed " });
       }
-       res.status(HttpStatusCode.OK).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 
@@ -138,16 +138,16 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
       console.log("resposne form doctor blocking ctrl..", result);
 
       if (!result) {
-         res
+        res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ msg: "blocking doctors has been fialed " });
       }
-       res.status(HttpStatusCode.OK).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
-       res
+      res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Envalid credentials" });
+        .json({ message: MESSAGES.server.serverError });
     }
   }
 }

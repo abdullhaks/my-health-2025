@@ -1,15 +1,21 @@
-import { Request, Response, NextFunction ,RequestHandler} from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { HttpStatusCode } from "../../utils/enum";
 import doctorModel from "../../models/doctor";
 
-export function verifyIsPremiume():RequestHandler {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export function verifyIsPremiume(): RequestHandler {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { doctorEmail } = req.cookies;
 
       if (!doctorEmail) {
-         res .status(HttpStatusCode.UNAUTHORIZED).json({ msg: "Credentials missing" });
-         return
+        res
+          .status(HttpStatusCode.UNAUTHORIZED)
+          .json({ msg: "Credentials missing" });
+        return;
       }
 
       const doctor = await doctorModel.findOne({ email: doctorEmail });
@@ -23,10 +29,13 @@ export function verifyIsPremiume():RequestHandler {
         res.clearCookie("doctorRefreshToken");
         res.clearCookie("doctorEmail");
 
-         res.status(HttpStatusCode.FORBIDDEN).json({success: false,
-          error: { message: "You are not a premium member. Logged out." },
-        });
-        return
+        res
+          .status(HttpStatusCode.FORBIDDEN)
+          .json({
+            success: false,
+            error: { message: "You are not a premium member. Logged out." },
+          });
+        return;
       }
 
       next();
@@ -37,10 +46,11 @@ export function verifyIsPremiume():RequestHandler {
       res.clearCookie("doctorRefreshToken");
       res.clearCookie("doctorEmail");
 
-       res.status(HttpStatusCode.FORBIDDEN)
+      res
+        .status(HttpStatusCode.FORBIDDEN)
         .json({ msg: "Credentials mismatch. Logged out." });
 
-        return
+      return;
     }
   };
 }

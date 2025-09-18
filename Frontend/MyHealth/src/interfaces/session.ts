@@ -1,5 +1,4 @@
 export interface sessionData {
-    
   _id?: string;
   doctorId?: string;
   dayOfWeek: number;
@@ -7,5 +6,4 @@ export interface sessionData {
   endTime: string;
   duration: number;
   fee: number;
-
 }
