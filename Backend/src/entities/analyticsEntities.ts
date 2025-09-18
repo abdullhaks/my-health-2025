@@ -11,3 +11,4 @@ export interface IAnalyticsDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface analyticsDocument extends IAnalyticsDocument {}

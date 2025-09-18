@@ -1,14 +1,15 @@
 import BaseRepository from "./baseRepository";
 import { inject, injectable } from "inversify";
-import { IBlogDocument } from "../../entities/blogEntities";
+import { IBlogDocument, blogDocument } from "../../entities/blogEntities";
 import IBlogRepository from "../interfaces/IBlogRepository";
+import { Model } from "mongoose";
 
 @injectable()
 export default class BlogsRepository
   extends BaseRepository<IBlogDocument>
   implements IBlogRepository
 {
-  constructor(@inject("blogModel") private _blogModel: any) {
+  constructor(@inject("blogModel") private _blogModel: Model<blogDocument>) {
     super(_blogModel);
   }
 

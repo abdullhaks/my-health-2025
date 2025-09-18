@@ -14,3 +14,4 @@ export interface ISubscriptionDocument extends Document {
   doctor: Types.ObjectId | string | undefined;
   userId: Types.ObjectId | string | undefined;
 }
+export interface subscriptionDocument extends ISubscriptionDocument {}

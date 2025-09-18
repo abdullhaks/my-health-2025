@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import doctorModel from "../../models/doctor";
 import OtpModel from "../../models/otp";
-import { IDoctorDocument } from "../../entities/doctorEntities";
+import { IDoctorDocument, doctorDocument } from "../../entities/doctorEntities";
 import BaseRepository from "./baseRepository";
 import IDoctorRepository from "../interfaces/IDoctorRepository";
 import { FilterQuery, Model } from "mongoose";
@@ -14,7 +14,7 @@ export default class DoctorRepository
   implements IDoctorRepository
 {
   constructor(
-    @inject("doctorModel") private _doctorModel: Model<IDoctorDocument>
+    @inject("doctorModel") private _doctorModel: Model<doctorDocument>
   ) {
     super(_doctorModel);
   }

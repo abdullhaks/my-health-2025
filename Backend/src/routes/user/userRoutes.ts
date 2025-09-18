@@ -43,7 +43,7 @@ userRoutes.post("/login",(req,res)=>authCtrl.userLogin(req,res));
 
 userRoutes.post("/logout",(req,res)=>authCtrl.userLogout(req,res))
 
-userRoutes.post("/signup",(req,res,next)=>authCtrl.userSignup(req,res,next));
+userRoutes.post("/signup",(req,res)=>authCtrl.userSignup(req,res));
 
 userRoutes.post("/refreshToken",(req,res)=>authCtrl.refreshToken(req,res));
 

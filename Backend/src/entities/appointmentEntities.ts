@@ -29,3 +29,4 @@ export interface IAppointment {
 export interface IAppointmentDocument extends IAppointment, Document {
   _id: Types.ObjectId;
 }
+export interface appointmentDocument extends IAppointmentDocument {}

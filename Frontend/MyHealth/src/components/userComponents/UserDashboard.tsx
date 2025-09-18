@@ -79,8 +79,8 @@ const UserDashboard = () => {
     latitude: number;
     longitude: number;
   } | null>(null);
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
+  const [latitude, setLatitude] = useState<number | null>(0);
+  const [longitude, setLongitude] = useState<number | null>(0);
   const [latestPrescription, setLatestPrescription] =
     useState<Prescription | null>(null);
   const [calendarValue, setCalendarValue] = useState<Date | null>(new Date());
@@ -111,6 +111,8 @@ const UserDashboard = () => {
 
   useEffect(() => {
     if (latitude && longitude) {
+
+      console.log("fetching.............................")
       fetchDashboardContent();
     }
   }, [latitude, longitude]);
@@ -229,11 +231,10 @@ const UserDashboard = () => {
       setLongitude(position.coords.longitude);
     };
 
-    const errorHandler = (err: GeolocationPositionError) => {
-      message.error(`Location accessing failed: ${err.message}`);
+    const errorHandler = (/*err: GeolocationPositionError*/) => {
       setLocation(null);
-      setLatitude(null);
-      setLongitude(null);
+      setLatitude(11.0510);
+      setLongitude(76.0711);
     };
 
     navigator.geolocation.getCurrentPosition(successHandler, errorHandler, {

@@ -1,7 +1,8 @@
 import BaseRepository from "./baseRepository";
 import IAdvertisementRepository from "../interfaces/IAdvertisementRepository";
-import { IAdvertisementDocument } from "../../entities/advertisementEntitites";
+import { IAdvertisementDocument , advertisementDocument} from "../../entities/advertisementEntitites";
 import { inject, injectable } from "inversify";
+import { Model } from "mongoose";
 
 interface IGetAddsResponse {
   adds: IAdvertisementDocument[];
@@ -9,11 +10,11 @@ interface IGetAddsResponse {
 }
 
 @injectable()
-export default class AdvertisementRepository
-  extends BaseRepository<IAdvertisementDocument>
-  implements IAdvertisementRepository
-{
-  constructor(@inject("advertisementModel") private _advertisementModel: any) {
+export default class AdvertisementRepository 
+extends BaseRepository<IAdvertisementDocument>
+implements IAdvertisementRepository{
+  constructor(
+    @inject("advertisementModel") private _advertisementModel: Model<advertisementDocument>) {
     super(_advertisementModel);
   }
 
@@ -52,7 +53,7 @@ export default class AdvertisementRepository
     try {
       console.log("tags from get adds by tags ....", tags);
 
-      let advertisements = [];
+      let advertisements:advertisementDocument[] = [];
 
       let locationBased = await this.getAdsNearLocation(
         latitude,
@@ -82,14 +83,16 @@ export default class AdvertisementRepository
 
         advertisements = [...advertisements, ...tagAdds];
         console.log("adds wiht tags......", advertisements);
-      } else {
+
+
+      } 
         let latestAdd = await this._advertisementModel
           .find({ createdAt: { $gte: startDate } })
           .limit(2) // Limit to 5 ads for carousel
           .lean();
 
         advertisements = [...advertisements, ...latestAdd];
-      }
+      
 
       return advertisements;
     } catch (error) {

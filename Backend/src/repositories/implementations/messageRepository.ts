@@ -1,7 +1,9 @@
 import { injectable, inject } from "inversify";
-import { IMessageDocument } from "../../entities/messageEntities";
+import { IMessageDocument, messageDocument } from "../../entities/messageEntities";
+import {conversationDocument} from "../../entities/conversationEntities"
 import BaseRepository from "./baseRepository";
 import IMessageRepository from "../interfaces/IMessageRepository";
+import {Model} from "mongoose";
 
 @injectable()
 export default class MessageRepository
@@ -9,8 +11,8 @@ export default class MessageRepository
   implements IMessageRepository
 {
   constructor(
-    @inject("messageModel") private _messageModel: any,
-    @inject("conversationModel") private _conversationModel: any
+    @inject("messageModel") private _messageModel: Model<messageDocument>,
+    @inject("conversationModel") private _conversationModel: Model<conversationDocument>
   ) {
     super(_messageModel);
   }

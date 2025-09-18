@@ -5,8 +5,7 @@ interface IGetAddsResponse {
   totalPages: number;
 }
 
-export default interface IAdvertisementRepository
-  extends BaseRepository<IAdvertisementDocument> {
+export default interface IAdvertisementRepository extends BaseRepository<IAdvertisementDocument> {
   getAdds(
     doctorId: string,
     pageNumber: number,

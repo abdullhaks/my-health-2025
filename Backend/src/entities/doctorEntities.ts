@@ -44,3 +44,4 @@ export interface IDoctorDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface doctorDocument extends IDoctorDocument {}

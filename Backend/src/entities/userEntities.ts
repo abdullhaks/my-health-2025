@@ -25,3 +25,4 @@ export interface IUserDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface userDocument extends IUserDocument {}

@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IAppointmentDocument } from "../../entities/appointmentEntities";
+import { IAppointmentDocument, appointmentDocument } from "../../entities/appointmentEntities";
 import BaseRepository from "./baseRepository";
 import IAppointmentsRepository from "../interfaces/IAppointmentsRepository";
 import { Model } from "mongoose";
@@ -14,7 +14,7 @@ export default class AppointmentsRepository
 {
   constructor(
     @inject("appointmentModel")
-    private _appointmentModel: Model<IAppointmentDocument>
+    private _appointmentModel: Model<appointmentDocument>
   ) {
     super(_appointmentModel);
   }

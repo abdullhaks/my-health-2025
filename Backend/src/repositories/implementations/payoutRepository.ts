@@ -1,10 +1,11 @@
 import BaseRepository from "./baseRepository";
 import { inject, injectable } from "inversify";
-import { IPayoutDocument } from "../../entities/payoutEntities";
+import { IPayoutDocument, payoutDocument } from "../../entities/payoutEntities";
+import {Model} from "mongoose"
 
 @injectable()
 export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
-  constructor(@inject("payoutModel") private _payoutModel: any) {
+  constructor(@inject("payoutModel") private _payoutModel: Model<payoutDocument>) {
     super(_payoutModel);
   }
 

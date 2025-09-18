@@ -11,3 +11,4 @@ export interface INotificationDocument extends Document {
   type: string;
   createdAt: Date;
 }
+export interface notificationDocument extends INotificationDocument {}

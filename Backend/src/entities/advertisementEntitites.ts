@@ -15,3 +15,5 @@ export interface IAdvertisementDocument extends Document {
   expDate: Date;
   createdAt: Date;
 }
+
+export interface advertisementDocument extends IAdvertisementDocument {}

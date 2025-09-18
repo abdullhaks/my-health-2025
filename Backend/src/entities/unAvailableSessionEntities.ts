@@ -8,3 +8,4 @@ export interface IUnAvailableSessionDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface unAvailableSessionDocument extends IUnAvailableSessionDocument {}

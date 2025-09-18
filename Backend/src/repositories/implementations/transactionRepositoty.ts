@@ -1,14 +1,15 @@
 import { inject, injectable } from "inversify";
-import { ITransactionDocument } from "../../entities/transactionsEntities";
+import { ITransactionDocument, transactionDocument } from "../../entities/transactionsEntities";
 import ITransactionRepository from "../interfaces/ITransactionRepository";
 import BaseRepository from "./baseRepository";
+import {Model} from "mongoose";
 
 @injectable()
 export default class TransactionRepository
   extends BaseRepository<ITransactionDocument>
   implements ITransactionRepository
 {
-  constructor(@inject("transactionModel") private _transactionModel: any) {
+  constructor(@inject("transactionModel") private _transactionModel: Model<transactionDocument>) {
     super(_transactionModel);
   }
 

@@ -1,7 +1,8 @@
 import BaseRepository from "./baseRepository";
 import IUnAvailableDayRepository from "../interfaces/IUnAvailableDayRepository";
-import { IUnAvailableDayDocument } from "../../entities/unAvailableDayEntities";
+import { IUnAvailableDayDocument, unAvailableDayDocument } from "../../entities/unAvailableDayEntities";
 import { inject, injectable } from "inversify";
+import {Model} from "mongoose";
 
 @injectable()
 export default class UnAvailableDayRepository
@@ -9,7 +10,7 @@ export default class UnAvailableDayRepository
   implements IUnAvailableDayRepository
 {
   constructor(
-    @inject("unAvailableDayModel") private _unAvailableDayModel: any
+    @inject("unAvailableDayModel") private _unAvailableDayModel: Model<unAvailableDayDocument>
   ) {
     super(_unAvailableDayModel);
   }

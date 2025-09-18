@@ -14,3 +14,4 @@ export interface IBlogDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface blogDocument extends IBlogDocument {}

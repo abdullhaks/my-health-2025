@@ -5,7 +5,7 @@ export default interface IUserAuthCtrl {
 
   userLogout(req: Request, res: Response): Promise<void>;
 
-  userSignup(req: Request, res: Response, next: NextFunction): Promise<void>;
+  userSignup(req: Request, res: Response): Promise<void>;
 
   verifyOtp(req: Request, res: Response): Promise<void>;
 

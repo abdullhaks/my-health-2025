@@ -492,7 +492,7 @@ const DoctorAppointments = () => {
                         </button>
                       </Popconfirm>
                     )}
-                    {appt.appointmentStatus === "completed" &&
+                    {appt.appointmentStatus ==="completed" &&
                       appt.prescriptions &&
                       appt.prescriptions.length > 0 && (
                         <button

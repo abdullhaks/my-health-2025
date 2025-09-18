@@ -15,3 +15,4 @@ export interface IReportAnalysisDocument extends Document {
   result: String;
   updatedAt: Date;
 }
+export interface reportAnalysisDocument extends IReportAnalysisDocument {}

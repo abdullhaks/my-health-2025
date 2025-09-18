@@ -17,3 +17,4 @@ export interface ITransactionDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface transactionDocument extends ITransactionDocument {}

@@ -1,14 +1,15 @@
 import { inject, injectable } from "inversify";
 import INotificationRepository from "../interfaces/INotificationRepository";
 import BaseRepository from "./baseRepository";
-import { INotificationDocument } from "../../entities/notificationEntities";
+import { INotificationDocument, notificationDocument } from "../../entities/notificationEntities";
+import { Model } from "mongoose";
 
 @injectable()
 export default class NotificationRepository
   extends BaseRepository<INotificationDocument>
   implements INotificationRepository
 {
-  constructor(@inject("notificationModel") private _notificationModel: any) {
+  constructor(@inject("notificationModel") private _notificationModel: Model<notificationDocument>) {
     super(_notificationModel);
   }
 

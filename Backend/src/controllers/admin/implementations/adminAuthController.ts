@@ -32,14 +32,14 @@ export default class AdminAuthController implements IAuthCtrl {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.cookie("adminAccessToken", result.accessToken, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res
@@ -158,7 +158,7 @@ export default class AdminAuthController implements IAuthCtrl {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.status(HttpStatusCode.OK).json(result);

@@ -7,3 +7,4 @@ export interface IUnAvailableDayDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface unAvailableDayDocument extends IUnAvailableDayDocument {}

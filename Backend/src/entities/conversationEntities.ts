@@ -5,3 +5,4 @@ export interface IConversationDocument extends Document {
   updatedAt: Date;
   lastMessage?: string;
 }
+export interface conversationDocument extends IConversationDocument {}

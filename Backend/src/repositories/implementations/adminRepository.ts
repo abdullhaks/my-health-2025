@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IAdminDocument } from "../../entities/adminEntities";
+import { adminDocument, IAdminDocument } from "../../entities/adminEntities";
 import BaseRepository from "./baseRepository";
 import IAdminRepository from "../interfaces/IAdminRepository";
 import { Model } from "mongoose";
@@ -10,7 +10,7 @@ export default class AdminRepository
   implements IAdminRepository
 {
   constructor(
-    @inject("adminModel") private _adminModel: Model<IAdminDocument>
+    @inject("adminModel") private _adminModel: Model<adminDocument>
   ) {
     super(_adminModel);
   }

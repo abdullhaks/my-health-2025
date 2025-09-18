@@ -16,3 +16,4 @@ export interface IPayoutDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface payoutDocument extends IPayoutDocument {}

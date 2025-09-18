@@ -46,21 +46,21 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
         httpOnly: true,
         sameSite: "none", // allow cross-site
         secure: true, // only over HTTPS
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.cookie("doctorAccessToken", result.accessToken, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.cookie("doctorEmail", result.doctor.email, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res
@@ -225,7 +225,7 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.status(HttpStatusCode.OK).json(result);

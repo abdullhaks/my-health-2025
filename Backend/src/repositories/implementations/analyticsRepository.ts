@@ -1,14 +1,15 @@
 import { inject, injectable } from "inversify";
-import { IAnalyticsDocument } from "../../entities/analyticsEntities";
+import { IAnalyticsDocument , analyticsDocument} from "../../entities/analyticsEntities";
 import IAnalyticsRepository from "../interfaces/IAnalyticsRepository";
 import BaseRepository from "./baseRepository";
+import { Model } from "mongoose";
 
 @injectable()
 export default class AnalyticsRepository
   extends BaseRepository<IAnalyticsDocument>
   implements IAnalyticsRepository
 {
-  constructor(@inject("analyticsModel") private _analyticsModel: any) {
+  constructor(@inject("analyticsModel") private _analyticsModel: Model<analyticsDocument>) {
     super(_analyticsModel);
   }
 
@@ -23,6 +24,9 @@ export default class AnalyticsRepository
         update,
         options
       );
+      if (!updatedDocument) {
+        throw new Error("No document found or updated.");
+      }
       return updatedDocument;
     } catch (err) {
       console.log("Error updating document", err);

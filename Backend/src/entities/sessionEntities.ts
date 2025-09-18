@@ -12,3 +12,4 @@ export interface ISessionDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface sessionDocument extends ISessionDocument {}

@@ -10,6 +10,7 @@ import User from "../../../models/user";
 import { generateAccessToken, generateRefreshToken } from "../../../utils/jwt";
 import { UserLoginRequestDTO } from "../../../dto/userDTO";
 import { MESSAGES } from "../../../utils/messages";
+import { generateRandomPassword } from "../../../utils/helpers";
 
 @injectable()
 export default class UserAuthController implements IUserAuthCtrl {
@@ -37,14 +38,14 @@ export default class UserAuthController implements IUserAuthCtrl {
         httpOnly: true,
         sameSite: "none", // allow cross-site
         secure: true, // only over HTTPS
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.cookie("userAccessToken", result.accessToken, {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res
@@ -104,7 +105,6 @@ export default class UserAuthController implements IUserAuthCtrl {
   async userSignup(
     req: Request,
     res: Response,
-    next: NextFunction
   ): Promise<void> {
     try {
       const { fullName, email, password, confirmPassword } = req.body;
@@ -287,7 +287,7 @@ export default class UserAuthController implements IUserAuthCtrl {
         httpOnly: true,
         sameSite: "none",
         secure: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.status(HttpStatusCode.OK).json(result);
@@ -351,17 +351,14 @@ export default class UserAuthController implements IUserAuthCtrl {
       // Find or create user
       let user = await User.findOne({ email });
       if (!user) {
-        // user = await User.create({
-        //   email,
-        //   name,
-        //   isVerified: true,
-        //   profile: picture,
-        //   password: null, // No password for social login
-        // });
-
-        console.log("no account with this email");
-        res.status(HttpStatusCode.BAD_REQUEST).send("user not found..");
-        return;
+        const tempPass = generateRandomPassword(10);
+        user = await User.create({
+          email,
+          fullName:name,
+          isVerified: true,
+          password: tempPass, 
+        });
+        
       }
 
       console.log("User is ............", user);
@@ -378,26 +375,23 @@ export default class UserAuthController implements IUserAuthCtrl {
 
       res.cookie("userEmail", user.email, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 1000,
-        path: "/",
+        secure: true,
+        sameSite: "none",
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.cookie("userRefreshToken", myRefreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: "/",
+        secure: true,
+        sameSite: "none",
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       res.cookie("userAccessToken", myAccessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: "/",
+        secure: true,
+        sameSite: "none",
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
       });
 
       // Redirect to frontend dashboard

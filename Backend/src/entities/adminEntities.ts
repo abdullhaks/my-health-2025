@@ -8,4 +8,6 @@ export interface IAdminDocument extends Document {
   profile: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
+
+export interface adminDocument extends IAdminDocument {} 

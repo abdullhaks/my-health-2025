@@ -7,3 +7,4 @@ export interface IOtpDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface otpDocument extends IOtpDocument {}

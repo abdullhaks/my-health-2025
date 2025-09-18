@@ -9,3 +9,4 @@ export interface IMessageDocument extends Document {
   readBy: [string];
   status: string;
 }
+export interface messageDocument extends IMessageDocument {}

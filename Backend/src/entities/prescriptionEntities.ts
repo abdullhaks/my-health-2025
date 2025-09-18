@@ -17,3 +17,4 @@ export default interface IPrescriptionDocument extends Document {
   notes?: string;
   createdAt?: Date;
 }
+export  interface prescriptionDocument extends IPrescriptionDocument {}

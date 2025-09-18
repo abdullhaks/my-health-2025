@@ -1,14 +1,15 @@
 import { inject, injectable } from "inversify";
-import { ISessionDocument } from "../../entities/sessionEntities";
+import { ISessionDocument, sessionDocument } from "../../entities/sessionEntities";
 import ISessionRepository from "../interfaces/ISessionRepository";
 import BaseRepository from "./baseRepository";
+import {Model} from "mongoose";
 
 @injectable()
 export default class SessionRepository
   extends BaseRepository<ISessionDocument>
   implements ISessionRepository
 {
-  constructor(@inject("sessionModel") private _sessionModel: any) {
+  constructor(@inject("sessionModel") private _sessionModel: Model<sessionDocument>) {
     super(_sessionModel);
   }
 }

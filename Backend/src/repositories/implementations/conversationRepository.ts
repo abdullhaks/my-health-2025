@@ -1,15 +1,16 @@
 import { injectable, inject } from "inversify";
-import { IConversationDocument } from "../../entities/conversationEntities";
+import { IConversationDocument, conversationDocument} from "../../entities/conversationEntities";
 import BaseRepository from "./baseRepository";
 import IConversationRepository from "../interfaces/IConversationRepository";
 import { getSignedImageURL } from "../../middlewares/common/uploadS3";
+import {Model} from "mongoose"
 
 @injectable()
 export default class ConversationRepository
   extends BaseRepository<IConversationDocument>
   implements IConversationRepository
 {
-  constructor(@inject("conversationModel") private _conversationModel: any) {
+  constructor(@inject("conversationModel") private _conversationModel: Model<conversationDocument>) {
     super(_conversationModel);
   }
 

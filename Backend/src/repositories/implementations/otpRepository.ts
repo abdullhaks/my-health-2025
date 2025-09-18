@@ -2,13 +2,14 @@ import { injectable, inject } from "inversify";
 import { IOtpDocument } from "../../models/otp";
 import BaseRepository from "./baseRepository";
 import IOtpRepository from "../interfaces/IOtpRepository";
+import {Model} from "mongoose";
 
 @injectable()
 export default class OtpRepository
   extends BaseRepository<IOtpDocument>
   implements IOtpRepository
 {
-  constructor(@inject("otpModel") private _otpModel: any) {
+  constructor(@inject("otpModel") private _otpModel: Model<IOtpDocument>) {
     super(_otpModel);
   }
 
