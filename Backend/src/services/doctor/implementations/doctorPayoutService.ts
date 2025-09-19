@@ -4,6 +4,10 @@ import ITransactionRepository from "../../../repositories/interfaces/ITransactio
 import IPayoutRepository from "../../../repositories/interfaces/IPayoutRepository";
 import IDoctorRepository from "../../../repositories/interfaces/IDoctorRepository";
 import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
+import { IpayoutDetails } from "../../../entities/paymentEntities";
+import { userDocumentWithoutPassword } from "../../../entities/userEntities";
+import { IPayoutDocument } from "../../../entities/payoutEntities";
+import { FilterQuery } from "mongoose";
 
 interface filter {
   status?: string;
@@ -20,7 +24,10 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     @inject("IDoctorRepository") private _doctorRepository: IDoctorRepository
   ) {}
 
-  async requestPayout(payoutDetails: any, doctorId: string): Promise<any> {
+  async requestPayout(payoutDetails: IpayoutDetails, doctorId: string): Promise<{
+      message: string;
+      updatedDoctor: userDocumentWithoutPassword,
+    }> {
     const doctor = await this._doctorRepository.findOne({ _id: doctorId });
     if (!doctor) {
       throw new Error("invalied credentials");
@@ -57,13 +64,13 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     };
   }
 
-  async getgetPayouts(
+  async getPayouts(
     doctorId: string,
     pageNumber: number,
     limitNumber: number,
     filters: filter = {}
-  ): Promise<any[]> {
-    const query: any = { doctorId: doctorId };
+  ): Promise<IPayoutDocument[]> {
+    const query: FilterQuery<IPayoutDocument> = { doctorId: doctorId };
 
     if (filters.status) {
       console.log("status....", filters.status);

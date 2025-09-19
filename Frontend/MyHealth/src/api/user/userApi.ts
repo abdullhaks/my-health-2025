@@ -448,13 +448,26 @@ export const getBookedSlots = async (
 
 export const getNotifications = async (
   id: string,
-  limit: number,
-  notificationSet: number
+  newMsgs:boolean
 ) => {
   try {
     const response = await userInstance.get(ROUTES.user.notifications, {
-      params: { id, limit, notificationSet },
+      params: { id,newMsgs},
     });
+    return response.data;
+  } catch (error) {
+    console.log("Error in get notifications");
+    throw error;
+  }
+};
+
+
+export const readNotifications = async (id: string) => {
+  try {
+    const response = await userInstance.patch(ROUTES.user.notifications,null,
+      {
+        params: { id },
+      });
     return response.data;
   } catch (error) {
     console.log("Error in get notifications");

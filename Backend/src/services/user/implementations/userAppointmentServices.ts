@@ -10,6 +10,11 @@ import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IUser } from "../../../dto/userDTO";
 import { IDoctor } from "../../../dto/doctorDTO";
 import appointmentModel from "../../../models/appointment";
+import { FilterQuery } from "mongoose";
+
+interface DetailAppointment extends IAppointmentDTO {
+  profile?: string;
+}
 
 @injectable()
 export default class UserAppointmentService implements IUserAppointmentService {
@@ -79,7 +84,7 @@ export default class UserAppointmentService implements IUserAppointmentService {
   ): Promise<{ appointments: IAppointmentDTO[] | null; totalPages: number }> {
     console.log("userid from service...", userId);
 
-    const query: any = { userId };
+    const query: FilterQuery<IAppointmentDTO> = { userId };
     if (filters.appointmentStatus) {
       query.appointmentStatus = filters.appointmentStatus;
     }
@@ -109,7 +114,7 @@ export default class UserAppointmentService implements IUserAppointmentService {
       );
 
       await Promise.all(
-        expiredAppointments.map(async (appointment: any) => {
+        expiredAppointments.map(async (appointment) => {
           await this._userRepository.update(appointment.userId, {
             $inc: { walletBalance: appointment.fee },
           });
@@ -133,7 +138,7 @@ export default class UserAppointmentService implements IUserAppointmentService {
     if (appointments) {
       const profile = new Map();
       const updatedAppointments = await Promise.all(
-        appointments.map(async (item: any) => {
+        appointments.map(async (item:DetailAppointment) => {
           if (profile.has(item.doctorId)) {
             item.profile = profile.get(item.doctorId);
             return item;

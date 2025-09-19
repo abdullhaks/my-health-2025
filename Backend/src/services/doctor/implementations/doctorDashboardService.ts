@@ -7,6 +7,13 @@ import IPayoutRepository from "../../../repositories/interfaces/IPayoutRepositor
 import { IBlogDocument } from "../../../entities/blogEntities";
 import { IAdvertisementDocument } from "../../../entities/advertisementEntitites";
 
+interface IDoctorDashboardContent {
+    upcomingAppointmentsCount: [string, number][];
+    todayAppointmentsCount: number;
+    pendingReportsCount: number;
+    todaysFirstAppointmentTime: string | null | Date;
+  } 
+
 @injectable()
 export default class DoctorDashboardService implements IDoctorDashboardService {
   constructor(
@@ -17,7 +24,7 @@ export default class DoctorDashboardService implements IDoctorDashboardService {
     @inject("IPayoutRepository") private _payoutRepository: IPayoutRepository
   ) {}
 
-  async getDashboardContent(doctorId: string): Promise<any> {
+  async getDashboardContent(doctorId: string): Promise<IDoctorDashboardContent> {
     try {
       const today = new Date();
       const fourDaysLater = new Date();
@@ -180,7 +187,7 @@ export default class DoctorDashboardService implements IDoctorDashboardService {
           "Dec",
         ];
         return monthNames.map((m, idx) => ({
-          month: m,
+          day: m,
           appointments: monthMap.get(idx) || 0,
         }));
       }
@@ -200,9 +207,9 @@ export default class DoctorDashboardService implements IDoctorDashboardService {
           yearMap.set(year, (yearMap.get(year) || 0) + 1);
         }
 
-        const result: { year: string; appointments: number }[] = [];
+        const result: { day: string; appointments: number }[] = [];
         for (let y = startYear; y <= currentYear; y++) {
-          result.push({ year: String(y), appointments: yearMap.get(y) || 0 });
+          result.push({ day: String(y), appointments: yearMap.get(y) || 0 });
         }
 
         return result;

@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import INotificationRepository from "../interfaces/INotificationRepository";
 import BaseRepository from "./baseRepository";
 import { INotificationDocument, notificationDocument } from "../../entities/notificationEntities";
-import { Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
 
 @injectable()
 export default class NotificationRepository
@@ -17,9 +17,12 @@ export default class NotificationRepository
     id: string,
     limit: number,
     notificationSet: number
-  ): Promise<any> {
+  ): Promise<{
+        notifications: INotificationDocument[];
+        totalPages: number;
+      }> {
     try {
-      const query: any = { userId: id };
+      const query: FilterQuery<INotificationDocument> = { userId: id };
 
       const skip = (notificationSet - 1) * limit;
 

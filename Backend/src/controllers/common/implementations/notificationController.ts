@@ -14,14 +14,32 @@ export default class NotificationController implements INotificationCtrl {
 
   async createNotification(req: Request, res: Response): Promise<void> {}
 
-  async readAllNotifications(req: Request, res: Response): Promise<void> {}
+  async readAllNotifications(req: Request, res: Response): Promise<void> {
+
+      const { id } = req.query;
+      if (!id ) {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "fetching notification failed" });
+        return;
+      }
+
+      const response = await this._notificationService.readAllNotifications(
+        id.toString()
+      );
+      console.log("noti from ctrl....", response);
+      res.status(HttpStatusCode.OK).json(response);
+
+
+
+  }
 
   async getNewNotifications(req: Request, res: Response): Promise<void> {
     try {
-      const { id, limit, notificationSet } = req.query;
+      const { id,newMsgs } = req.query;
 
-      console.log("noti id is....", id, limit, notificationSet);
-      if (!id || !limit || !notificationSet) {
+      console.log("noti id is....", id, newMsgs);
+      if (!id || !newMsgs) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ message: "fetching notification failed" });
@@ -30,8 +48,7 @@ export default class NotificationController implements INotificationCtrl {
 
       const response = await this._notificationService.getNewNotifications(
         id.toString(),
-        Number(limit),
-        Number(notificationSet)
+        newMsgs === "true" 
       );
       console.log("noti from ctrl....", response);
       res.status(HttpStatusCode.OK).json(response);

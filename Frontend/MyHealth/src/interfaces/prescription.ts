@@ -7,7 +7,7 @@ interface medication {
 }
 
 export interface prescriptionData {
-  _id: string;
+  _id?: string;
   appointmentId: string;
   userId: string;
   doctorId: string;

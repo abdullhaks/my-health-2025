@@ -20,18 +20,39 @@ export default class NotificationService implements INotificationServices {
 
   async getNewNotifications(
     id: string,
-    limit: number,
-    notificationSet: number
+    newMsgs: boolean
   ): Promise<any> {
-    const response = await this._notificationRepository.getNewNotifications(
-      id,
-      limit,
-      notificationSet
-    );
 
-    console.log("noti resp from bakc end ...", response);
-    return response;
+    console.log("noti id is service......", id, newMsgs);
+    
+    if(newMsgs){
+
+      const response = await this._notificationRepository.findAll({ userId: id, isRead: false },{sort: { createdAt: -1 }});
+      
+      console.log("new noti is service......response", response);
+      if(!response.length){
+        const nwResp = await this._notificationRepository.findAll({ userId: id },{sort: { createdAt: -1 },limit:10});
+      console.log("new noti is service......nwResp", nwResp);
+        
+        return nwResp;
+      }
+      return response
+    }else{
+      const response = await this._notificationRepository.findAll({ userId: id },{sort: { createdAt: -1 }});
+      console.log("new noti is service......response2", response);
+      
+      return response;
+
+    }
+
   }
 
-  async readAllNotifications(id: string): Promise<any> {}
+  async readAllNotifications(id: string): Promise<any> {
+
+    const response = await this._notificationRepository.updateMany(
+      { userId: id, isRead: false },
+      { $set: { isRead: true } }
+    );
+    return response;
+  }
 }

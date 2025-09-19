@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import IUserTransactionsService from "../interfaces/IUserTransactionServices";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import { ITransactions } from "../../../dto/transactionDto";
+import { FilterQuery } from "mongoose";
 
 interface filter {
   method?: string;
@@ -25,7 +26,7 @@ export default class UserTransactionsService
     limitNumber: number,
     filters: filter = {}
   ): Promise<ITransactions[]> {
-    const query: any = { userId: userId };
+    const query: FilterQuery<ITransactions> = { userId: userId };
 
     if (filters.method) {
       query.method = filters.method;

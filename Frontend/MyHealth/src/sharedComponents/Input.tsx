@@ -3,7 +3,7 @@ interface InputProps {
   placeholder?: string;
   name?: string;
   type?: string ;
-  value?: any;
+  value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   height?: string;

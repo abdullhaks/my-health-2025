@@ -2,7 +2,7 @@ import BaseRepository from "./baseRepository";
 import IAdvertisementRepository from "../interfaces/IAdvertisementRepository";
 import { IAdvertisementDocument , advertisementDocument} from "../../entities/advertisementEntitites";
 import { inject, injectable } from "inversify";
-import { Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
 
 interface IGetAddsResponse {
   adds: IAdvertisementDocument[];
@@ -24,7 +24,7 @@ implements IAdvertisementRepository{
     limitNumber: number
   ): Promise<IGetAddsResponse> {
     try {
-      const query: any = { authorId: doctorId };
+      const query: FilterQuery<advertisementDocument> = { authorId: doctorId };
 
       const skip = (pageNumber - 1) * limitNumber;
 

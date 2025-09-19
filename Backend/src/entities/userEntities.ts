@@ -26,3 +26,24 @@ export interface IUserDocument extends Document {
   updatedAt: Date;
 }
 export interface userDocument extends IUserDocument {}
+export interface userDocumentWithoutPassword{
+
+   _id: Types.ObjectId;
+  fullName: string;
+  email: string;
+  password: string;
+  profile: string;
+  phone: string;
+  location: ILocation;
+  gender: string;
+  dob: string;
+  isBlocked: boolean;
+  isVerified: boolean;
+  bmi: string;
+  medicalTags: string;
+  latestHealthSummary: string;
+  walletBalance: number;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}

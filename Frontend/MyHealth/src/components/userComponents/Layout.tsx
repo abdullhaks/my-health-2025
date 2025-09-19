@@ -27,7 +27,7 @@ import appIconSm from "../../assets/app-icon-sm.png";
 import ConfirmModal from "../../sharedComponents/ConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/slices/userSlices";
-import { logoutUser as logout, getNotifications } from "../../api/user/userApi";
+import { logoutUser as logout, getNotifications,readNotifications } from "../../api/user/userApi";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
 import { message } from "antd";
@@ -73,21 +73,19 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
   const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  const limit = 10;
-  const [notificationSet, setNotificationSet] = useState(1);
 
   const user = useSelector((state: IUserData) => state.user.user);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (newMsgs:boolean) => {
     if (!user?._id) return;
     try {
-      const response = await getNotifications(user._id, limit, notificationSet);
+      const response = await getNotifications(user._id,newMsgs);
 
-      if (response.notifications.length) {
+      if (response.length) {
         console.log("noti respionse are", response);
         setNotifications((prev) => {
           const existingIds = new Set(prev.map((n) => n._id));
-          const newNotifications = response.notifications
+          const newNotifications = response
             .map((n: Notification) => ({
               ...n,
               date: new Date(n.createdAt),
@@ -100,7 +98,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
           );
         });
 
-        const unreadCount = response.notifications.filter(
+        const unreadCount = response.filter(
           (n: Notification) => !n.isRead
         ).length;
         setNotificationCount(unreadCount);
@@ -174,7 +172,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
       });
 
       socket.on("notification", () => {
-        fetchNotifications();
+        fetchNotifications(true);
       });
 
       socket.on("error", ({ message }) => {
@@ -204,12 +202,12 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
       }
     };
 
-    fetchNotifications();
+    fetchNotifications(true);
     window.addEventListener("resize", handleResize);
     handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
-  }, [user?._id, notificationSet]);
+  }, [user?._id]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -327,15 +325,7 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
     }
   };
 
-  const handleNextPage = () => {
-    setNotificationSet((prev) => prev + 1);
-  };
 
-  const handlePrevPage = () => {
-    if (notificationSet > 1) {
-      setNotificationSet((prev) => prev - 1);
-    }
-  };
 
   const menuItems = [
     { name: "Dashboard", path: "/user/dashboard", icon: <FaHome /> },
@@ -543,14 +533,20 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
               <div className="relative" ref={notificationRef}>
                 <button
                   className="p-2 rounded-full hover:bg-blue-50 text-blue-800 transition-colors"
-                  onClick={() =>
+                  onClick={async() =>{
                     setShowNotificationDropdown(!showNotificationDropdown)
+                     const resl =  await readNotifications(user._id);
+                     if(resl){
+                      setNotificationCount(0);
+                     }
+                    
+                  }
                   }
                 >
                   <FaBell className="w-4 h-4 md:w-5 md:h-5" />
                   {notificationCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center">
-                      {notificationCount > 9 ? "9+" : notificationCount}
+                      {notificationCount}
                     </span>
                   )}
                 </button>
@@ -626,26 +622,16 @@ const Layout: React.FC<NavbarProps> = ({ children }) => {
                     </div>
 
                     {notifications.length > 0 && (
-                      <div className="p-3 border-t border-gray-100 flex justify-between text-xs md:text-sm">
+                      <div className="p-3 border-t border-gray-100 flex justify-center text-xs md:text-sm">
+                       
+                        
                         <button
-                          onClick={handlePrevPage}
-                          className="text-blue-600 hover:text-blue-800 font-medium disabled:text-gray-400"
-                          disabled={notificationSet === 1}
-                        >
-                          Previous
-                        </button>
-                        <Link
-                          to="/user/notifications"
+                          onClick={()=>{
+                            fetchNotifications(false) 
+                          }}
                           className="text-blue-600 hover:text-blue-800 font-medium"
-                          onClick={() => setShowNotificationDropdown(false)}
                         >
                           View all
-                        </Link>
-                        <button
-                          onClick={handleNextPage}
-                          className="text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                          Next
                         </button>
                       </div>
                     )}

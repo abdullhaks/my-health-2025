@@ -134,6 +134,8 @@ userRoutes.post("/walletPayment",verifyAccessTokenMidleware("user"),(req,res)=> 
 
 userRoutes.get("/notifications",verifyAccessTokenMidleware("user"),(req,res)=> notificationCtrl.getNewNotifications(req,res) )
 
+userRoutes.patch("/notifications",verifyAccessTokenMidleware("user"),(req,res)=> notificationCtrl.readAllNotifications(req,res) )
+
 userRoutes.get("/getBlogs",verifyAccessTokenMidleware("user"),(req,res)=>blogCtrl.getBlogs(req,res));
 
 userRoutes.get("/dashboard",verifyAccessTokenMidleware("user"),(req,res)=> dashboardCtrl.getDashboardContent(req,res));

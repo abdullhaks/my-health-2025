@@ -60,7 +60,7 @@ export default class DoctorPayoutController implements IDoctorPayoutCtrl {
         endDate: endDate as string,
       };
 
-      const transactions = await this._doctorPayoutService.getgetPayouts(
+      const transactions = await this._doctorPayoutService.getPayouts(
         doctorId?.toString(),
         pageNumber,
         limitNumber,

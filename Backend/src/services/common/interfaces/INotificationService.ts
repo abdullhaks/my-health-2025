@@ -3,8 +3,7 @@ export default interface INotificationServices {
   readAllNotifications(id: string): Promise<any>;
   getNewNotifications(
     id: string,
-    limit: number,
-    notificationSet: number
+    newMsgs: boolean
   ): Promise<any>;
   getAllNotifications(id: string): Promise<any>;
 }

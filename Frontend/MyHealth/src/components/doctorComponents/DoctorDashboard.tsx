@@ -168,7 +168,7 @@ const DoctorDashboard = () => {
   const chartHeight = isMobile ? 200 : window.innerWidth < 1024 ? 250 : 300;
 
   // Dynamic font sizes
-  const axisFontSize = isMobile ? 6 : window.innerWidth < 1024 ? 12 : 14;
+  const axisFontSize = isMobile ? 4 : window.innerWidth < 1024 ? 12 : 14;
   const tooltipFontSize = isMobile ? 12 : 14;
 
   return (
@@ -308,7 +308,7 @@ const DoctorDashboard = () => {
                   margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
                 >
                   <XAxis
-                    dataKey="day"
+                    dataKey="day" 
                     tickFormatter={formatAxisLabel}
                     stroke="#64748b"
                     fontSize={axisFontSize}
