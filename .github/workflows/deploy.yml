@@ -50,7 +50,7 @@ jobs:
 
             # run new container
             sudo docker run -d --name myhealth-backend \
-              --env-file /home/ubuntu/.env \
+              --env-file /home/ubuntu/myhealth-backend/.env \
               -p 3000:3000 \
               --restart=always \
               ${{ secrets.DOCKERHUB_USERNAME }}/myhealth-backend:latest
