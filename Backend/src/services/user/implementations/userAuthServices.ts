@@ -20,7 +20,7 @@ import {
   verifyRefreshToken,
 } from "../../../utils/jwt";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
-import { IResponseDTO } from "../../../dto/commonDto";
+import { IResponseDTO } from "../../../dto/commonResponseDto";
 import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import { UserMapper } from "../../../mappers/user.mapper";
 import { AuthResponseDTO } from "../../../dto/userDTO";

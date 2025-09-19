@@ -19,7 +19,7 @@ import {
   verifyRefreshToken,
 } from "../../../utils/jwt";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
-import { IResponseDTO } from "../../../dto/commonDto";
+import { IResponseDTO } from "../../../dto/commonResponseDto"; 
 import {
   getSignedImageURL,
   uploadFileToS3,

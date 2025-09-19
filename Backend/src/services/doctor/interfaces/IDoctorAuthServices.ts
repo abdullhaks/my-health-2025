@@ -1,4 +1,4 @@
-import { IResponseDTO } from "../../../dto/commonDto";
+import { IResponseDTO } from "../../../dto/commonResponseDto";
 import { IDoctor } from "../../../dto/doctorDTO";
 import { Response } from "express";
 

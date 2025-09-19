@@ -1,6 +1,6 @@
 import { IUser } from "../../../dto/userDTO";
 import { IUserResponse } from "../../../dto/userDTO";
-import { IResponseDTO } from "../../../dto/commonDto";
+import { IResponseDTO } from "../../../dto/commonResponseDto"; 
 import { AuthResponseDTO } from "../../../dto/userDTO";
 import { UserLoginRequestDTO } from "../../../dto/userDTO";
 

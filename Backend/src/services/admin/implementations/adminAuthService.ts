@@ -15,7 +15,7 @@ import {
 } from "../../../utils/jwt";
 import { Request, Response, NextFunction } from "express";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
-import { IResponseDTO } from "../../../dto/commonDto";
+import { IResponseDTO } from "../../../dto/commonResponseDto"; 
 
 console.log("Admin auth service is running....");
 
