@@ -24,11 +24,13 @@ jobs:
       # Step 3: Build Docker image
       - name: Build Docker image
         run: |
+          cd Backend
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/myhealth-backend:latest .
 
       # Step 4: Push image to Docker Hub
       - name: Push Docker image
         run: |
+          cd Backend
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/myhealth-backend:latest
 
       # Step 5: Deploy on EC2 via SSH
