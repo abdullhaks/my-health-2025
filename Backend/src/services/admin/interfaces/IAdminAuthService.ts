@@ -1,5 +1,5 @@
 import { IAdmin } from "../../../dto/adminDTO";
-import { IResponseDTO } from "../../../dto/commonDto";
+import { IResponseDTO } from "../../../dto/commonDto"; 
 
 export default interface IAdminAuthService {
   login(
