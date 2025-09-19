@@ -5,7 +5,7 @@ import { setupSocket } from "./src/middlewares/common/socket";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import userRoutes from "./src/routes/user/userRoutes";
-import logger from "./src/utils/logs/logger";
+// import logger from "./src/utils/logs/logger";
 import connectDB from "./src/config/connectDB";
 import cors from "cors";
 import adminRoutes from "./src/routes/admin/adminRoutes";
@@ -61,7 +61,7 @@ app.post(
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(logger);
+// app.use(logger);
 
 app.use("/api/user", userRoutes);
 app.use("/api/admin", adminRoutes);
