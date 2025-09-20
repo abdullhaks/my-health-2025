@@ -16,6 +16,7 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ApiError } from "../../interfaces/error";
+import { message } from "antd";
 
 // Define the validation schema
 const adminLoginSchema = z.object({
@@ -100,7 +101,7 @@ function AdminLogin() {
         })
       );
 
-      toast.success("Logged in as Admin");
+      message.success("Logged in as Admin");
       navigate("/admin/dashboard");
     } catch (error) {
       console.error("Login failed:", error);

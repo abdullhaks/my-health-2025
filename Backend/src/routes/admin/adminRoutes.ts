@@ -69,6 +69,9 @@ adminRoutes.get("/payouts",verifyAccessTokenMidleware("admin"),(req,res)=>payout
 
 adminRoutes.post("/payouts",verifyAccessTokenMidleware("admin"),(req,res)=>payoutCtrl.updatePayout(req,res));
 
+adminRoutes.get("/appointmentStats",verifyAccessTokenMidleware("admin"),(req,res)=>analyticsCtrl.appointmentStats(req,res));
+
+adminRoutes.get("/reportsStats",verifyAccessTokenMidleware("admin"),(req,res)=>analyticsCtrl.reportsStats(req,res));
 
 
 export default adminRoutes; 

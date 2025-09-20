@@ -6,8 +6,11 @@ import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRep
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import { MESSAGES } from "../../../utils/messages";
 import { IAnalytics } from "../../../dto/analyticsDto";
+import IAppointmentsRepository from "../../../repositories/interfaces/IAppointmentsRepository";
+import IReportAnalysisRepository from "../../../repositories/interfaces/IReportAnalysisRepository";
+import { PipelineStage } from "mongoose";
 
-injectable();
+@injectable()
 export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
   constructor(
     @inject("IUserRepository") private _userRepository: IUserRepository,
@@ -15,7 +18,11 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
     @inject("IAnalyticsRepository")
     private _analyticsRepository: IAnalyticsRepository,
     @inject("ITransactionRepository")
-    private _transactionRepository: ITransactionRepository
+    private _transactionRepository: ITransactionRepository,
+    @inject("IAppointmentsRepository")
+    private _appointmentRepository: IAppointmentsRepository,
+    @inject("IReportAnalysisRepository")
+    private _reportAnalysisRepository: IReportAnalysisRepository
   ) {}
 
   async getUserAnalytics(
@@ -30,20 +37,19 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
 
       switch (filter) {
         case "day": {
-          // Get Monday of current week
-          const day = now.getDay();
-          const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-          const monday = new Date(now.setDate(diff));
-          monday.setHours(0, 0, 0, 0);
-          const sunday = new Date(monday);
-          sunday.setDate(monday.getDate() + 6);
-          sunday.setHours(23, 59, 59, 999);
+          const startDate = new Date();
+          startDate.setDate(now.getDate() - 14); // Last 15 days
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date();
+          endDate.setHours(23, 59, 59, 999);
 
           matchStage = {
-            createdAt: { $gte: monday, $lte: sunday },
+            createdAt: { $gte: startDate, $lte: endDate },
           };
           groupStage = {
-            _id: { $dayOfWeek: "$createdAt" },
+            _id: {
+              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            },
             count: { $sum: 1 },
           };
           projectStage = {
@@ -53,43 +59,21 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
           break;
         }
 
-        case "week": {
-          const firstDayOfMonth = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            1
-          );
-          const lastDayOfMonth = new Date(
-            now.getFullYear(),
-            now.getMonth() + 1,
-            0
-          );
+        case "month": {
+          const startDate = new Date();
+          startDate.setMonth(now.getMonth() - 11); // Last 12 months
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date();
+          endDate.setHours(23, 59, 59, 999);
+
           matchStage = {
-            createdAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
+            createdAt: { $gte: startDate, $lte: endDate },
           };
           groupStage = {
             _id: {
-              $toInt: {
-                $ceil: { $divide: [{ $dayOfMonth: "$createdAt" }, 7] },
-              },
+              $dateToString: { format: "%Y-%m", date: "$createdAt" },
             },
-            count: { $sum: 1 },
-          };
-          projectStage = {
-            name: { $concat: ["Week ", { $toString: "$_id" }] },
-            value: "$count",
-          };
-          break;
-        }
-
-        case "month": {
-          const yearStart = new Date(now.getFullYear(), 0, 1);
-          const yearEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
-          matchStage = {
-            createdAt: { $gte: yearStart, $lte: yearEnd },
-          };
-          groupStage = {
-            _id: { $month: "$createdAt" },
             count: { $sum: 1 },
           };
           projectStage = {
@@ -100,13 +84,23 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         }
 
         case "year": {
-          matchStage = {}; // No time constraint, get all years
+          const startDate = new Date();
+          startDate.setFullYear(now.getFullYear() - 7); // Last 8 years
+          startDate.setMonth(0);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date();
+          endDate.setHours(23, 59, 59, 999);
+
+          matchStage = {
+            createdAt: { $gte: startDate, $lte: endDate },
+          };
           groupStage = {
             _id: { $year: "$createdAt" },
             count: { $sum: 1 },
           };
           projectStage = {
-            name: "$_id",
+            name: { $toString: "$_id" },
             value: "$count",
           };
           break;
@@ -128,40 +122,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         value: number;
       }>(pipeline);
 
-      // Format results
-      switch (filter) {
-        case "day": {
-          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-          return rawData.map(({ name, value }) => ({
-            name: days[Number(name) % 7],
-            value,
-          }));
-        }
-
-        case "month": {
-          const months = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ];
-          return rawData.map(({ name, value }) => ({
-            name: months[Number(name) - 1] || name,
-            value,
-          }));
-        }
-
-        default:
-          return rawData;
-      }
+      return rawData.map(({ name, value }) => ({ name: String(name), value }));
     } catch (error) {
       console.error("Error in getUserAnalytics:", error);
       throw new Error(MESSAGES.analytics.failedTofetch);
@@ -180,20 +141,19 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
 
       switch (filter) {
         case "day": {
-          // Get Monday of current week
-          const day = now.getDay();
-          const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-          const monday = new Date(now.setDate(diff));
-          monday.setHours(0, 0, 0, 0);
-          const sunday = new Date(monday);
-          sunday.setDate(monday.getDate() + 6);
-          sunday.setHours(23, 59, 59, 999);
+          const startDate = new Date();
+          startDate.setDate(now.getDate() - 14); // Last 15 days
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date();
+          endDate.setHours(23, 59, 59, 999);
 
           matchStage = {
-            createdAt: { $gte: monday, $lte: sunday },
+            createdAt: { $gte: startDate, $lte: endDate },
           };
           groupStage = {
-            _id: { $dayOfWeek: "$createdAt" },
+            _id: {
+              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            },
             count: { $sum: 1 },
           };
           projectStage = {
@@ -203,43 +163,21 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
           break;
         }
 
-        case "week": {
-          const firstDayOfMonth = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            1
-          );
-          const lastDayOfMonth = new Date(
-            now.getFullYear(),
-            now.getMonth() + 1,
-            0
-          );
+        case "month": {
+          const startDate = new Date();
+          startDate.setMonth(now.getMonth() - 11); // Last 12 months
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date();
+          endDate.setHours(23, 59, 59, 999);
+
           matchStage = {
-            createdAt: { $gte: firstDayOfMonth, $lte: lastDayOfMonth },
+            createdAt: { $gte: startDate, $lte: endDate },
           };
           groupStage = {
             _id: {
-              $toInt: {
-                $ceil: { $divide: [{ $dayOfMonth: "$createdAt" }, 7] },
-              },
+              $dateToString: { format: "%Y-%m", date: "$createdAt" },
             },
-            count: { $sum: 1 },
-          };
-          projectStage = {
-            name: { $concat: ["Week ", { $toString: "$_id" }] },
-            value: "$count",
-          };
-          break;
-        }
-
-        case "month": {
-          const yearStart = new Date(now.getFullYear(), 0, 1);
-          const yearEnd = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
-          matchStage = {
-            createdAt: { $gte: yearStart, $lte: yearEnd },
-          };
-          groupStage = {
-            _id: { $month: "$createdAt" },
             count: { $sum: 1 },
           };
           projectStage = {
@@ -250,13 +188,23 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         }
 
         case "year": {
-          matchStage = {}; // No time constraint, get all years
+          const startDate = new Date();
+          startDate.setFullYear(now.getFullYear() - 7); // Last 8 years
+          startDate.setMonth(0);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date();
+          endDate.setHours(23, 59, 59, 999);
+
+          matchStage = {
+            createdAt: { $gte: startDate, $lte: endDate },
+          };
           groupStage = {
             _id: { $year: "$createdAt" },
             count: { $sum: 1 },
           };
           projectStage = {
-            name: "$_id",
+            name: { $toString: "$_id" },
             value: "$count",
           };
           break;
@@ -278,43 +226,10 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         value: number;
       }>(pipeline);
 
-      // Format results
-      switch (filter) {
-        case "day": {
-          const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-          return rawData.map(({ name, value }) => ({
-            name: days[Number(name) % 7],
-            value,
-          }));
-        }
-
-        case "month": {
-          const months = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ];
-          return rawData.map(({ name, value }) => ({
-            name: months[Number(name) - 1] || name,
-            value,
-          }));
-        }
-
-        default:
-          return rawData;
-      }
+      return rawData.map(({ name, value }) => ({ name: String(name), value }));
     } catch (error) {
-      console.error("Error in getUserAnalytics:", error);
-      throw new Error("Failed to fetch user analytics");
+      console.error("Error in getDoctorAnalytics:", error);
+      throw new Error("Failed to fetch doctor analytics");
     }
   }
 
@@ -331,6 +246,278 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
     } catch (err) {
       console.log("error in getTotalAnalytics service", err);
       throw new Error("error in getTotalAnalytics service");
+    }
+  }
+
+  async appointmentStats(
+    filter: string
+  ): Promise<{ day: string; appointments: number }[]> {
+    try {
+      const now = new Date();
+      let startDate: Date;
+      let matchStage: any = {
+        appointmentStatus: { $in: ["booked", "completed"] },
+      };
+      let groupStage: any;
+      let sortStage: PipelineStage.Sort = { $sort: { _id: 1 } };
+      let projectStage: any = { day: "$_id", appointments: "$count" };
+
+      switch (filter) {
+        case "day":
+          startDate = new Date();
+          startDate.setDate(now.getDate() - 14);
+          startDate.setHours(0, 0, 0, 0);
+          matchStage.date = {
+            $gte: startDate.toISOString().split("T")[0],
+            $lte: now.toISOString().split("T")[0],
+          };
+          groupStage = {
+            _id: "$date",
+            count: { $sum: 1 },
+          };
+          break;
+
+        case "month":
+          startDate = new Date();
+          startDate.setMonth(now.getMonth() - 11);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          matchStage.date = {
+            $gte: startDate.toISOString().split("T")[0],
+            $lte: now.toISOString().split("T")[0],
+          };
+          groupStage = {
+            _id: {
+              $dateToString: { format: "%Y-%m", date: { $toDate: "$date" } },
+            },
+            count: { $sum: 1 },
+          };
+          break;
+
+        case "year":
+          startDate = new Date();
+          startDate.setFullYear(now.getFullYear() - 7);
+          startDate.setMonth(0);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          matchStage.date = {
+            $gte: startDate.toISOString().split("T")[0],
+            $lte: now.toISOString().split("T")[0],
+          };
+          groupStage = {
+            _id: {
+              $dateToString: { format: "%Y", date: { $toDate: "$date" } },
+            },
+            count: { $sum: 1 },
+          };
+          projectStage.day = { $toString: "$_id" };
+          break;
+
+        default:
+          throw new Error("Invalid filter");
+      }
+
+      const pipeline: PipelineStage[] = [
+        { $match: matchStage },
+        { $group: groupStage },
+        sortStage,
+        { $project: projectStage },
+      ];
+
+      let rawData = await this._appointmentRepository.aggregate(pipeline);
+
+      let result: { day: string; appointments: number }[] = [];
+
+      if (filter === "day") {
+        const dayMap = new Map(
+          rawData.map((r: any) => [r.day, r.appointments])
+        );
+        for (let i = 0; i < 15; i++) {
+          const d = new Date(startDate);
+          d.setDate(startDate.getDate() + i);
+          const key = d.toISOString().split("T")[0];
+          result.push({ day: key, appointments: dayMap.get(key) || 0 });
+        }
+      } else if (filter === "month") {
+        const monthMap = new Map(
+          rawData.map((r: any) => [r.day, r.appointments])
+        );
+        for (let i = 0; i < 12; i++) {
+          const d = new Date(startDate);
+          d.setMonth(startDate.getMonth() + i);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}`;
+          result.push({ day: key, appointments: monthMap.get(key) || 0 });
+        }
+      } else if (filter === "year") {
+        const yearMap = new Map(
+          rawData.map((r: any) => [r.day, r.appointments])
+        );
+        for (let i = 0; i < 8; i++) {
+          const d = new Date(startDate);
+          d.setFullYear(startDate.getFullYear() + i);
+          const key = String(d.getFullYear());
+          result.push({ day: key, appointments: yearMap.get(key) || 0 });
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error in appointmentStats:", error);
+      throw new Error("Failed to fetch appointment stats");
+    }
+  }
+
+  async reportsStats(
+    filter: string
+  ): Promise<{ day: string; pending: number; submitted: number }[]> {
+    try {
+      const now = new Date();
+      let startDate: Date;
+      let matchStage: any = {
+        analysisStatus: { $in: ["pending", "submitted"] },
+      };
+      let groupStage: any;
+      let sortStage: PipelineStage.Sort = { $sort: { _id: 1 } };
+      let projectStage: any = {
+        day: "$_id",
+        pending: "$pending",
+        submitted: "$submitted",
+      };
+
+      switch (filter) {
+        case "day":
+          startDate = new Date();
+          startDate.setDate(now.getDate() - 14);
+          startDate.setHours(0, 0, 0, 0);
+          matchStage.createdAt = { $gte: startDate, $lte: now };
+          groupStage = {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            pending: {
+              $sum: { $cond: [{ $eq: ["$analysisStatus", "pending"] }, 1, 0] },
+            },
+            submitted: {
+              $sum: {
+                $cond: [{ $eq: ["$analysisStatus", "submitted"] }, 1, 0],
+              },
+            },
+          };
+          break;
+
+        case "month":
+          startDate = new Date();
+          startDate.setMonth(now.getMonth() - 11);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          matchStage.createdAt = { $gte: startDate, $lte: now };
+          groupStage = {
+            _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+            pending: {
+              $sum: { $cond: [{ $eq: ["$analysisStatus", "pending"] }, 1, 0] },
+            },
+            submitted: {
+              $sum: {
+                $cond: [{ $eq: ["$analysisStatus", "submitted"] }, 1, 0],
+              },
+            },
+          };
+          break;
+
+        case "year":
+          startDate = new Date();
+          startDate.setFullYear(now.getFullYear() - 7);
+          startDate.setMonth(0);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          matchStage.createdAt = { $gte: startDate, $lte: now };
+          groupStage = {
+            _id: { $dateToString: { format: "%Y", date: "$createdAt" } },
+            pending: {
+              $sum: { $cond: [{ $eq: ["$analysisStatus", "pending"] }, 1, 0] },
+            },
+            submitted: {
+              $sum: {
+                $cond: [{ $eq: ["$analysisStatus", "submitted"] }, 1, 0],
+              },
+            },
+          };
+          projectStage.day = { $toString: "$_id" };
+          break;
+
+        default:
+          throw new Error("Invalid filter");
+      }
+
+      const pipeline: PipelineStage[] = [
+        { $match: matchStage },
+        { $group: groupStage },
+        sortStage,
+        { $project: projectStage },
+      ];
+
+      let rawData = await this._reportAnalysisRepository.aggregate(pipeline);
+
+      let result: { day: string; pending: number; submitted: number }[] = [];
+
+      if (filter === "day") {
+        const dayMap = new Map(
+          rawData.map((r: any) => [
+            r.day,
+            { pending: r.pending, submitted: r.submitted },
+          ])
+        );
+        for (let i = 0; i < 15; i++) {
+          const d = new Date(startDate);
+          d.setDate(startDate.getDate() + i);
+          const key = d.toISOString().split("T")[0];
+          result.push({
+            day: key,
+            ...(dayMap.get(key) || { pending: 0, submitted: 0 }),
+          });
+        }
+      } else if (filter === "month") {
+        const monthMap = new Map(
+          rawData.map((r: any) => [
+            r.day,
+            { pending: r.pending, submitted: r.submitted },
+          ])
+        );
+        for (let i = 0; i < 12; i++) {
+          const d = new Date(startDate);
+          d.setMonth(startDate.getMonth() + i);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}`;
+          result.push({
+            day: key,
+            ...(monthMap.get(key) || { pending: 0, submitted: 0 }),
+          });
+        }
+      } else if (filter === "year") {
+        const yearMap = new Map(
+          rawData.map((r: any) => [
+            r.day,
+            { pending: r.pending, submitted: r.submitted },
+          ])
+        );
+        for (let i = 0; i < 8; i++) {
+          const d = new Date(startDate);
+          d.setFullYear(startDate.getFullYear() + i);
+          const key = String(d.getFullYear());
+          result.push({
+            day: key,
+            ...(yearMap.get(key) || { pending: 0, submitted: 0 }),
+          });
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error in reportsStats:", error);
+      throw new Error("Failed to fetch reports stats");
     }
   }
 }

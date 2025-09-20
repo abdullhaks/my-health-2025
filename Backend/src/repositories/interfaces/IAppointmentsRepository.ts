@@ -1,7 +1,7 @@
 import BaseRepository from "../implementations/baseRepository";
 import { IAppointmentDocument } from "../../entities/appointmentEntities";
 import { IAppointment, IAppointmentDTO } from "../../dto/appointmentDTO";
-import { FilterQuery } from "mongoose";
+import { FilterQuery, PipelineStage } from "mongoose";
 
 export default interface IAppointmentsRepository
   extends BaseRepository<IAppointmentDocument> {
@@ -33,4 +33,6 @@ export default interface IAppointmentsRepository
     appointments: IAppointmentDTO[] | null;
     totalPages: number | null;
   }>;
+
+  aggregate<T = IAppointmentDocument>(pipeline: PipelineStage[]): Promise<T[]>;
 }

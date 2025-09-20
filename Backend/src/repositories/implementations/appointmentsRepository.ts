@@ -1,8 +1,11 @@
 import { injectable, inject } from "inversify";
-import { IAppointmentDocument, appointmentDocument } from "../../entities/appointmentEntities";
+import {
+  IAppointmentDocument,
+  appointmentDocument,
+} from "../../entities/appointmentEntities";
 import BaseRepository from "./baseRepository";
 import IAppointmentsRepository from "../interfaces/IAppointmentsRepository";
-import { Model } from "mongoose";
+import { Model, PipelineStage } from "mongoose";
 import { FilterQuery } from "mongoose";
 import { IAppointment } from "../../dto/appointmentDTO";
 import { IAppointmentDTO } from "../../dto/appointmentDTO";
@@ -174,6 +177,18 @@ export default class AppointmentsRepository
     } catch (err) {
       console.error("Error fetching appointments:", err);
       throw new Error("Failed to fetch appointments");
+    }
+  }
+
+  async aggregate<T = any>(pipeline: PipelineStage[]): Promise<T[]> {
+    try {
+      const resp = await this._appointmentModel.aggregate(pipeline);
+      console.log("pipeline is .....", pipeline);
+      console.log("resp is .....", resp);
+      return resp;
+    } catch (error) {
+      console.error("Error in aggregate:", error);
+      throw new Error("Failed to perform aggregation");
     }
   }
 }

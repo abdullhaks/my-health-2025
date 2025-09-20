@@ -6,4 +6,6 @@ export default interface IAdminAnalyticsServices {
     filter: string
   ): Promise<{ name: string; value: number }[]>;
   getTotalAnalytics(): Promise<IAnalytics>;
+  appointmentStats(filter: string): Promise<any>;
+  reportsStats(filter: string): Promise<any>;
 }

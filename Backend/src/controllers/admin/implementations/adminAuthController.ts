@@ -133,16 +133,14 @@ export default class AdminAuthController implements IAuthCtrl {
 
   async refreshToken(req: Request, res: Response): Promise<void> {
     try {
-      const { adminRefreshToken } = req.cookies;
-      if (!adminRefreshToken) {
+      const { refreshToken } = req.cookies;
+      if (!refreshToken) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)
           .json({ msg: "refresh token not found" });
         return;
       }
-      const result = await this._adminAuthService.refreshToken(
-        adminRefreshToken
-      );
+      const result = await this._adminAuthService.refreshToken(refreshToken);
       if (!result) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)

@@ -41,7 +41,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           } rounded-lg focus:outline-none focus:ring-2 ${
             error ? "focus:ring-red-400" : "focus:ring-blue-300"
           } ${className}`}
-          required
+          // required
         />
         <button
           type="button"

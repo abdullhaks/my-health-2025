@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -7,13 +7,18 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  BarChart,
+  Bar,
 } from "recharts";
 import {
   getDoctorAnalytics,
   getUserAnalytics,
   getTotalAnalytics,
   getTransactions,
+  getAppointmentsStats,
+  getReportsStats,
 } from "../../api/admin/adminApi";
+
 import adminimg from "../../assets/doctorLogin.png";
 import { FaCalendarCheck, FaUsers } from "react-icons/fa";
 import {
@@ -100,7 +105,15 @@ const AdminDashboard = () => {
   const [userData, setUserData] = useState<AnalyticsItem[]>([]);
   const [doctorData, setDoctorData] = useState<AnalyticsItem[]>([]);
   const [combinedData, setCombinedData] = useState<CombinedAnalyticsItem[]>([]);
-  const [analyticsFilter, setAnalyticsFilter] = useState("day");
+  const [appointmentsStats, setAppointmentsStats] = useState<
+    { day: string; appointments: number }[]
+  >([]);
+  const [reportsStats, setReportsStats] = useState<
+    { day: string; pending: number; submitted: number }[]
+  >([]);
+  const [analyticsFilter, setAnalyticsFilter] = useState<
+    "day" | "month" | "year"
+  >("day");
   const [totaldata, setTotalData] = useState<TotalAnalytics>({
     totalConsultations: 0,
     totalDoctors: 0,
@@ -167,6 +180,30 @@ const AdminDashboard = () => {
       }
     };
     fetchDoctorAnalytics();
+  }, [analyticsFilter]);
+
+  useEffect(() => {
+    const fetchAppointmentsStats = async () => {
+      try {
+        const response = await getAppointmentsStats(analyticsFilter);
+        setAppointmentsStats(response);
+      } catch (error) {
+        console.error("Failed to fetch appointments stats:", error);
+      }
+    };
+    fetchAppointmentsStats();
+  }, [analyticsFilter]);
+
+  useEffect(() => {
+    const fetchReportsStats = async () => {
+      try {
+        const response = await getReportsStats(analyticsFilter);
+        setReportsStats(response);
+      } catch (error) {
+        console.error("Failed to fetch reports stats:", error);
+      }
+    };
+    fetchReportsStats();
   }, [analyticsFilter]);
 
   useEffect(() => {
@@ -250,22 +287,88 @@ const AdminDashboard = () => {
     }
   };
 
+  // Group months for mobile view (Jan-Feb, Mar-Apr, etc.)
+  const groupedAppointmentsStats = useMemo(() => {
+    if (analyticsFilter !== "month" || !isMobile) return appointmentsStats;
+
+    const grouped = [];
+    for (let i = 0; i < appointmentsStats.length; i += 2) {
+      const first = appointmentsStats[i];
+      const second = appointmentsStats[i + 1];
+      const month1 = new Date(first.day + "-01").toLocaleDateString("en-GB", {
+        month: "short",
+      });
+      let appointments = first.appointments;
+      let dayLabel = month1;
+      if (second) {
+        const month2 = new Date(second.day + "-01").toLocaleDateString(
+          "en-GB",
+          { month: "short" }
+        );
+        dayLabel = `${month1}-${month2}`;
+        appointments += second.appointments;
+      }
+      grouped.push({
+        day: dayLabel,
+        appointments,
+      });
+    }
+    return grouped;
+  }, [appointmentsStats, analyticsFilter, isMobile]);
+
+  // Group reports for mobile view (Jan-Feb, Mar-Apr, etc.)
+  const groupedReportsStats = useMemo(() => {
+    if (analyticsFilter !== "month" || !isMobile) return reportsStats;
+
+    const grouped = [];
+    for (let i = 0; i < reportsStats.length; i += 2) {
+      const first = reportsStats[i];
+      const second = reportsStats[i + 1];
+      const month1 = new Date(first.day + "-01").toLocaleDateString("en-GB", {
+        month: "short",
+      });
+      let pending = first.pending;
+      let submitted = first.submitted;
+      let dayLabel = month1;
+      if (second) {
+        const month2 = new Date(second.day + "-01").toLocaleDateString(
+          "en-GB",
+          { month: "short" }
+        );
+        dayLabel = `${month1}-${month2}`;
+        pending += second.pending;
+        submitted += second.submitted;
+      }
+      grouped.push({
+        day: dayLabel,
+        pending,
+        submitted,
+      });
+    }
+    return grouped;
+  }, [reportsStats, analyticsFilter, isMobile]);
+
   // Format axis label based on filter
   const formatAxisLabel = (value: string) => {
     if (analyticsFilter === "day") {
-      return new Date(value).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-      });
-    } else if (analyticsFilter === "month" && isMobile) {
-      const [month, year] = value.split("-");
-      const date = new Date(`${month}-01-${year}`);
-      const monthName = date.toLocaleDateString("en-GB", { month: "short" });
-      return monthName;
+      try {
+        return new Date(value).toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+        });
+      } catch {
+        return value;
+      }
     } else if (analyticsFilter === "month") {
-      return new Date(value + "-01").toLocaleDateString("en-GB", {
-        month: "short",
-      });
+      if (isMobile) return value; // Use grouped month labels (e.g., "Jan-Feb")
+      try {
+        return new Date(value + "-01").toLocaleDateString("en-GB", {
+          month: "short",
+          year: "2-digit",
+        });
+      } catch {
+        return value;
+      }
     } else {
       return value;
     }
@@ -273,8 +376,8 @@ const AdminDashboard = () => {
 
   // Dynamic chart height and font sizes
   const chartHeight = isMobile ? 200 : window.innerWidth < 1024 ? 250 : 300;
-  const axisFontSize = isMobile ? 10 : window.innerWidth < 1024 ? 12 : 14;
-  const tooltipFontSize = isMobile ? 12 : 14;
+  const axisFontSize = isMobile ? 8 : window.innerWidth < 1024 ? 10 : 12; // Set to 8px for mobile, adjust to 4px if required
+  const tooltipFontSize = isMobile ? 8 : 12;
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -439,104 +542,232 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Analytics Chart */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-gray-100">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800">
-                User & Doctor Analytics
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                Track user and doctor trends over time
-              </p>
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2 sm:gap-3">
+        {["day", "month", "year"].map((f) => (
+          <button
+            key={f}
+            onClick={() => setAnalyticsFilter(f as "day" | "month" | "year")}
+            className={`px-3 sm:px-4 py-2 rounded-lg border text-sm sm:text-base font-medium transition-colors min-w-[80px] ${
+              analyticsFilter === f
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400"
+            }`}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="space-y-6 sm:space-y-8">
+        {/* User & Doctor Analytics */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="p-4 sm:p-6 border-b border-gray-100">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
+              User & Doctor Analytics
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Track user and doctor trends over time
+            </p>
+          </div>
+          <div className="p-4 sm:p-6 overflow-x-auto snap-x snap-mandatory">
+            <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <LineChart
+                  data={
+                    combinedData.length > 0
+                      ? combinedData
+                      : [{ name: "", users: 0, doctors: 0 }]
+                  }
+                  margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
+                >
+                  <XAxis
+                    dataKey="name"
+                    tickFormatter={formatAxisLabel}
+                    stroke="#64748b"
+                    fontSize={axisFontSize}
+                    tick={{ fontSize: axisFontSize }}
+                    interval={isMobile ? 0 : undefined}
+                  />
+                  <YAxis stroke="#64748b" fontSize={axisFontSize} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: tooltipFontSize,
+                      padding: isMobile ? "8px" : "10px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: isMobile ? 10 : 20,
+                      fontSize: axisFontSize,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="users"
+                    stroke="#3b82f6"
+                    strokeWidth={isMobile ? 2 : 3}
+                    dot={{
+                      r: isMobile ? 3 : 5,
+                      fill: "#3b82f6",
+                      strokeWidth: 1,
+                      stroke: "#fff",
+                    }}
+                    activeDot={{
+                      r: isMobile ? 5 : 6,
+                      fill: "#1d4ed8",
+                      strokeWidth: 1,
+                      stroke: "#fff",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="doctors"
+                    stroke="#10b981"
+                    strokeWidth={isMobile ? 2 : 3}
+                    dot={{
+                      r: isMobile ? 3 : 5,
+                      fill: "#10b981",
+                      strokeWidth: 1,
+                      stroke: "#fff",
+                    }}
+                    activeDot={{
+                      r: isMobile ? 5 : 6,
+                      fill: "#059669",
+                      strokeWidth: 1,
+                      stroke: "#fff",
+                    }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <select
-              className="border border-gray-300 px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-              value={analyticsFilter}
-              onChange={(e) => setAnalyticsFilter(e.target.value)}
-            >
-              <option value="day">Day</option>
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-              <option value="year">Year</option>
-            </select>
           </div>
         </div>
-        <div className="p-4 sm:p-6 overflow-x-auto snap-x snap-mandatory">
-          <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
-            <ResponsiveContainer width="100%" height={chartHeight}>
-              <LineChart
-                data={
-                  combinedData.length > 0
-                    ? combinedData
-                    : [{ name: "", users: 0, doctors: 0 }]
-                }
-                margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
-              >
-                <XAxis
-                  dataKey="name"
-                  tickFormatter={formatAxisLabel}
-                  stroke="#64748b"
-                  fontSize={axisFontSize}
-                  tick={{ fontSize: axisFontSize }}
-                  interval={isMobile ? 0 : undefined}
-                />
-                <YAxis stroke="#64748b" fontSize={axisFontSize} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: tooltipFontSize,
-                    padding: isMobile ? "8px" : "10px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  }}
-                />
-                <Legend
-                  wrapperStyle={{
-                    paddingTop: isMobile ? 10 : 20,
-                    fontSize: axisFontSize,
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="users"
-                  stroke="#3b82f6"
-                  strokeWidth={isMobile ? 2 : 3}
-                  dot={{
-                    r: isMobile ? 3 : 5,
-                    fill: "#3b82f6",
-                    strokeWidth: 1,
-                    stroke: "#fff",
-                  }}
-                  activeDot={{
-                    r: isMobile ? 5 : 6,
-                    fill: "#1d4ed8",
-                    strokeWidth: 1,
-                    stroke: "#fff",
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="doctors"
-                  stroke="#10b981"
-                  strokeWidth={isMobile ? 2 : 3}
-                  dot={{
-                    r: isMobile ? 3 : 5,
-                    fill: "#10b981",
-                    strokeWidth: 1,
-                    stroke: "#fff",
-                  }}
-                  activeDot={{
-                    r: isMobile ? 5 : 6,
-                    fill: "#059669",
-                    strokeWidth: 1,
-                    stroke: "#fff",
-                  }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+
+        {/* Appointments Overview */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-gray-100">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
+              Appointments Overview
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Track appointment trends
+            </p>
+          </div>
+          <div className="p-4 sm:p-5 overflow-x-auto snap-x snap-mandatory">
+            <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <BarChart
+                  data={groupedAppointmentsStats}
+                  margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
+                >
+                  <XAxis
+                    dataKey="day"
+                    tickFormatter={formatAxisLabel}
+                    stroke="#64748b"
+                    fontSize={axisFontSize}
+                    tick={{ fontSize: axisFontSize }}
+                    interval={isMobile ? 0 : undefined}
+                  />
+                  <YAxis stroke="#64748b" fontSize={axisFontSize} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: tooltipFontSize,
+                      padding: isMobile ? "8px" : "10px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                  <Bar
+                    dataKey="appointments"
+                    fill="url(#appointmentsGradient)"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={isMobile ? 40 : 60}
+                  />
+                  <defs>
+                    <linearGradient
+                      id="appointmentsGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#1d4ed8" />
+                    </linearGradient>
+                  </defs>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Reports Analysis */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-gray-100">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-800">
+              Reports Analysis
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              Compare pending vs submitted reports
+            </p>
+          </div>
+          <div className="p-4 sm:p-5 overflow-x-auto snap-x snap-mandatory">
+            <div className="min-w-[280px] sm:min-w-[400px] lg:min-w-[600px] max-w-full">
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <BarChart
+                  data={groupedReportsStats}
+                  margin={{ top: 20, right: 10, left: 0, bottom: 20 }}
+                >
+                  <XAxis
+                    dataKey="day"
+                    tickFormatter={formatAxisLabel}
+                    stroke="#64748b"
+                    fontSize={axisFontSize}
+                    tick={{ fontSize: axisFontSize }}
+                    interval={isMobile ? 0 : undefined}
+                  />
+                  <YAxis stroke="#64748b" fontSize={axisFontSize} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: tooltipFontSize,
+                      padding: isMobile ? "8px" : "10px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                  />
+                  <Legend
+                    wrapperStyle={{
+                      paddingTop: isMobile ? 10 : 20,
+                      fontSize: axisFontSize,
+                    }}
+                  />
+                  <Bar
+                    dataKey="pending"
+                    fill="#f97316"
+                    name="Pending"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={isMobile ? 30 : 40}
+                  />
+                  <Bar
+                    dataKey="submitted"
+                    fill="#10b981"
+                    name="Submitted"
+                    radius={[4, 4, 0, 0]}
+                    maxBarSize={isMobile ? 30 : 40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>

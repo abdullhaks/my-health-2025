@@ -126,6 +126,8 @@ export const ROUTES = {
     getTotalAnalytics : "/admin/getTotalAnalytics",
     getTransactions : "/admin/getTransactions",
     payouts:"/admin/payouts",
+    appointmentStats: "/admin/appointmentStats",
+    reportsStats:"/admin/ReportsStats",
 
     
     

@@ -59,4 +59,52 @@ export default class AdminAnalyticsContorller
         .json({ message: MESSAGES.server.serverError });
     }
   }
+
+  async appointmentStats(req: Request, res: Response): Promise<void> {
+    try {
+      const { filter } = req.query;
+
+      if (!filter) {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "bad request , doctor id missed" });
+        return;
+      }
+
+      const response = await this._adminAnalyticsService.appointmentStats(
+        filter?.toString()
+      );
+
+      res.status(HttpStatusCode.OK).json(response);
+    } catch (err) {
+      console.error("Error fetching appointment stats:", err);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+        message: MESSAGES.server.serverError,
+      });
+    }
+  }
+
+  async reportsStats(req: Request, res: Response): Promise<void> {
+    try {
+      const { filter } = req.query;
+
+      if (!filter) {
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "bad request , doctor id missed" });
+        return;
+      }
+
+      const response = await this._adminAnalyticsService.reportsStats(
+        filter?.toString()
+      );
+
+      res.status(HttpStatusCode.OK).json(response);
+    } catch (err) {
+      console.error("Error fetching reports stats:", err);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+        message: MESSAGES.server.serverError,
+      });
+    }
+  }
 }

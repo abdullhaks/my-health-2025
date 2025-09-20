@@ -280,39 +280,6 @@ export const ActivateSubscription = async (productId: string) => {
   }
 };
 
-export const getUserAnalytics = async (filter: string) => {
-  try {
-    const response = await adminInstance.get(
-      ROUTES.admin.getUserAnalytics(filter)
-    );
-    return response.data;
-  } catch (error) {
-    console.error("error in getUserAnalytics");
-    throw error;
-  }
-};
-
-export const getDoctorAnalytics = async (filter: string) => {
-  try {
-    const response = await adminInstance.get(
-      ROUTES.admin.getDoctorAnalytics(filter)
-    );
-    return response.data;
-  } catch (error) {
-    console.error("error in getUserAnalytics");
-    throw error;
-  }
-};
-
-export const getTotalAnalytics = async () => {
-  try {
-    const response = await adminInstance.get(ROUTES.admin.getTotalAnalytics);
-    return response.data;
-  } catch (err) {
-    console.log("error in get total analytics");
-    throw err;
-  }
-};
 
 export const getTransactions = async (
   page: number,
@@ -360,6 +327,76 @@ export const updatePayout = async (id: string, updateData: payoutUpdateDto) => {
       id,
       ...updateData,
     });
+    return response.data;
+  } catch (err) {
+    console.log("error in get total analytics");
+    throw err;
+  }
+};
+
+
+// API file remains unchanged except for console logs if needed
+export const getAppointmentsStats = async (
+  filter: "day" | "month" | "year"
+) => {
+  console.log("doctorId and filter in stats api is", filter);
+  try {
+    const response = await adminInstance.get(ROUTES.admin.appointmentStats, {
+      params: { filter },
+    });
+    console.log("appointment stats response is ", response.data);
+    return response.data;
+  } catch (err) {
+    console.log("error in get doctor appointment stats");
+    throw err;
+  }
+};
+
+
+export const getReportsStats = async (
+  filter: "day" | "month" | "year"
+) => {
+  console.log("doctorId and filter in stats api is",filter);
+  try {
+    const response = await adminInstance.get(ROUTES.admin.reportsStats, {
+      params: {filter },
+    });
+    console.log("appointment stats response is ", response.data);
+    return response.data;
+  } catch (err) {
+    console.log("error in get doctor appointment stats");
+    throw err;
+  }
+};
+
+
+export const getUserAnalytics = async (filter: string) => {
+  try {
+    const response = await adminInstance.get(
+      ROUTES.admin.getUserAnalytics(filter)
+    );
+    return response.data;
+  } catch (error) {
+    console.error("error in getUserAnalytics");
+    throw error;
+  }
+};
+
+export const getDoctorAnalytics = async (filter: string) => {
+  try {
+    const response = await adminInstance.get(
+      ROUTES.admin.getDoctorAnalytics(filter)
+    );
+    return response.data;
+  } catch (error) {
+    console.error("error in getUserAnalytics");
+    throw error;
+  }
+};
+
+export const getTotalAnalytics = async () => {
+  try {
+    const response = await adminInstance.get(ROUTES.admin.getTotalAnalytics);
     return response.data;
   } catch (err) {
     console.log("error in get total analytics");

@@ -230,7 +230,7 @@ function UserSignup() {
                       placeholder="Enter your email address"
                       value={formData.email}
                       onChange={handleChange}
-                      required
+                      // required
                       className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
                         touched.email && errors.email
                           ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
@@ -248,7 +248,7 @@ function UserSignup() {
                       placeholder="Enter your full name"
                       value={formData.fullName}
                       onChange={handleChange}
-                      required
+                      // required
                       className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
                         touched.fullName && errors.fullName
                           ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
@@ -324,7 +324,8 @@ function UserSignup() {
                       icon={<FcGoogle className="text-lg sm:text-xl" />}
                       className="w-full min-h-[48px] sm:min-h-[52px] bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md transition-all duration-300 text-sm sm:text-base font-semibold rounded-xl transform hover:scale-[1.02] active:scale-[0.98]"
                       onClick={() => {
-                        window.location.href = `${import.meta.env.VITE_API_URL}/user/google` ||
+                        window.location.href =
+                          `${import.meta.env.VITE_API_URL}/user/google` ||
                           "https://api.abdullhakalamban.online/api/user/google";
                       }}
                     />
