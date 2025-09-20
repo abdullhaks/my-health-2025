@@ -109,7 +109,7 @@ const AdminDashboard = () => {
     { day: string; appointments: number }[]
   >([]);
   const [reportsStats, setReportsStats] = useState<
-    { day: string; pending: number; submitted: number }[]
+    { day: string; pending: number; submited: number }[]
   >([]);
   const [analyticsFilter, setAnalyticsFilter] = useState<
     "day" | "month" | "year"
@@ -328,7 +328,7 @@ const AdminDashboard = () => {
         month: "short",
       });
       let pending = first.pending;
-      let submitted = first.submitted;
+      let submited = first.submited;
       let dayLabel = month1;
       if (second) {
         const month2 = new Date(second.day + "-01").toLocaleDateString(
@@ -337,12 +337,12 @@ const AdminDashboard = () => {
         );
         dayLabel = `${month1}-${month2}`;
         pending += second.pending;
-        submitted += second.submitted;
+        submited += second.submited;
       }
       grouped.push({
         day: dayLabel,
         pending,
-        submitted,
+        submited,
       });
     }
     return grouped;
@@ -759,9 +759,9 @@ const AdminDashboard = () => {
                     maxBarSize={isMobile ? 30 : 40}
                   />
                   <Bar
-                    dataKey="submitted"
+                    dataKey="submited"
                     fill="#10b981"
-                    name="Submitted"
+                    name="submited"
                     radius={[4, 4, 0, 0]}
                     maxBarSize={isMobile ? 30 : 40}
                   />

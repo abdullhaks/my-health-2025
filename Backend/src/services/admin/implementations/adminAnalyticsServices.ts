@@ -372,19 +372,19 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
 
   async reportsStats(
     filter: string
-  ): Promise<{ day: string; pending: number; submitted: number }[]> {
+  ): Promise<{ day: string; pending: number; submited: number }[]> {
     try {
       const now = new Date();
       let startDate: Date;
       let matchStage: any = {
-        analysisStatus: { $in: ["pending", "submitted"] },
+        analysisStatus: { $in: ["pending", "submited"] },
       };
       let groupStage: any;
       let sortStage: PipelineStage.Sort = { $sort: { _id: 1 } };
       let projectStage: any = {
         day: "$_id",
         pending: "$pending",
-        submitted: "$submitted",
+        submited: "$submited",
       };
 
       switch (filter) {
@@ -398,9 +398,9 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
             pending: {
               $sum: { $cond: [{ $eq: ["$analysisStatus", "pending"] }, 1, 0] },
             },
-            submitted: {
+            submited: {
               $sum: {
-                $cond: [{ $eq: ["$analysisStatus", "submitted"] }, 1, 0],
+                $cond: [{ $eq: ["$analysisStatus", "submited"] }, 1, 0],
               },
             },
           };
@@ -417,9 +417,9 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
             pending: {
               $sum: { $cond: [{ $eq: ["$analysisStatus", "pending"] }, 1, 0] },
             },
-            submitted: {
+            submited: {
               $sum: {
-                $cond: [{ $eq: ["$analysisStatus", "submitted"] }, 1, 0],
+                $cond: [{ $eq: ["$analysisStatus", "submited"] }, 1, 0],
               },
             },
           };
@@ -437,9 +437,9 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
             pending: {
               $sum: { $cond: [{ $eq: ["$analysisStatus", "pending"] }, 1, 0] },
             },
-            submitted: {
+            submited: {
               $sum: {
-                $cond: [{ $eq: ["$analysisStatus", "submitted"] }, 1, 0],
+                $cond: [{ $eq: ["$analysisStatus", "submited"] }, 1, 0],
               },
             },
           };
@@ -459,13 +459,13 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
 
       let rawData = await this._reportAnalysisRepository.aggregate(pipeline);
 
-      let result: { day: string; pending: number; submitted: number }[] = [];
+      let result: { day: string; pending: number; submited: number }[] = [];
 
       if (filter === "day") {
         const dayMap = new Map(
           rawData.map((r: any) => [
             r.day,
-            { pending: r.pending, submitted: r.submitted },
+            { pending: r.pending, submited: r.submited },
           ])
         );
         for (let i = 0; i < 15; i++) {
@@ -474,14 +474,14 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
           const key = d.toISOString().split("T")[0];
           result.push({
             day: key,
-            ...(dayMap.get(key) || { pending: 0, submitted: 0 }),
+            ...(dayMap.get(key) || { pending: 0, submited: 0 }),
           });
         }
       } else if (filter === "month") {
         const monthMap = new Map(
           rawData.map((r: any) => [
             r.day,
-            { pending: r.pending, submitted: r.submitted },
+            { pending: r.pending, submited: r.submited },
           ])
         );
         for (let i = 0; i < 12; i++) {
@@ -493,14 +493,14 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
           )}`;
           result.push({
             day: key,
-            ...(monthMap.get(key) || { pending: 0, submitted: 0 }),
+            ...(monthMap.get(key) || { pending: 0, submited: 0 }),
           });
         }
       } else if (filter === "year") {
         const yearMap = new Map(
           rawData.map((r: any) => [
             r.day,
-            { pending: r.pending, submitted: r.submitted },
+            { pending: r.pending, submited: r.submited },
           ])
         );
         for (let i = 0; i < 8; i++) {
@@ -509,7 +509,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
           const key = String(d.getFullYear());
           result.push({
             day: key,
-            ...(yearMap.get(key) || { pending: 0, submitted: 0 }),
+            ...(yearMap.get(key) || { pending: 0, submited: 0 }),
           });
         }
       }
