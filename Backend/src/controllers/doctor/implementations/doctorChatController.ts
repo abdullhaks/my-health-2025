@@ -43,10 +43,13 @@ export default class DoctorChatController implements IDoctorChatCtrl {
   async getConversations(req: Request, res: Response): Promise<void> {
     try {
       const doctorId = req.params.doctorId;
-      if (!doctorId) {
+      let from = req.query.from as string | undefined;
+      console.log("from doc... is ...", from);
+
+      if (!doctorId || !from) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
-          .json({ message: "Doctor ID is required" });
+          .json({ message: "Doctor ID is required and doc location" });
         return;
       }
       // if (doctorId !== req.userId) { // Assuming req.userId from verifyAccessTokenMidleware
@@ -54,7 +57,8 @@ export default class DoctorChatController implements IDoctorChatCtrl {
       //   return;
       // }
       const conversations = await this._doctorChatService.getUserConversations(
-        doctorId
+        doctorId,
+        from as string
       );
       res.status(HttpStatusCode.OK).json(conversations);
     } catch (error) {
