@@ -4,6 +4,8 @@ import ITransactionRepository from "../../../repositories/interfaces/ITransactio
 import IPayoutRepository from "../../../repositories/interfaces/IPayoutRepository";
 import IDoctorRepository from "../../../repositories/interfaces/IDoctorRepository";
 import { IPayouts } from "../../../dto/payoutDto";
+import { payoutResponseDTO } from "../../../dto/payoutDto";
+import { PayoutMapper } from "../../../mappers/payout.mapper";
 
 interface filter {
   status?: string;
@@ -20,11 +22,11 @@ export default class AdminPayoutService implements IAdminPayoutService {
     @inject("IDoctorRepository") private _doctorRepository: IDoctorRepository
   ) {}
 
-  async getgetPayouts(
+  async getPayouts(
     pageNumber: number,
     limitNumber: number,
     filters: filter = {}
-  ): Promise<IPayouts[]> {
+  ): Promise<payoutResponseDTO[]> {
     const query: any = {};
 
     if (filters.status) {
@@ -46,10 +48,16 @@ export default class AdminPayoutService implements IAdminPayoutService {
     );
     console.log("transactions from service...", transactions);
 
-    return transactions;
+   const payoutDto = Promise.all(
+    transactions.map(async(item:IPayouts)=>{
+      return await PayoutMapper.toPayoutResponseDTO(item)
+    })
+   )
+
+    return payoutDto;
   }
 
-  async updatePayout(id: string, data: any): Promise<IPayouts> {
+  async updatePayout(id: string, data: any): Promise<payoutResponseDTO> {
     const resp = await this._payoutRepository.update(id, data);
     console.log("payourt respo is ", resp);
 
@@ -62,6 +70,8 @@ export default class AdminPayoutService implements IAdminPayoutService {
 
     console.log("wallet respo is ", updateWalet);
 
-    return resp;
+    const payoutdto = await PayoutMapper.toPayoutResponseDTO(resp);
+
+    return payoutdto;
   }
 }

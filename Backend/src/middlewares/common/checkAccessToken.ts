@@ -17,12 +17,12 @@ export function verifyAccessTokenMidleware(
     if (role === "user") {
       const { accessToken } = req.cookies;
 
-      // console.log("token is..... ",userAccessToken);
+      console.log("userAccessToken is..... ",accessToken);
 
       token = accessToken;
       if (!accessToken) {
         res
-          .status(HttpStatusCode.UNAUTHORIZED)
+          .status(HttpStatusCode.FORBIDDEN)
           .json({ msg: "Access token missing" });
 
         return;
@@ -31,13 +31,13 @@ export function verifyAccessTokenMidleware(
 
     if (role === "admin") {
       const { accessToken } = req.cookies;
-
+      console.log("admin token from cookie.......... ", accessToken);
       // console.log("token is..... ",accessToken);
 
       token = accessToken;
       if (!accessToken) {
         res
-          .status(HttpStatusCode.UNAUTHORIZED)
+          .status(HttpStatusCode.FORBIDDEN)
           .json({ msg: "Access token missing" });
         return;
       }
@@ -46,12 +46,12 @@ export function verifyAccessTokenMidleware(
     if (role === "doctor") {
       const { accessToken } = req.cookies;
 
-      // console.log("token is..... ",accessToken);
+      console.log("token is.....from doctor midleware..... ",accessToken);
 
       token = accessToken;
       if (!accessToken) {
         res
-          .status(HttpStatusCode.UNAUTHORIZED)
+          .status(HttpStatusCode.FORBIDDEN)
           .json({ msg: "Access token missing" });
         return;
       }
@@ -85,12 +85,10 @@ export function verifyAccessTokenMidleware(
         }
 
         if (user.isBlocked) {
-          res
-            .status(HttpStatusCode.FORBIDDEN)
-            .json({
-              success: false,
-              error: { message: "User is blocked. Please contact support." },
-            });
+          res.status(HttpStatusCode.FORBIDDEN).json({
+            success: false,
+            error: { message: "User is blocked. Please contact support." },
+          });
           return;
         }
       }

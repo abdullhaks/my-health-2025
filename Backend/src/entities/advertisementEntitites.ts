@@ -9,9 +9,9 @@ export interface IAdvertisementDocument extends Document {
   tags: Array<string>;
   videoUrl: string;
   pack: string;
-  fee: Number;
-  views: Number;
-  clicks: Number;
+  fee: number;
+  views: number;
+  clicks: number;
   expDate: Date;
   createdAt: Date;
 }

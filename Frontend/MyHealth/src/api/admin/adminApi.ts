@@ -108,11 +108,12 @@ export const getDoctors = async (
   search: string,
   page: number,
   limit: number,
-  onlyPremium: boolean
+  onlyPremium: boolean,
+  toVerify: boolean
 ) => {
   try {
     const response = await adminInstance.get(ROUTES.admin.doctors, {
-      params: { search, page, limit, onlyPremium },
+      params: { search, page, limit, onlyPremium, toVerify },
     });
 
     console.log("doctors response from api..", response);

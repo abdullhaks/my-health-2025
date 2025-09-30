@@ -5,12 +5,13 @@ import { IoDocumentAttachOutline } from "react-icons/io5";
 import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import {
+  createDoctorConversation,
   directFileUpload,
   getDoctorConversations,
   getDoctorMessages,
+  refreshToken,
 } from "../../api/doctor/doctorApi";
 import { message } from "antd";
-import axios from "axios";
 import doodle from "../../assets/bg_print.png";
 import { IDoctorData } from "../../interfaces/doctor";
 import { ApiError } from "../../interfaces/error";
@@ -60,16 +61,12 @@ const DoctorChat = () => {
   const [isConversationListVisible, setIsConversationListVisible] =
     useState(true);
 
-  const apiUrl = import.meta.env.VITE_API_URL as string;
+  // const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
-      const response = await axios.post(
-        `${apiUrl}/doctor/refreshToken`,
-        {},
-        { withCredentials: true }
-      );
-      return response.data.accessToken;
+      const response = await refreshToken()
+      return response.accessToken;
     } catch (error) {
       console.error("Failed to fetch access token:", error);
       message.error("Session expired. Please log in again.");
@@ -363,11 +360,7 @@ const DoctorChat = () => {
     }
 
     try {
-      const response = await axios.post(
-        "https://api.abdullhakalamban.online/api/doctor/conversation",
-        { userIds: [doctorId, selectedUser] },
-        { withCredentials: true }
-      );
+      const response = await createDoctorConversation(doctorId, selectedUser);
       const newConversation = response.data;
       setConversations((prev) => [...prev, newConversation]);
       setCurrentChat(newConversation);

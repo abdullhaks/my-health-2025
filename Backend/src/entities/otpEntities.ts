@@ -2,8 +2,8 @@ import { Document, Types } from "mongoose";
 
 export interface IOtpDocument extends Document {
   _id: Types.ObjectId;
-  email: String;
-  otp: String;
+  email: string;
+  otp: string;
   createdAt: Date;
   updatedAt: Date;
 }

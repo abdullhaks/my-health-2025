@@ -4,6 +4,7 @@ import IAppointmentsRepository from "../../../repositories/interfaces/IAppointme
 import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import IDoctorRepository from "../../../repositories/interfaces/IDoctorRepository";
+import { AppointmentMapper } from "../../../mappers/appointment.mapper";
 
 interface filter {
   status?: string;
@@ -55,6 +56,19 @@ export default class AdminAppointmentService
 
     console.log("appointments from service...", appointments);
 
-    return appointments;
+    let appointmentDto:IAppointmentDTO[] | null;
+
+    if(appointments.appointments?.length){
+      appointmentDto = await Promise.all(
+      appointments.appointments.map(async (item) => await AppointmentMapper.toResponseDTO(item))
+    );
+    }else{
+      appointmentDto=[]
+    }
+
+    return {
+      appointments: appointmentDto,
+      totalPages: appointments.totalPages,
+    };
   }
 }

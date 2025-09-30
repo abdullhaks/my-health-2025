@@ -104,7 +104,7 @@ const UserAppointments = () => {
 
       let token = document.cookie
         .split("; ")
-        .find((row) => row.startsWith("userAccessToken="))
+        .find((row) => row.startsWith("accessToken="))
         ?.split("=")[1];
 
       if (!token) {
@@ -136,18 +136,18 @@ const UserAppointments = () => {
             socket.auth = { token: newToken };
             socket.connect();
           } catch {
-            message.error("Failed to reconnect. Please log in again.");
+            // message.error("Failed to reconnect. Please log in again.");
           }
         } else {
-          message.error(
-            "Failed to connect to notification server: " + err.message
-          );
+          // message.error(
+          //   "Failed to connect to notification server: " + err.message
+          // );
         }
       });
 
       socket.on("error", ({ message }) => {
         console.error("Socket error:", message);
-        message.error(message);
+        // message.error(message);
       });
 
       return () => {

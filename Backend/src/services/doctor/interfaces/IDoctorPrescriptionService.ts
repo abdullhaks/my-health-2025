@@ -1,4 +1,7 @@
 import IPrescriptionDocument from "../../../entities/prescriptionEntities";
+import { prescriptionResponseDTO } from "../../../dto/prescriptionDto";
+
+
 interface medication {
   name: string;
   dosage: string;
@@ -18,6 +21,6 @@ interface prescriptionReq{
   createdAt?: Date;
 }
 export default interface IDoctorPrescriptionService {
-  getPrescriptions(userId: string): Promise<IPrescriptionDocument[]>;
-  submitPrescription(prescriptionData: prescriptionReq): Promise<IPrescriptionDocument>;
+  getPrescriptions(userId: string): Promise<prescriptionResponseDTO[]>;
+  submitPrescription(prescriptionData: prescriptionReq): Promise<prescriptionResponseDTO>;
 }

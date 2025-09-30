@@ -1,5 +1,7 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "antd";
+import { getDoctor } from "../../api/user/userApi";
+import { useEffect, useState } from "react";
 
 interface Doctor {
   _id: string;
@@ -23,8 +25,35 @@ interface Doctor {
 
 const UserDoctorDetails = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const doctor: Doctor = location.state?.doctor;
+  const { doctorId } = useParams<{ doctorId: string }>();
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDoctorDetails = async () => {
+      try {
+        setLoading(true);
+        const res = await getDoctor(doctorId || "");
+        setDoctor(res);
+      } catch (error) {
+        console.error("Error fetching doctor details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDoctorDetails();
+  }, [doctorId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+          <p className="mt-2 text-gray-600 text-sm sm:text-base">Loading doctor details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!doctor) {
     return (
@@ -37,7 +66,7 @@ const UserDoctorDetails = () => {
   }
 
   const handleBookAppointment = () => {
-    navigate("/user/doctor-appointment-slots", {
+    navigate(`/user/doctor-appointment-slots/${doctor._id}`, {
       state: { doctorId: doctor._id },
     });
   };

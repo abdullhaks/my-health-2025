@@ -16,6 +16,9 @@ import {
 import { Request, Response, NextFunction } from "express";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
 import { IResponseDTO } from "../../../dto/commonResponseDto"; 
+import { adminResponseDTO } from "../../../dto/adminDTO";
+import { AdminMapper } from "../../../mappers/admin.mapper";
+
 
 console.log("Admin auth service is running....");
 
@@ -34,7 +37,7 @@ export default class AdminAuthService implements IAdminAuthService {
     adminData: IAdmin
   ): Promise<{
     message: string;
-    admin: IAdmin;
+    admin: adminResponseDTO;
     accessToken: string;
     refreshToken: string;
   }> {
@@ -82,11 +85,11 @@ export default class AdminAuthService implements IAdminAuthService {
     //   maxAge: 7 * 24 * 60 * 60 * 1000,
     // });
 
-    const { password, ...userWithoutPassword } = admin.toObject();
+    const adminDto = await AdminMapper.toResponseDTO(admin)
 
     return {
       message: "Login successful",
-      admin: userWithoutPassword,
+      admin: adminDto,
       accessToken,
       refreshToken,
     };

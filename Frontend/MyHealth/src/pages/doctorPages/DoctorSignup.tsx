@@ -8,11 +8,17 @@ import applogoWhite from "../../assets/applogoWhite.png";
 import doctorLogin from "../../assets/doctorLogin.png";
 import { signupDoctor } from "../../api/doctor/doctorApi";
 import toast from "react-hot-toast";
+import { message } from "antd";
 
 // Validation schema
 const doctorSignupSchema = z
   .object({
-    fullName: z.string().min(3, "Full name must be at least 3 characters"),
+    fullName: z.string().min(3, "Full name must be at least 3 characters")
+    .max(30," Full name must be at most 30 characters")
+    .refine((val) => val.trim() === val, {
+        message: "No leading or trailing spaces allowed",
+      }),
+
     email: z.string().email("Invalid email address"),
     password: z
       .string()
@@ -22,12 +28,17 @@ const doctorSignupSchema = z
       .regex(/\d/, "At least one digit")
       .regex(/[@$!%*?&#]/, "Include at least one special character"),
     confirmPassword: z.string(),
-    graduation: z.string(),
+    graduation: z.string().min(3, "Graduation must be at least 3 characters")
+    .max(30,"Graduation must be at most 30 characters")
+    .refine((val) => val.trim() === val, {
+        message: "No leading or trailing spaces allowed",
+      }),
     graduationCertificate: z.instanceof(File).nullable(),
     category: z.string(),
-    registerNo: z.string().min(6, "Not valid"),
+    registerNo: z.string().min(6, "Not valid").max(35,"Not valid"),
     registrationCertificate: z.instanceof(File).nullable(),
     verificationId: z.instanceof(File).nullable(),
+    profile: z.instanceof(File).nullable(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
@@ -50,6 +61,7 @@ function DoctorSignup() {
     registerNo: "",
     registrationCertificate: null,
     verificationId: null,
+    profile: null,
   });
   const [errors, setErrors] = useState<
     Partial<Record<keyof DoctorSignupData, string>>
@@ -124,7 +136,7 @@ function DoctorSignup() {
     }
 
     setLoading(true);
-
+    message.loading("Signing you up...",);
     try {
       const formDataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
@@ -132,11 +144,15 @@ function DoctorSignup() {
           formDataToSend.append(key, value);
         }
       });
+    message.loading("Signing you up...uploading files", 2);
 
       await signupDoctor(formDataToSend)
         .then((response) => {
           console.log("Signup successful", response);
-          navigate("/doctor/login");
+          message.success("Please verify your email.");
+          localStorage.setItem("doctorEmail", response.doctor.email);
+
+          navigate("/doctor/otp");
         })
         .catch((error) => {
           console.error("Signup error", error);
@@ -167,7 +183,8 @@ function DoctorSignup() {
       return (
         formData.graduation.length > 0 &&
         formData.category.length > 0 &&
-        formData.graduationCertificate !== null
+        formData.graduationCertificate !== null&&
+        formData.profile !== null
       );
     }
     if (step === 3) {
@@ -380,6 +397,26 @@ function DoctorSignup() {
                         error={
                           touched.graduationCertificate
                             ? errors.graduationCertificate
+                            : ""
+                        }
+                      />
+
+                       <Input
+                        id="profile"
+                        name="profile"
+                        label="Profile Picture"
+                        type="file"
+                        onChange={handleChange}
+                        required
+                        className={`transition-all duration-200 min-h-[44px] text-sm sm:text-base ${
+                          touched.profile &&
+                          errors.profile
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                            : "focus:border-blue-500 focus:ring-blue-500/20"
+                        }`}
+                        error={
+                          touched.profile
+                            ? errors.profile
                             : ""
                         }
                       />

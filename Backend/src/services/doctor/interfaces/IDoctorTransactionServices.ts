@@ -1,5 +1,6 @@
 import { Payout, filter } from "../../../dto/transactionDto";
 
+
 export default interface IDoctorTransactionsService {
   getRevenues(
     doctorId: string,

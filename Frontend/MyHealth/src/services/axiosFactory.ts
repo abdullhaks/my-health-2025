@@ -5,7 +5,7 @@ import axios, {
   AxiosResponse,
 } from "axios";
 
-import { store } from "../redux/store/store";
+import { persistor, store } from "../redux/store/store";
 import { logoutUser } from "../redux/slices/userSlices";
 import { logoutDoctor } from "../redux/slices/doctorSlices";
 import { logoutAdmin } from "../redux/slices/adminSlices";
@@ -51,21 +51,36 @@ const getRoleFromURL = (url?: string): "user" | "doctor" | "admin" | null => {
  * Logout logic for each role
  */
 const handleLogout = async (role: string, error: AxiosError<ErrorResponse>) => {
+
+  console.log(`Handling logout for ${role} due to error:`, error);
+
   switch (role) {
     case "user":
       store.dispatch(logoutUser());
+      await persistor.purge();
       await userLogout();
       localStorage.removeItem("userEmail");
+      window.location.href = "/";
+
       break;
     case "doctor":
+
+    console.log("Logging out doctor.....................................................///...............");
       store.dispatch(logoutDoctor());
+      await persistor.purge();
       await doctorLogout();
-      localStorage.removeItem("doctorEmail");
+      localStorage.removeItem("doctorEmail"); 
+      window.location.href = "/";
+
+
       break;
     case "admin":
       store.dispatch(logoutAdmin());
       await adminLogout();
       localStorage.removeItem("adminEmail");
+      await persistor.purge();
+      window.location.href = "/admin/login";
+
       break;
   }
 
@@ -127,7 +142,14 @@ const createAxiosInstance = (): AxiosInstance => {
         originalRequest.isRetry = true;
         console.log(`401 for ${role}. Attempting token refresh...`);
         return handleTokenRefresh(originalRequest, role);
+      } else if (originalRequest.isRetry) {
+
+        console.log(`retry.....Logging out...`);
+        await handleLogout(role, error);
+        return
       } else if (error.response?.status === HttpStatusCode.FORBIDDEN) {
+
+        console.log(`403 for ${role}. Logging out...`);
         await handleLogout(role, error);
       }
 

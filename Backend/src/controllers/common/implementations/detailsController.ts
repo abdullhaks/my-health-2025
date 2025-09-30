@@ -13,7 +13,7 @@ export default class DetailsController implements IDetailsCtrl {
 
   async getDoctor(req: Request, res: Response): Promise<void> {
     try {
-      const doctorId = req.query.doctorId;
+      const {doctorId} = req.query;
       console.log("doctor id is ", doctorId);
       if (doctorId) {
         const response = await this._detailsService.getDoctor(

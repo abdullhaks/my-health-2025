@@ -26,13 +26,15 @@ export default class AdminDoctorService implements IAdminDoctorService {
     page: number,
     search: string | undefined,
     limit: number,
-    onlyPremium: boolean
+    onlyPremium: boolean,
+    toVerify: boolean
   ): Promise<{ doctors: IDoctor[] | null; totalPages: number }> {
     const response = await this._doctorRepository.getDoctors(
       page,
       search,
       limit,
-      onlyPremium
+      onlyPremium,
+      toVerify
     );
 
     if (!response) {
@@ -52,6 +54,11 @@ export default class AdminDoctorService implements IAdminDoctorService {
     if (userWithoutPassword.profile) {
       userWithoutPassword.profile = await getSignedImageURL(response.profile);
     }
+
+    userWithoutPassword.graduationCertificate = await getSignedImageURL(response.graduationCertificate);
+    userWithoutPassword.registrationCertificate =await getSignedImageURL(response.registrationCertificate);
+    userWithoutPassword.verificationId =await getSignedImageURL(response.verificationId);
+    
     return userWithoutPassword;
   }
 

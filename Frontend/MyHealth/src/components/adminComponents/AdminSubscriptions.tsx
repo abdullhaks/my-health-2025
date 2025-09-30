@@ -143,6 +143,8 @@ const AdminSubscriptions = () => {
     // Description validation
     if (formData.description && formData.description.length > 500) {
       newErrors.description = "Description cannot exceed 500 characters";
+    } else if (!formData.description || formData.description.length < 5) {
+      newErrors.description = "Description cannot be less than 5 characters";
     }
 
     // Price validation
@@ -206,9 +208,15 @@ const AdminSubscriptions = () => {
       };
 
       if (isEditing) {
+        resetForm();
+        setIsModalOpen(false);
+        setLoading(true);
         await updateSubscription(payload);
         toast.success("Plan updated successfully");
       } else {
+        resetForm();
+        setIsModalOpen(false);
+        setLoading(true);
         await createSubscription(payload);
         toast.success("Plan created successfully");
       }
@@ -535,7 +543,8 @@ const AdminSubscriptions = () => {
                     id="price"
                     name="price"
                     type="number"
-                    step="0.01"
+                    step="0.1"
+                    min={1}
                     value={formData.price}
                     onChange={handleInputChange}
                     className={`w-full pl-8 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 ${
@@ -673,11 +682,35 @@ const AdminSubscriptions = () => {
                     : "hover:from-indigo-700 hover:to-purple-700"
                 }`}
               >
-                {submitting
-                  ? "Processing..."
-                  : isEditing
-                  ? "Update Plan"
-                  : "Create Plan"}
+                {submitting ? (
+                  <span className="flex items-center">
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : isEditing ? (
+                  "Update Plan"
+                ) : (
+                  "Create Plan"
+                )}
               </Button>
               <Button
                 onClick={() => {

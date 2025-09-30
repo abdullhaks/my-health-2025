@@ -3,12 +3,13 @@ import IAdminAnalyticsServices from "../interfaces/IAdminAnalyticsServices";
 import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import IDoctorRepository from "../../../repositories/interfaces/IDoctorRepository";
 import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRepository";
-import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import { MESSAGES } from "../../../utils/messages";
 import { IAnalytics } from "../../../dto/analyticsDto";
 import IAppointmentsRepository from "../../../repositories/interfaces/IAppointmentsRepository";
 import IReportAnalysisRepository from "../../../repositories/interfaces/IReportAnalysisRepository";
 import { PipelineStage } from "mongoose";
+import { analyticsResponseDTO } from "../../../dto/analyticsDto";
+import { AnalyticsMapper } from "../../../mappers/analytics.mapper";
 
 @injectable()
 export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
@@ -17,8 +18,6 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
     @inject("IDoctorRepository") private _doctorRepository: IDoctorRepository,
     @inject("IAnalyticsRepository")
     private _analyticsRepository: IAnalyticsRepository,
-    @inject("ITransactionRepository")
-    private _transactionRepository: ITransactionRepository,
     @inject("IAppointmentsRepository")
     private _appointmentRepository: IAppointmentsRepository,
     @inject("IReportAnalysisRepository")
@@ -233,7 +232,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
     }
   }
 
-  async getTotalAnalytics(): Promise<IAnalytics> {
+  async getTotalAnalytics(): Promise<analyticsResponseDTO> {
     try {
       const response = await this._analyticsRepository.findOne({
         dataSet: "1",
@@ -241,8 +240,10 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
       if (!response) {
         throw new Error("internal error in getTotalAnalytics");
       }
+      const analyticsDto = await AnalyticsMapper.toResponseDTO(response)
 
-      return response;
+      return analyticsDto;
+      
     } catch (err) {
       console.log("error in getTotalAnalytics service", err);
       throw new Error("error in getTotalAnalytics service");

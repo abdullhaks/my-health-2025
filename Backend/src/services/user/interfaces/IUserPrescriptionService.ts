@@ -1,6 +1,9 @@
 import { IPrescription } from "../../../dto/prescriptionDto";
+import { prescriptionResponseDTO } from "../../../dto/prescriptionDto";
+
+
 interface prescriptionReponseDto {
-  prescription: IPrescription;
+  prescription: prescriptionResponseDTO;
   user: {
     fullName?: string;
     dob?: string;
@@ -15,9 +18,9 @@ interface prescriptionReponseDto {
 
 export default interface IUserPrescriptionService {
   getPrescription(appointmentId: string): Promise<prescriptionReponseDto>;
-  getLatestPrescription(userId: string): Promise<IPrescription | null>;
+  getLatestPrescription(userId: string): Promise<prescriptionResponseDTO | null>;
   getLatestDoctorPrescription(
     userId: string,
     doctorId: string
-  ): Promise<IPrescription | null>;
+  ): Promise<prescriptionResponseDTO | null>;
 }

@@ -1,5 +1,7 @@
 import { IAdvertisement } from "../../../dto/advertisementDto";
 import { IBlog } from "../../../dto/blogDto";
+import { blogResponseDTO } from "../../../dto/blogDto";
+import { advertisementResponseDTO } from "../../../dto/advertisementDto";
 
 export default interface IUserDashboardService {
   getDashboardContent(
@@ -8,7 +10,7 @@ export default interface IUserDashboardService {
     latitude: number,
     longitude: number
   ): Promise<{
-    blogs: IBlog[];
-    advertisements: IAdvertisement[];
+    blogs: blogResponseDTO[];
+    advertisements: advertisementResponseDTO[];
   }>;
 }

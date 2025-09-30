@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import {
@@ -32,9 +32,8 @@ interface AppointmentSlot {
 }
 
 const UserAppointmentSlots = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const doctorId = location.state?.doctorId;
+  const {doctorId} = useParams<{ doctorId: string }>();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [appointmentSlots, setAppointmentSlots] = useState<AppointmentSlot[]>(

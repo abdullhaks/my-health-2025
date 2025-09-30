@@ -2,7 +2,8 @@ import { inject, injectable } from "inversify";
 import IDoctorReportAnalysisService from "../interfaces/IDoctorReportAnalysis";
 import IReportAnalysisRepository from "../../../repositories/interfaces/IReportAnalysisRepository";
 import IUserRepository from "../../../repositories/interfaces/IUserRepository";
-import { IReportAnalysis } from "../../../dto/reportAnalysisDTO";
+import { IReportAnalysis, reportAnalysisResponseDTO } from "../../../dto/reportAnalysisDTO";
+import { ReportAnalysisMapper } from "../../../mappers/reportAnalysis.mapper";
 
 @injectable()
 export default class DoctorReportAnalysisService
@@ -14,12 +15,20 @@ export default class DoctorReportAnalysisService
     @inject("IUserRepository") private _UserRepository: IUserRepository
   ) {}
 
-  async getReports(doctorId: string): Promise<IReportAnalysis[]> {
+  async getReports(doctorId: string): Promise<reportAnalysisResponseDTO[]> {
     try {
       const response = await this._ReportAnalysisRepository.findAll({
         doctorId: doctorId,
       });
-      return response;
+
+      const reportAnalysisDto = await Promise.all(
+        response.map(async (report) => {
+          return await ReportAnalysisMapper.toReportAnalysisResponseDTO(report);
+        })
+      );
+
+      return reportAnalysisDto;
+
     } catch (error) {
       console.error("Error in get sessions", error);
       throw new Error("Failed to get consultation sessions");
@@ -29,7 +38,7 @@ export default class DoctorReportAnalysisService
   async submitAnalysisReports(
     analysisId: string,
     result: string
-  ): Promise<IReportAnalysis> {
+  ): Promise<reportAnalysisResponseDTO> {
     try {
       const response = await this._ReportAnalysisRepository.update(analysisId, {
         result: result,
@@ -38,8 +47,11 @@ export default class DoctorReportAnalysisService
 
       if (!response) {
         throw new Error("submiting report analysis failed");
-      }
-      return response;
+      };
+
+      const reportAnalysisDto = await ReportAnalysisMapper.toReportAnalysisResponseDTO(response);
+      return reportAnalysisDto;
+
     } catch (error) {
       console.error("Error in submitting analysis reports", error);
       throw new Error("Failed to submit analysis report");
@@ -50,7 +62,7 @@ export default class DoctorReportAnalysisService
     analysisId: string,
     userId: string,
     fee: number
-  ): Promise<IReportAnalysis> {
+  ): Promise<reportAnalysisResponseDTO> {
     try {
       if (!analysisId || !userId || fee <= 0) {
         throw new Error("Invalid parameters for cancelling analysis report");
@@ -77,7 +89,10 @@ export default class DoctorReportAnalysisService
         if (!response) {
           throw new Error("wallet updation failed");
         }
-        return response;
+
+        const reportAnalysisDto = await ReportAnalysisMapper.toReportAnalysisResponseDTO(response);
+        return reportAnalysisDto;
+        
       } else {
         console.error("Failed to update wallet balance");
         throw new Error("Failed to update wallet balance");

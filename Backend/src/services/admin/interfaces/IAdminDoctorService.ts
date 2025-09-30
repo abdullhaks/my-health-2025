@@ -5,7 +5,8 @@ export default interface IAdminDoctorService {
     page: number,
     search: string | undefined,
     limit: number,
-    onlyPremium: boolean
+    onlyPremium: boolean,
+    toVerify: boolean
   ): Promise<{ doctors: IDoctor[] | null; totalPages: number }>;
   getDoctor(id: string): Promise<IDoctor>;
   verifyDoctor(id: string): Promise<IDoctor>;

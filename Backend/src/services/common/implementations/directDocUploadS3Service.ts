@@ -1,4 +1,4 @@
-import { uploadFileToS3 } from "../../../middlewares/common/uploadS3";
+import { uploadFileToS3, getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import IDirectDocUploadS3Service from "../interfaces/IDirectDocUploadS3Service";
 
 export default class DirectDocUploadS3Service
@@ -24,9 +24,15 @@ export default class DirectDocUploadS3Service
       throw new Error("Failed to upload document to S3");
     }
 
+    let signedUrl: string = await getSignedImageURL(fileUrl);
+
+    if (!signedUrl) {
+      throw new Error("Failed to upload document to S3");
+    }
+
     return {
       message: "Document uploaded successfully",
-      url: fileUrl,
+      url: signedUrl,
     };
   }
 }

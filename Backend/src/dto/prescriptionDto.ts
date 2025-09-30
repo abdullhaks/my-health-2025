@@ -17,4 +17,28 @@ export default interface IPrescriptionDocument extends Document {
   createdAt?: Date;
 }
 
-export interface IPrescription extends IPrescriptionDocument {}
+export interface IPrescription extends IPrescriptionDocument {};
+
+
+export interface prescriptionResponseDTO {
+  _id: string;
+  appointmentId: string;
+  userId: string;
+  doctorId: string;
+  medicalCondition: string;
+  medications: {
+    name: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    instructions?: string;
+  }[];
+  notes?: string;
+  createdAt?: Date;
+
+
+}
+
+export interface prescriptionRequestDTO {
+
+}

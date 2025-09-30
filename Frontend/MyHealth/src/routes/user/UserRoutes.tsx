@@ -57,7 +57,7 @@ const UserRoutes = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="doctors" element={<Doctors/>} />
           <Route path="chat" element={<UserChat />} />
-          <Route path="doctor-appointment-slots" element={<UserAppointmentSlots />} />
+          <Route path="doctor-appointment-slots/:doctorId" element={<UserAppointmentSlots />} />
           <Route path="appointment-confirmation" element={<UserAppointmentConfirmation />} />
           <Route path="payment-success" element={<UserPaymentSuccess />} />
           <Route path="payment-cancelled" element={<UserPaymentCancelled />} />

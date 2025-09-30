@@ -20,6 +20,7 @@ import ConfirmModal from "../../sharedComponents/ConfirmModal";
 import { useDispatch } from "react-redux";
 import { logoutAdmin } from "../../redux/slices/adminSlices";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { logoutAdmin as adminLogout } from "../../api/admin/adminApi";
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -65,7 +66,8 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
+    await adminLogout();
     dispatch(logoutAdmin());
     navigate("/admin/login");
   };

@@ -1,8 +1,9 @@
 import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IPrescription } from "../../../dto/prescriptionDto";
+import { prescriptionResponseDTO } from "../../../dto/prescriptionDto";
 
-interface IAppointmentWithPrescription extends IAppointment {
-  prescriptions?: IPrescription;
+interface IAppointmentWithPrescription extends IAppointmentDTO {
+  prescriptions?: prescriptionResponseDTO;
 }
 export default interface IDoctorAppointmentService {
   getDoctorAppointments(

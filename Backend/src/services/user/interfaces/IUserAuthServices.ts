@@ -13,6 +13,6 @@ export default interface IUserAuthService {
   forgotPassword(email: string): Promise<Partial<IUserResponse>>;
   verifyRecoveryPassword(email: string, recoveryCode: string): Promise<boolean>;
   resetPassword(email: string, newPassword: string): Promise<IUser>;
-  refreshToken(token: string): Promise<IResponseDTO>;
+  refreshToken(refreshToken: string): Promise<IResponseDTO>;
   getMe(email: String): Promise<Partial<IUserResponse>>;
 }

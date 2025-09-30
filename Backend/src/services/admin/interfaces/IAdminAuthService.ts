@@ -1,12 +1,14 @@
 import { IAdmin } from "../../../dto/adminDTO";
 import { IResponseDTO } from "../../../dto/commonResponseDto";
+import { adminResponseDTO } from "../../../dto/adminDTO";
+
 
 export default interface IAdminAuthService {
   login(
     userData: Partial<IAdmin>
   ): Promise<{
     message: string;
-    admin: IAdmin;
+    admin: adminResponseDTO;
     accessToken: string;
     refreshToken: string;
   }>;

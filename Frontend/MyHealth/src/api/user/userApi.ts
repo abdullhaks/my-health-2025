@@ -222,8 +222,8 @@ export const updateProfileImage = async (
 
 export const logoutUser = async () => {
   try {
-    await userInstance.post(ROUTES.user.logout);
-    // return response.data;
+    const response= await userInstance.post(ROUTES.user.logout);
+    return response.data;
   } catch (error) {
     console.error("Error logging out user:", error);
     throw error;

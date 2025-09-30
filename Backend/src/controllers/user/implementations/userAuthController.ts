@@ -96,9 +96,17 @@ export default class UserAuthController implements IUserAuthCtrl {
         secure: true,
       });
 
+
+      res.clearCookie("userEmail", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+
+
       res
         .status(HttpStatusCode.OK)
-        .json({ message: MESSAGES.server.serverError });
+        .json({ message:"logout successfully"});
     } catch (error) {
       console.log(error);
     }

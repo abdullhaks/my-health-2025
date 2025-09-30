@@ -111,7 +111,7 @@ import UserSessionService from "../services/user/implementations/userSessionServ
 import IUserSessionService from "../services/user/interfaces/IUserSessionService";
 import UserReportAnalysisService from "../services/user/implementations/userReportAnalysis";
 import IUserReportAnalysisService from "../services/user/interfaces/IUserReportAnalysis";
-import UserBlogService from "../services/user/implementations/userrBlogServices";
+import UserBlogService from "../services/user/implementations/userBlogServices";
 import IUserBlogService from "../services/user/interfaces/IUserBlogServices";
 import UserDashboardService from "../services/user/implementations/userDashboardService";
 import IUserDashboardService from "../services/user/interfaces/IUserDashboardService";

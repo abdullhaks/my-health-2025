@@ -57,13 +57,12 @@ doctorRoutes.post(
     { name: "graduationCertificate", maxCount: 1 },
     { name: "verificationId", maxCount: 1 },
     { name: "specializations[0][certificate]", maxCount: 1 },
+    { name: "profile", maxCount: 1 },
   ]),
   (req, res ,next) => authCtrl.doctorSignup(req, res ,next)
 );
 
-doctorRoutes.post("/refreshToken", (req, res,next) =>
-  authCtrl.refreshToken(req, res,next)
-);
+doctorRoutes.post("/refreshToken", (req, res) =>authCtrl.refreshToken(req, res));
 
 doctorRoutes.post("/verifyOtp", (req, res,next) => authCtrl.verifyOtp(req, res,next));
 

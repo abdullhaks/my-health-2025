@@ -1,7 +1,8 @@
-import { ISession, ISessionDocument } from "../../../dto/sessionDTO";
+import { ISession, ISessionDocument, sessionResponseDTO } from "../../../dto/sessionDTO";
 import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IUnAvailableDayDocument } from "../../../entities/unAvailableDayEntities";
 import { IUnAvailableSessionDocument } from "../../../entities/unAvailableSessionEntities";
+
 interface cancelledSessions {
   appointmentId: string;
   userId: string;
@@ -12,15 +13,15 @@ interface cancelledSessions {
 }
 
 export default interface IDoctorSessionService {
-  addSession(sessionData: ISession): Promise<ISession>;
-  getSessions(doctorId: string): Promise<ISession[]>;
+  addSession(sessionData: ISession): Promise<sessionResponseDTO>;
+  getSessions(doctorId: string): Promise<sessionResponseDTO[]>;
   getBookedSlots(doctorId: string, formattedDate: string): Promise<string[]>;
   deleteSession(sessionId: string): Promise<Partial<IAppointmentDTO>[] | null>;
   updateSession(
     sessionId: string,
     editingSession: Partial<ISession>
   ): Promise<{
-    updatedSession: ISessionDocument | null;
+    updatedSession: sessionResponseDTO | null;
     cancelledAppoitments: cancelledSessions[] | null;
   }>;
   makeDayUnavailable(

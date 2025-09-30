@@ -1,7 +1,12 @@
-import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
+import { IAppointment , IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IUser } from "../../../dto/userDTO";
 import { IDoctor } from "../../../dto/doctorDTO";
 import { IWalletPaymentData } from "../../../entities/paymentEntities";
+
+interface DetailAppointment extends IAppointmentDTO {
+  profile?: string;
+}
+
 
 export default interface IUserAppointmentService {
   fetchingDoctors(
@@ -27,11 +32,11 @@ export default interface IUserAppointmentService {
       startDate?: string;
       endDate?: string;
     }
-  ): Promise<{ appointments: IAppointmentDTO[] | null; totalPages: number }>;
+  ): Promise<{ appointments: DetailAppointment[] | null; totalPages: number }>;
 
   cancelAppointment(
     appointmentId: string
   ): Promise<{ status: boolean; message: string; updatedUser: Partial<IUser> }>;
-  walletPayment(data: Partial<IAppointment>): Promise<IAppointment>;
+  walletPayment(data: Partial<IAppointment>): Promise<IAppointmentDTO>;
   activeBooking(userId: string, doctorId: string): Promise<{ status: boolean }>;
 }

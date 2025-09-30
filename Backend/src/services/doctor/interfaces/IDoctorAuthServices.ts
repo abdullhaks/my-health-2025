@@ -1,6 +1,5 @@
 import { IResponseDTO } from "../../../dto/commonResponseDto";
 import { IDoctor } from "../../../dto/doctorDTO";
-import { Response } from "express";
 
 interface IParsed {
   title?: string;
@@ -37,7 +36,6 @@ interface ICertificates {
 
 export default interface IDoctorAuthService {
   login(
-    res: Response,
     doctorData: Partial<IDoctor>
   ): Promise<{
     message: string;
@@ -51,7 +49,7 @@ export default interface IDoctorAuthService {
     doctor: Partial<IDoctor>,
     certificates: ICertificates,
     parsedSpecializations: IParsed[]
-  ): Promise<{ message: string; email: string }>;
+  ): Promise<{ message: string; doctor: IDoctor; }>;
   verifyOtp(email: string, otp: string): Promise<{ message: string }>;
   resentOtp(email: string): Promise<{ message: string }>;
 }

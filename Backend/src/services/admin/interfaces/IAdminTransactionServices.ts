@@ -1,4 +1,4 @@
-import { ITransactions } from "../../../dto/transactionDto";
+import { ITransactions, TransactionResponseDTO } from "../../../dto/transactionDto";
 
 interface filter {
   method?: string;
@@ -12,5 +12,5 @@ export default interface IAdminTransactionsService {
     pageNumber: number,
     limitNumber: number,
     filters: filter
-  ): Promise<ITransactions[]>;
+  ): Promise<TransactionResponseDTO[]>;
 }

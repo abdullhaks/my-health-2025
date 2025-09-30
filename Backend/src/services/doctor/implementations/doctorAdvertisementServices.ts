@@ -2,9 +2,12 @@ import { inject, injectable } from "inversify";
 import IDoctorAdvertisementService from "../interfaces/IDoctorAdvertisementServices";
 import IAdvertisementRepository from "../../../repositories/interfaces/IAdvertisementRepository";
 import { IAdvertisement } from "../../../dto/advertisementDto";
+import { advertisementResponseDTO } from "../../../dto/advertisementDto";
+import { AdvertisementMapper } from "../../../mappers/advertisement.mapper";
+
 
 interface IGetAddsResponse {
-  adds: IAdvertisement[];
+  adds: advertisementResponseDTO[];
   totalPages: number;
 }
 
@@ -17,12 +20,13 @@ export default class DoctorAdvertisementService
     private _advertisementRepository: IAdvertisementRepository
   ) {}
 
-  async createAdvertisement(addData: any): Promise<IAdvertisement> {
+  async createAdvertisement(addData: any): Promise<advertisementResponseDTO> {
     if (addData.tags.length) {
       addData.tags = addData.tags.map((item: string) => item.toLowerCase());
     }
     const response = await this._advertisementRepository.create(addData);
-    return response;
+    const advertisementDto = await AdvertisementMapper.toResponseDTO(response)
+    return advertisementDto;
   }
 
   async getAdds(
@@ -30,12 +34,16 @@ export default class DoctorAdvertisementService
     pageNumber: number,
     limitNumber: number
   ): Promise<IGetAddsResponse> {
-    const response = await this._advertisementRepository.getAdds(
+    const {adds,totalPages} = await this._advertisementRepository.getAdds(
       doctorId,
       pageNumber,
       limitNumber
     );
-    console.log("blog response....", response);
-    return response;
+    console.log("blog response....", adds,totalPages);
+    const addsDto = await Promise.all(
+      adds.map(async (item)=>await AdvertisementMapper.toResponseDTO(item))
+    )
+
+    return {adds:addsDto,totalPages};
   }
 }

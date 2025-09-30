@@ -2,10 +2,13 @@ import { inject, injectable } from "inversify";
 import IUserSessionService from "../interfaces/IUserSessionService";
 import ISessionRepository from "../../../repositories/interfaces/ISessionRepository";
 import IAppointmentsRepository from "../../../repositories/interfaces/IAppointmentsRepository";
-import { ISession } from "../../../dto/sessionDTO";
+import { ISession, sessionResponseDTO } from "../../../dto/sessionDTO";
 import { IAppointment } from "../../../dto/appointmentDTO";
 import IUnAvailableDayRepository from "../../../repositories/interfaces/IUnAvailableDayRepository";
 import IUnAvailableSessionRepository from "../../../repositories/interfaces/IUnAvailableSessionRepository";
+import { SessionMapper } from "../../../mappers/session.mapper";
+import { IAppointmentDTO } from "../../../dto/appointmentDTO";
+import { AppointmentMapper } from "../../../mappers/appointment.mapper";
 
 @injectable()
 export default class UserSessionService implements IUserSessionService {
@@ -20,12 +23,19 @@ export default class UserSessionService implements IUserSessionService {
     private _unAvailableSessionRepository: IUnAvailableSessionRepository
   ) {}
 
-  async getSessions(doctorId: string): Promise<ISession[]> {
+  async getSessions(doctorId: string): Promise<sessionResponseDTO[]> {
     try {
       const response = await this._sessionRepository.findAll({
         doctorId: doctorId,
       });
-      return response;
+
+      const sessionDto = await Promise.all(
+        response.map(async (session) => {
+          return await SessionMapper.toSessionResponseDTO(session);
+        })
+      );
+      
+      return sessionDto;
     } catch (error) {
       console.error("Error in get sessions", error);
       throw new Error("Failed to get consultation sessions");
@@ -35,7 +45,7 @@ export default class UserSessionService implements IUserSessionService {
   async getBookedSlots(
     doctorId: string,
     formattedDate: string
-  ): Promise<IAppointment[]> {
+  ): Promise<IAppointmentDTO[]> {
     try {
       console.log("doctorId and formatted date is :", doctorId, formattedDate);
 
@@ -45,8 +55,11 @@ export default class UserSessionService implements IUserSessionService {
         appointmentStatus: { $in: ["booked", "completed"] },
       });
 
+      const appointmentDto = await Promise.all (
+        response.map(async(item)=> await AppointmentMapper.toResponseDTO(item))
+      );
       console.log("booked appointmets are:", response);
-      return response;
+      return appointmentDto;
     } catch (error) {
       console.error("Error in get sessions", error);
       throw new Error("Failed to get consultation sessions");

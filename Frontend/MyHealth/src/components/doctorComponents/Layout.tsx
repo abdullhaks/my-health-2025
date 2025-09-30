@@ -32,7 +32,7 @@ import { RootState } from "../../redux/store/store";
 import { io, Socket } from "socket.io-client";
 import axios from "axios";
 import { message } from "antd";
-import { getNotifications } from "../../api/doctor/doctorApi";
+import { getNotifications, logoutDoctor as logout  } from "../../api/doctor/doctorApi";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { MdAttachMoney } from "react-icons/md";
 
@@ -234,7 +234,9 @@ const Layout: React.FC<DoctorLayoutProps> = ({ children }) => {
   }, []);
 
   const handleLogout = () => {
+    
     dispatch(logoutDoctor());
+    logout();
     navigate("/doctor/login");
   };
 

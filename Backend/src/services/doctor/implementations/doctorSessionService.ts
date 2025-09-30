@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import IDoctorSessionService from "../interfaces/IDoctorSessionService";
 import ISessionRepository from "../../../repositories/interfaces/ISessionRepository";
-import { ISession, ISessionDocument } from "../../../dto/sessionDTO";
+import { ISession, ISessionDocument, sessionResponseDTO } from "../../../dto/sessionDTO";
 import IAppointmentsRepository from "../../../repositories/interfaces/IAppointmentsRepository";
 import IUnAvailableDayRepository from "../../../repositories/interfaces/IUnAvailableDayRepository";
 import IUnAvailableSessionRepository from "../../../repositories/interfaces/IUnAvailableSessionRepository";
@@ -10,6 +10,7 @@ import ITransactionRepository from "../../../repositories/interfaces/ITransactio
 import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IUnAvailableDayDocument } from "../../../entities/unAvailableDayEntities";
 import { IUnAvailableSessionDocument } from "../../../entities/unAvailableSessionEntities";
+import { SessionMapper } from "../../../mappers/session.mapper";
 
 interface cancelledSessions {
   appointmentId: string;
@@ -36,23 +37,30 @@ export default class DoctorSessionService implements IDoctorSessionService {
     private _transactionRepository: ITransactionRepository
   ) {}
 
-  async addSession(sessionData: ISession): Promise<ISession> {
+  async addSession(sessionData: ISession): Promise<sessionResponseDTO> {
     console.log("session data from service ", sessionData);
     try {
       const result = await this._sessionRepository.create(sessionData);
-      return result;
+      const sessionDto = await SessionMapper.toSessionResponseDTO(result);
+      return sessionDto;
     } catch (error) {
       console.error("Error in store sessions", error);
       throw new Error("Failed to store consultation sessions");
     }
   }
 
-  async getSessions(doctorId: string): Promise<ISession[]> {
+  async getSessions(doctorId: string): Promise<sessionResponseDTO[]> {
     try {
       const response = await this._sessionRepository.findAll({
         doctorId: doctorId,
       });
-      return response;
+
+      const sessionDto = await Promise.all(
+        response.map(async (session) => {
+          return await SessionMapper.toSessionResponseDTO(session);
+        })
+      );
+      return sessionDto;
     } catch (error) {
       console.error("Error in get sessions", error);
       throw new Error("Failed to get consultation sessions");
@@ -151,7 +159,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
     sessionId: string,
     editingSession: Partial<ISession>
   ): Promise<{
-    updatedSession: ISessionDocument | null;
+    updatedSession: sessionResponseDTO | null;
     cancelledAppoitments: cancelledSessions[] | [];
   }> {
     try {
@@ -164,9 +172,13 @@ export default class DoctorSessionService implements IDoctorSessionService {
         sessionId,
         editingSession
       );
+
+      
       if (!updatedSession) {
         throw new Error("Session not found or could not be updated");
       }
+
+      const sessionDto = await SessionMapper.toSessionResponseDTO( updatedSession);
 
       let cancelledAppoitments: cancelledSessions[] = [];
       let existingAppointment = await this._appointmentRepository.findAll({
@@ -212,7 +224,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
 
       console.log("cancelled appointments are :", cancelledAppoitments);
 
-      return { updatedSession, cancelledAppoitments };
+      return { updatedSession:sessionDto, cancelledAppoitments };
     } catch (error) {
       console.error("Error in updateSession:", error);
       throw new Error("Failed to update consultation session");

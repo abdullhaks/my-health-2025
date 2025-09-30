@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   getDoctorAppointments,
   cancelAppointment,
+  refreshToken,
 } from "../../api/doctor/doctorApi";
 import {
   Popconfirm,
@@ -21,7 +22,6 @@ import {
 } from "@ant-design/icons";
 import moment from "moment";
 import { io, Socket } from "socket.io-client";
-import axios from "axios";
 import { IDoctorData } from "../../interfaces/doctor";
 import { ApiError } from "../../interfaces/error";
 
@@ -106,16 +106,14 @@ const DoctorAppointments = () => {
   const navigate = useNavigate();
   const socketRef = useRef<Socket | null>(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL as string;
+  // const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
-      const response = await axios.post(
-        `${apiUrl}/doctor/refreshToken`,
-        {},
-        { withCredentials: true }
-      );
-      return response.data.accessToken;
+      const response = await refreshToken()
+
+      console.log('...............',response);
+      return response.accessToken;
     } catch (error) {
       console.error("Failed to fetch access token:", error);
       message.error("Session expired. Please log in again.");
@@ -129,10 +127,11 @@ const DoctorAppointments = () => {
 
       let token = document.cookie
         .split("; ")
-        .find((row) => row.startsWith("userAccessToken="))
+        .find((row) => row.startsWith("accessToken="))
         ?.split("=")[1];
 
       if (!token) {
+        console.log("no toker........................")
         token = await getAccessToken();
       }
 
@@ -161,18 +160,18 @@ const DoctorAppointments = () => {
             socket.auth = { token: newToken };
             socket.connect();
           } catch {
-            message.error("Failed to reconnect. Please log in again.");
+            // message.error("Failed to reconnect. Please log in again.");
           }
         } else {
-          message.error(
-            "Failed to connect to notification server: " + err.message
-          );
+          // message.error(
+          //   "Failed to connect to notification server: " + err.message
+          // );
         }
       });
 
       socket.on("error", ({ message }) => {
         console.error("Socket error:", message);
-        message.error(message);
+        // message.error(message);
       });
 
       return () => {

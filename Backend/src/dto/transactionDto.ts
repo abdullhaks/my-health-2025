@@ -40,3 +40,30 @@ export interface filter {
   startDate?: string;
   endDate?: string;
 }
+
+
+export interface TransactionResponseDTO {
+  _id:string;
+  date: Date;
+  from: string;
+  to: string;
+  method: string;
+  amount: number;
+  paymentFor: string;
+  transactionId?: string;
+  appointmentId?: string;
+  analysisId?: string;
+  invoice?: string;
+  userId?: string;
+  doctorId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+
+};
+
+
+export interface TransactionRequestDTO {
+
+
+}

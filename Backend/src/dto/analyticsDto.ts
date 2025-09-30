@@ -13,3 +13,20 @@ export interface IAnalyticsDocument extends Document {
 }
 
 export interface IAnalytics extends IAnalyticsDocument {}
+
+
+export interface analyticsResponseDTO {
+  _id: string;
+  dataSet: string;
+  totalUsers: number;
+  totalDoctors: number;
+  totalRevenue: number;
+  totalPaid: number;
+  totalConsultations: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface analyticsRequestDTO {
+  
+}

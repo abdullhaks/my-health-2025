@@ -26,7 +26,8 @@ export default interface IDoctorRepository
     page: number,
     search: string | undefined,
     limit: number,
-    onlyPremium: boolean
+    onlyPremium: boolean,
+    toVerify: boolean
   ): Promise<{ doctors: IDoctor[] | null; totalPages: number }>;
   getDoctor(id: string): Promise<IDoctor | null>;
   verifyDoctorByAdmin(id: string): Promise<IDoctor | null>;

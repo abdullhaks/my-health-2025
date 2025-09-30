@@ -24,13 +24,13 @@ export default interface IAppointmentsRepository
     page: number,
     limit: number,
     query?: FilterQuery<IAppointment>
-  ): Promise<{ appointments: IAppointmentDTO[] | null; totalPages: number }>;
+  ): Promise<{ appointments: IAppointment[] | null; totalPages: number }>;
   getAllAppointmentsAdmin(
     page: number,
     limit: number,
     query?: FilterQuery<IAppointment>
   ): Promise<{
-    appointments: IAppointmentDTO[] | null;
+    appointments: IAppointment[] | null;
     totalPages: number | null;
   }>;
 

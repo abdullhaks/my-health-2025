@@ -28,7 +28,7 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
     try {
       const { email, password } = req.body;
 
-      const result = await this._doctorAuthService.login(res, {
+      const result = await this._doctorAuthService.login({
         email,
         password,
       });
@@ -76,29 +76,34 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
     }
   };
 
-    async doctorLogout(req: Request, res: Response): Promise<void> {
-      try {
-        console.log("log out ............ ctrl....");
-        res.clearCookie("refreshToken", {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
-  
-        res.clearCookie("accessToken", {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
-  
-        res
-          .status(HttpStatusCode.OK)
-          .json({ message: MESSAGES.server.serverError });
-      } catch (error) {
-        console.log(error);
-      }
-    }
+   async doctorLogout(req: Request, res: Response): Promise<void> {
+  try {
+    const isProduction = process.env.NODE_ENV === 'production';
 
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+    });
+
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+    });
+
+    res.clearCookie('doctorEmail', {
+      httpOnly: true,
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+    });
+
+    res.status(HttpStatusCode.OK).json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.server.serverError });
+  }
+}
   async doctorSignup(req: Request, res: Response): Promise<void> { 
     try {
       const { fullName, email, password, graduation, category, registerNo } =
@@ -167,6 +172,7 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
         certificates.verificationId
       );
 
+
       const response = await this._doctorAuthService.signup(
         doctor,
         certificates,
@@ -175,7 +181,7 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
 
       res
         .status(HttpStatusCode.CREATED)
-        .json({ message: "Doctor signed up successfully!" });
+        .json({ message: "Doctor signed up successfully!",doctor: response.doctor });
     } catch (error) {
       console.log(error);
       res
@@ -222,38 +228,40 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
 
   async refreshToken(req: Request, res: Response): Promise<void> {
     try {
-      const { refreshToken } = req.cookies;
+         const { refreshToken } = req.cookies;
+   
+         if (!refreshToken) {
 
-      if (!refreshToken) {
-        res
-          .status(HttpStatusCode.UNAUTHORIZED)
-          .json({ msg: "refresh token not found" });
-      }
-
-      const result = await this._doctorAuthService.refreshToken(
-        refreshToken
-      );
-
-      console.log("result from ctrl is ...", result);
-
-      if (!result) {
-        res
-          .status(HttpStatusCode.UNAUTHORIZED)
-          .json({ msg: "Refresh token expired" });
-      }
-
-      const { accessToken } = result;
-
-      console.log("result from ctrl is afrt destructr...", accessToken);
-
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
-
-      res.status(HttpStatusCode.OK).json(result);
+          console.log("no refresh token........................");
+           res
+             .status(HttpStatusCode.FORBIDDEN)
+             .json({ msg: "refresh token not found" });
+           return;
+         }
+   
+         const result = await this._doctorAuthService.refreshToken(refreshToken);
+   
+         console.log("result from ctrl is ...", result);
+   
+         if (!result) {
+           res
+             .status(HttpStatusCode.UNAUTHORIZED)
+             .json({ msg: "Refresh token expired" });
+           return;
+         }
+   
+         const { accessToken } = result;
+   
+         console.log("result from ctrl is afrt destructr...", accessToken);
+   
+         res.cookie("accessToken", accessToken, {
+           httpOnly: true,
+           sameSite: "none",
+           secure: true,
+           maxAge: parseInt(process.env.MAX_AGE || "604800000"),
+         });
+   
+         res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
       res 
@@ -262,19 +270,18 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
     }
   }
 
-  async getRefreshToken(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const refreshToken = req.cookies.refreshToken;
-      res.status(HttpStatusCode.OK).json(refreshToken);
-    } catch (error) {
-      console.log(error);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
-    }
-  }
+  // async getRefreshToken(
+  //   req: Request,
+  //   res: Response
+  // ): Promise<void> {
+  //   try {
+  //     const refreshToken = req.cookies.refreshToken;
+  //     res.status(HttpStatusCode.OK).json(refreshToken);
+  //   } catch (error) {
+  //     console.log(error);
+  //     res
+  //       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+  //       .json({ message: MESSAGES.server.serverError });
+  //   }
+  // }
 }

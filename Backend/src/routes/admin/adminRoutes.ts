@@ -25,6 +25,8 @@ const payoutCtrl = container.get<IAdminPayoutController>("IAdminPayoutController
 
 adminRoutes.post("/login",(req,res)=>authCtrl.adminLogin(req,res));
 
+adminRoutes.post("/logout",(req,res)=>authCtrl.adminLogout(req,res));
+
 adminRoutes.get("/forgotPassword",(req,res)=>authCtrl.forgotPassword(req,res));
 
 adminRoutes.get("/recoveryPassword",(req,res)=>authCtrl.getRecoveryPassword(req,res));

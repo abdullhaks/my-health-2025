@@ -37,6 +37,9 @@ const EditProfileModal = ({
     switch (name) {
       case "fullName":
         if (!value.trim()) error = "Full name is required";
+        else if (value.trim().length < 3) error = "Full name must be at least 3 characters";
+        else if (value.trim().length > 30) error = "Full name must be at most 30 characters";
+        
         break;
       case "phone":
         if (!/^\+?[0-9\s]{10,15}$/.test(value.replace(/\s/g, "")))
@@ -58,7 +61,16 @@ const EditProfileModal = ({
 
     if (!formData.fullName || formData.fullName.trim().length < 3) {
       newErrors.fullName = "Full name is required";
+    }else if (formData.fullName.trim().length > 30) {
+      newErrors.fullName = "Full name must be at most 30 characters";
+    }else if (!/^\+?[0-9\s]{10,15}$/.test(formData.phone.replace(/\s/g, ""))){
+      newErrors.phone = "Invalid phone number format";
+    }else if(formData.medicalTags && formData.medicalTags.length > 40){
+      newErrors.medicalTags = "Character limit exceeded";
     }
+
+  
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

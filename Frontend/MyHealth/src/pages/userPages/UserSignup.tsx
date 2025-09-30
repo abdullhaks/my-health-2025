@@ -16,6 +16,7 @@ const signupSchema = z
     fullName: z
       .string()
       .min(3, "Full name must be at least 3 characters")
+      .max(30," Full name must be at most 30 characters")
       .refine((val) => val.trim() === val, {
         message: "No leading or trailing spaces allowed",
       }),

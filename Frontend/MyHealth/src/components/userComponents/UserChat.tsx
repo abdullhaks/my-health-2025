@@ -10,6 +10,7 @@ import {
   directFileUpload,
   checkActiveBooking,
   getLatestDoctorPrescription,
+  refreshToken,
 } from "../../api/user/userApi";
 import { message } from "antd";
 import axios from "axios";
@@ -64,16 +65,13 @@ const UserChat = () => {
   const [isConversationListVisible, setIsConversationListVisible] =
     useState(true);
 
-  const apiUrl = import.meta.env.VITE_API_URL as string;
+  // const apiUrl = import.meta.env.VITE_API_URL as string;
 
   const getAccessToken = async () => {
     try {
-      const response = await axios.post(
-        `${apiUrl}/user/refreshToken`,
-        {},
-        { withCredentials: true }
-      );
-      return response.data.accessToken;
+      const response = await refreshToken();
+      console.log("user chat refresh tokern is...........",response.accessToken);
+      return response.accessToken;
     } catch (error) {
       console.error("Failed to fetch access token:", error);
       message.error("Session expired. Please log in again.");

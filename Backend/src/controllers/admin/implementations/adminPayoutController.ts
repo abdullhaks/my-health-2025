@@ -25,7 +25,7 @@ export default class AdminPayoutController implements IAdminPayoutController {
         endDate: endDate as string,
       };
 
-      const transactions = await this._adminPayoutService.getgetPayouts(
+      const transactions = await this._adminPayoutService.getPayouts(
         pageNumber,
         limitNumber,
         filters

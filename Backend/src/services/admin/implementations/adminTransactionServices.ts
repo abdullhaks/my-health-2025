@@ -1,8 +1,9 @@
 import { inject, injectable } from "inversify";
 import IAdminTransactionsService from "../interfaces/IAdminTransactionServices";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
-import { ITransactions } from "../../../dto/transactionDto";
+import { ITransactions, TransactionResponseDTO } from "../../../dto/transactionDto";
 import { FilterQuery } from "mongoose";
+import { TransactionMapper } from "../../../mappers/transaction.mapper";
 
 interface filter {
   method?: string;
@@ -24,7 +25,7 @@ export default class AdminTransactionsService
     pageNumber: number,
     limitNumber: number,
     filters: filter = {}
-  ): Promise<ITransactions[]> {
+  ): Promise<TransactionResponseDTO[]> {
     const query: FilterQuery<ITransactions> = {};
 
     if (filters.method) {
@@ -46,6 +47,12 @@ export default class AdminTransactionsService
       query
     );
     console.log("transactions from service...", transactions);
+
+    const transactionsDTOs: TransactionResponseDTO[] = [];
+    for (const t of transactions) {
+      const dto = await TransactionMapper.toTransactionResponseDTO(t);
+      transactionsDTOs.push(dto);
+    }
 
     return transactions;
   }

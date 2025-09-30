@@ -82,7 +82,8 @@ export default class DoctorRepository
     page: number,
     search: string | undefined,
     limit: number,
-    onlyPremium: boolean
+    onlyPremium: boolean,
+    toVerify: boolean
   ): Promise<{ doctors: IDoctor[] | null; totalPages: number }> {
     try {
       const query: FilterQuery<IDoctorDocument> = {};
@@ -96,6 +97,10 @@ export default class DoctorRepository
 
       if (onlyPremium) {
         query.premiumMembership = true;
+      }
+
+      if (toVerify) {
+        query.adminVerified = 0; 
       }
 
       const skip = (page - 1) * limit;

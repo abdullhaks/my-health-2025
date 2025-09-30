@@ -11,3 +11,17 @@ export interface IAdminDocument extends Document {
 }
 
 export interface IAdmin extends IAdminDocument {}
+
+
+export interface adminResponseDTO {
+  _id: string;
+  fullName: string;
+  email: string;
+  profile: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface adminRequestDTO {
+  
+}

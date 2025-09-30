@@ -9,11 +9,32 @@ export interface IAdvertisementDocument extends Document {
   tags: Array<string>;
   videoUrl: string;
   pack: string;
-  fee: Number;
-  views: Number;
-  clicks: Number;
+  fee: number;
+  views: number;
+  clicks: number;
   expDate: Date;
   createdAt: Date;
 }
 
 export interface IAdvertisement extends IAdvertisementDocument {}
+
+
+export interface advertisementResponseDTO {
+  _id: string;
+  title: string;
+  author: string;
+  authorId: string;
+  location: object;
+  tags: Array<string>;
+  videoUrl: string;
+  pack: string;
+  fee: number;
+  views: number;
+  clicks: number;
+  expDate: Date;
+  createdAt: Date;
+}
+
+export interface advertisementRequestDTO {
+
+}

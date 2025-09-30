@@ -13,6 +13,7 @@ export default class AdminAuthController implements IAuthCtrl {
 
   async adminLogin(req: Request, res: Response): Promise<void> {
     try {
+      const isProduction = process.env.NODE_ENV === 'production';
       const { email, password } = req.body;
 
       console.log("email and password are ", email, password);
@@ -166,5 +167,33 @@ export default class AdminAuthController implements IAuthCtrl {
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: MESSAGES.server.serverError });
     }
-  }
+  };
+
+
+
+    async adminLogout(req: Request, res: Response): Promise<void> {
+      try {
+        console.log("log out ............ ctrl....");
+        res.clearCookie("refreshToken", {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+  
+        res.clearCookie("accessToken", {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        });
+  
+        res
+          .status(HttpStatusCode.OK)
+          .json({ message:"logout successfully"});
+      } catch (error) {
+        console.log(error);
+        res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
+      }
+    }
 }

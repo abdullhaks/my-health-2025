@@ -68,7 +68,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
   ) {}
 
   async login(
-    res: Response,
     doctorData: Partial<IDoctor>
   ): Promise<{
     message: string;
@@ -111,6 +110,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
       await this.sendMail(existingDoctor.email, otp);
       console.log("OTP sent to email: ", existingDoctor.email);
 
+
       return {
         doctor: existingDoctor,
         message: "doctor not verified, OTP sent",
@@ -129,7 +129,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
 
       return {
         doctor: existingDoctor,
-        message: `doctor credential not verified.${existingDoctor.rejectionReason}`,
+        message: `doctor credential rejected.${existingDoctor.rejectionReason}`,
       };
     }
 
@@ -179,7 +179,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
     doctor: Partial<IDoctor>,
     certificates: ICertificates,
     parsedSpecializations: IParsed[]
-  ): Promise<{ message: string; email: string }> {
+  ): Promise<{  message: string;doctor: IDoctor;}> {
     console.log("user data from service....", doctor);
 
     const existingUser = await this._doctorRepository.findOne({
@@ -187,8 +187,14 @@ export default class DoctorAuthService implements IDoctorAuthService {
     });
 
     console.log("Existing user: ", existingUser);
+
     if (existingUser) {
+
+      if(existingUser.adminVerified == 3){
+      await this._doctorRepository.delete(existingUser._id.toString());
+      }else{
       throw new Error("User already exists");
+      }
     }
 
     const graduationCertUrl = await uploadFileToS3(
@@ -234,16 +240,16 @@ export default class DoctorAuthService implements IDoctorAuthService {
 
     console.log("doctor response from service is ", response);
 
-    // const otp = generateOtp();
+    const otp = generateOtp();
 
     if (!doctor.email) {
       throw new Error("Doctor email is required");
     }
-    // await this.sendMail(doctor.email, otp);
+    await this.sendMail(doctor.email, otp);
 
     return {
       message: "Signup successful. OTP sent to email.",
-      email: doctor.email,
+      doctor: response,
     };
   }
 

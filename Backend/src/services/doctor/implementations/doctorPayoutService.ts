@@ -8,6 +8,10 @@ import { IpayoutDetails } from "../../../entities/paymentEntities";
 import { userDocumentWithoutPassword } from "../../../entities/userEntities";
 import { IPayoutDocument } from "../../../entities/payoutEntities";
 import { FilterQuery } from "mongoose";
+import { DoctorResponseDTO } from "../../../dto/doctorDTO";
+import { payoutResponseDTO } from "../../../dto/payoutDto";
+import { DoctorMapper } from "../../../mappers/doctor.mapper";
+import { PayoutMapper } from "../../../mappers/payout.mapper";
 
 interface filter {
   status?: string;
@@ -26,7 +30,7 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
 
   async requestPayout(payoutDetails: IpayoutDetails, doctorId: string): Promise<{
       message: string;
-      updatedDoctor: userDocumentWithoutPassword,
+      updatedDoctor: DoctorResponseDTO,
     }> {
     const doctor = await this._doctorRepository.findOne({ _id: doctorId });
     if (!doctor) {
@@ -51,16 +55,13 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     if (!walletManage) {
       throw new Error("payout request failed");
     }
-    const { password, ...userWithoutPassword } = walletManage.toObject();
 
-    if (userWithoutPassword.profile) {
-      userWithoutPassword.profile = await getSignedImageURL(
-        userWithoutPassword.profile
-      );
-    }
+    const doctorDto = await DoctorMapper.toDoctorResponseDTO(walletManage);
+    
+    
     return {
       message: "payout requested",
-      updatedDoctor: userWithoutPassword,
+      updatedDoctor: doctorDto,
     };
   }
 
@@ -69,7 +70,8 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     pageNumber: number,
     limitNumber: number,
     filters: filter = {}
-  ): Promise<IPayoutDocument[]> {
+  ): Promise<payoutResponseDTO[]> {
+    
     const query: FilterQuery<IPayoutDocument> = { doctorId: doctorId };
 
     if (filters.status) {
@@ -91,6 +93,14 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     );
     console.log("transactions from service...", transactions);
 
-    return transactions;
+    const payoutDto = Promise.all(
+      transactions.map(async(item:IPayoutDocument)=>{
+        return await PayoutMapper.toPayoutResponseDTO(item)
+      })
+
+    );
+
+
+    return payoutDto;
   }
 }

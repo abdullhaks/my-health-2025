@@ -103,8 +103,8 @@ export const refreshToken = async () => {
 
 export const logoutDoctor = async () => {
   try {
-    await doctorInstance.post(ROUTES.doctor.logout);
-    // return response.data;
+    const response = await doctorInstance.post(ROUTES.doctor.logout);
+    return response.data;
   } catch (error) {
     console.error("Error logging out user:", error);
     throw error;
@@ -210,7 +210,7 @@ export const getDoctorConversations = async (
 ) => {
   try {
     const response = await doctorInstance.get(
-      ROUTES.doctor.conversation(doctorId),
+      ROUTES.doctor.conversations(doctorId),
       { params: { from } }
     );
     return response.data;
@@ -219,6 +219,17 @@ export const getDoctorConversations = async (
     throw error;
   }
 };
+
+export const createDoctorConversation = async(doctorId:string, selectedUser:string) =>{
+  try{
+    const response = await doctorInstance.post(ROUTES.doctor.conversation,{userIds:[doctorId,selectedUser]});
+    return response.data;
+
+  }catch(error){
+    console.error("Error creating conversation:", error);
+    throw error;
+  }
+}
 
 export const getDoctorMessages = async (conversationId: string) => {
   try {

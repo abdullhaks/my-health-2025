@@ -32,6 +32,8 @@ export default class AdminProductController implements IAdminProductCtrl {
         description,
       });
 
+      console.log("product created is....... ", product);
+
       // Create price for the product
       const priceObj = await stripe.prices.create({
         product: product.id,
@@ -40,11 +42,15 @@ export default class AdminProductController implements IAdminProductCtrl {
         recurring: interval !== "one_time" ? { interval } : undefined,
       });
 
+      console.log("price created is.......... ", priceObj);
+
       // Set the default price for the product
-      await stripe.products.update(product.id, {
+      const addPrice = await stripe.products.update(product.id, {
         default_price: priceObj.id,
       });
 
+      console.log("add price is........",addPrice);
+      
       // Fetch the updated product with expanded default_price
       const updatedProduct = await stripe.products.retrieve(product.id, {
         expand: ["default_price"],

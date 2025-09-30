@@ -8,9 +8,12 @@ import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRepository";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import IPrescriptionRepository from "../../../repositories/interfaces/IPrescriptionRepositiory";
+import { prescriptionResponseDTO } from "../../../dto/prescriptionDto";
+import { PrescriptionMapper } from "../../../mappers/prescription.mapper";
+import { AppointmentMapper } from "../../../mappers/appointment.mapper";
 
-interface IAppointmentWithPrescription extends IAppointment {
-  prescriptions?: IPrescription;
+interface IAppointmentWithPrescription extends IAppointmentDTO {
+  prescriptions?: prescriptionResponseDTO;
 }
 
 @injectable()
@@ -96,10 +99,17 @@ export default class DoctorAppointmentService
     console.log("Appointments from service...", appointments);
 
     if (appointments) {
+
+
+      const appointDto = await Promise.all(
+        appointments.map(async(item)=>await AppointmentMapper.toResponseDTO(item))
+      )
+
+
       const profile = new Map();
 
       let updatedAppointments = await Promise.all(
-        appointments.map(async (item: any) => {
+        appointDto.map(async (item: any) => {
           if (profile.has(item.userId)) {
             item.profile = profile.get(item.userId);
             return item;
@@ -133,7 +143,15 @@ export default class DoctorAppointmentService
               userId: item.userId,
             });
             if (prescrs) {
-              prescriptions.set(item.userId, prescrs);
+
+              const prescrsDTO: prescriptionResponseDTO[] = [];
+              for (const p of prescrs) {
+                const dto = await PrescriptionMapper.toPrescriptionResponseDTO(p);
+                prescrsDTO.push(dto);
+              }
+
+
+              prescriptions.set(item.userId, prescrsDTO);
               item.prescriptions = prescrs;
             } else {
               item.prescriptions = [];
@@ -143,15 +161,16 @@ export default class DoctorAppointmentService
         })
       );
 
-      if (nwUpdatedAppointments) {
-        appointments = updatedAppointments;
-      }
+      // if (nwUpdatedAppointments) {
+      //   appointments = updatedAppointments;
+      // }
 
-      const typedAppointments: IAppointmentWithPrescription[] =
-        updatedAppointments.map(
-          (item: any) => item as IAppointmentWithPrescription
-        );
-      return { appointments: typedAppointments, totalPages };
+      // const typedAppointments: IAppointmentWithPrescription[] =
+      //   updatedAppointments.map(
+      //     (item: any) => item as IAppointmentWithPrescription
+      //   );
+      return { appointments: nwUpdatedAppointments, totalPages };
+      
     }
 
     return { appointments: null, totalPages };

@@ -83,7 +83,7 @@ export default class AppointmentsRepository
     page: number,
     limit: number,
     query: FilterQuery<IAppointment> = {}
-  ): Promise<{ appointments: IAppointmentDTO[]; totalPages: number }> {
+  ): Promise<{ appointments: IAppointment[]; totalPages: number }> {
     try {
       const skip = (page - 1) * limit;
       const appointments = await this._appointmentModel
@@ -99,27 +99,7 @@ export default class AppointmentsRepository
       const totalPages = Math.ceil(total / limit);
 
       return {
-        appointments: appointments.map((appointment) => ({
-          _id: appointment._id.toString(),
-          userId: appointment.userId.toString(),
-          userName: appointment.userName,
-          userEmail: appointment.userEmail,
-          doctorId: appointment.doctorId.toString(),
-          doctorName: appointment.doctorName,
-          doctorCategory: appointment.doctorCategory,
-          date: appointment.date,
-          start: appointment.start,
-          end: appointment.end,
-          duration: appointment.duration,
-          fee: appointment.fee,
-          paymentStatus: appointment.paymentStatus,
-          paymentType: appointment.paymentType,
-          appointmentStatus: appointment.appointmentStatus,
-          callStartTime: appointment.callStartTime,
-          createdAt: appointment.createdAt,
-          updatedAt: appointment.updatedAt,
-          slotId: appointment.slotId,
-        })),
+        appointments: appointments,
         totalPages,
       };
     } catch (err) {
@@ -133,7 +113,7 @@ export default class AppointmentsRepository
     limit: number,
     query: FilterQuery<IAppointment> = {}
   ): Promise<{
-    appointments: IAppointmentDTO[] | null;
+    appointments: IAppointment[] | null;
     totalPages: number | null;
   }> {
     try {
@@ -151,27 +131,7 @@ export default class AppointmentsRepository
       const totalPages = Math.ceil(total / limit);
 
       return {
-        appointments: appointments.map((appointment) => ({
-          _id: appointment._id.toString(),
-          userId: appointment.userId.toString(),
-          userName: appointment.userName,
-          userEmail: appointment.userEmail,
-          doctorId: appointment.doctorId.toString(),
-          doctorName: appointment.doctorName,
-          doctorCategory: appointment.doctorCategory,
-          date: appointment.date,
-          start: appointment.start,
-          end: appointment.end,
-          duration: appointment.duration,
-          fee: appointment.fee,
-          paymentStatus: appointment.paymentStatus,
-          paymentType: appointment.paymentType,
-          appointmentStatus: appointment.appointmentStatus,
-          callStartTime: appointment.callStartTime,
-          createdAt: appointment.createdAt,
-          updatedAt: appointment.updatedAt,
-          slotId: appointment.slotId,
-        })),
+        appointments: appointments,
         totalPages,
       };
     } catch (err) {

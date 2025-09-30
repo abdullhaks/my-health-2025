@@ -11,6 +11,7 @@ import { IUser } from "../../../dto/userDTO";
 import { IDoctor } from "../../../dto/doctorDTO";
 import appointmentModel from "../../../models/appointment";
 import { FilterQuery } from "mongoose";
+import { AppointmentMapper } from "../../../mappers/appointment.mapper";
 
 interface DetailAppointment extends IAppointmentDTO {
   profile?: string;
@@ -73,100 +74,91 @@ export default class UserAppointmentService implements IUserAppointmentService {
   }
 
   async getUserAppointments(
-    userId: string,
-    page: number,
-    limit: number,
-    filters: {
-      appointmentStatus?: string;
-      startDate?: string;
-      endDate?: string;
-    }
-  ): Promise<{ appointments: IAppointmentDTO[] | null; totalPages: number }> {
-    console.log("userid from service...", userId);
-
-    const query: FilterQuery<IAppointmentDTO> = { userId };
-    if (filters.appointmentStatus) {
-      query.appointmentStatus = filters.appointmentStatus;
-    }
-    if (filters.startDate && filters.endDate) {
-      query.date = {
-        $gte: filters.startDate,
-        $lte: filters.endDate,
-      };
-    }
-
-    // First, find expired appointments
-    const expiredAppointments = await this._appointmentsRepository.findAll({
-      userId: userId,
-      appointmentStatus: "booked",
-      end: { $lt: new Date() },
-    });
-
-    // Then, update their status
-    if (expiredAppointments && expiredAppointments.length > 0) {
-      await this._appointmentsRepository.updateMany(
-        {
-          userId: userId,
-          appointmentStatus: "booked",
-          end: { $lt: new Date() },
-        },
-        { appointmentStatus: "cancelled", paymentStatus: "refunded" }
-      );
-
-      await Promise.all(
-        expiredAppointments.map(async (appointment) => {
-          await this._userRepository.update(appointment.userId, {
-            $inc: { walletBalance: appointment.fee },
-          });
-          // Optionally update analytics here if needed
-          await this._transactionRepository.create({
-            from: "admin",
-            to: "user",
-            method: "wallet",
-            amount: appointment.fee,
-            paymentFor: "refund",
-            userId: appointment.userId,
-            doctorId: appointment.doctorId,
-          });
-        })
-      );
-    }
-
-    let { appointments, totalPages } =
-      await this._appointmentsRepository.getAllAppointments(page, limit, query);
-
-    if (appointments) {
-      const profile = new Map();
-      const updatedAppointments = await Promise.all(
-        appointments.map(async (item:DetailAppointment) => {
-          if (profile.has(item.doctorId)) {
-            item.profile = profile.get(item.doctorId);
-            return item;
-          } else {
-            const doctor = await this._doctorRepository.findOne({
-              _id: item.doctorId,
-            });
-            if (doctor) {
-              const url = await getSignedImageURL(doctor.profile);
-              if (url) {
-                profile.set(item.doctorId, url);
-                item.profile = url;
-              } else {
-                item.profile = "";
-              }
-            }
-            return item;
-          }
-        })
-      );
-
-      if (updatedAppointments) {
-        appointments = updatedAppointments;
-      }
-    }
-
-    return { appointments, totalPages };
+  userId: string,
+  page: number,
+  limit: number,
+  filters: {
+    appointmentStatus?: string;
+    startDate?: string;
+    endDate?: string;
   }
+): Promise<{ appointments: DetailAppointment[] | null; totalPages: number }> {
+  console.log("userid from service...", userId);
+
+  const query: FilterQuery<IAppointment> = { userId };
+  if (filters.appointmentStatus) {
+    query.appointmentStatus = filters.appointmentStatus;
+  }
+  if (filters.startDate && filters.endDate) {
+    query.date = {
+      $gte: filters.startDate,
+      $lte: filters.endDate,
+    };
+  }
+
+  // First, find expired appointments
+  const expiredAppointments = await this._appointmentsRepository.findAll({
+    userId: userId,
+    appointmentStatus: "booked",
+    end: { $lt: new Date() },
+  });
+
+  // Then, update their status
+  if (expiredAppointments && expiredAppointments.length > 0) {
+    await this._appointmentsRepository.updateMany(
+      {
+        userId: userId,
+        appointmentStatus: "booked",
+        end: { $lt: new Date() },
+      },
+      { appointmentStatus: "cancelled", paymentStatus: "refunded" }
+    );
+
+    await Promise.all(
+      expiredAppointments.map(async (appointment) => {
+        await this._userRepository.update(appointment.userId, {
+          $inc: { walletBalance: appointment.fee },
+        });
+        await this._transactionRepository.create({
+          from: "admin",
+          to: "user",
+          method: "wallet",
+          amount: appointment.fee,
+          paymentFor: "refund",
+          userId: appointment.userId,
+          doctorId: appointment.doctorId,
+        });
+      })
+    );
+  }
+
+  const { appointments, totalPages } = await this._appointmentsRepository.getAllAppointments(page, limit, query);
+
+  if (!appointments || appointments.length === 0) {
+    return { appointments: null, totalPages };
+  }
+
+  const appointDto = await Promise.all(
+    appointments.map(async (item) => await AppointmentMapper.toResponseDTO(item))
+  );
+
+  const profile = new Map<string, string>();
+  const updatedAppointments = await Promise.all(
+    appointDto.map(async (item) => {
+      if (profile.has(item.doctorId)) {
+        return { ...item, profile: profile.get(item.doctorId) };
+      }
+      const doctor = await this._doctorRepository.findOne({
+        _id: item.doctorId,
+      });
+      const profileImg = doctor ? await getSignedImageURL(doctor.profile) || "" : "";
+      profile.set(item.doctorId, profileImg);
+      return { ...item, profile: profileImg };
+    })
+  );
+
+  return { appointments: updatedAppointments, totalPages };
+}
 
   async cancelAppointment(appointmentId: string): Promise<{
     status: boolean;
@@ -226,7 +218,7 @@ export default class UserAppointmentService implements IUserAppointmentService {
     };
   }
 
-  async walletPayment(data: Partial<IAppointment>): Promise<IAppointment> {
+  async walletPayment(data: Partial<IAppointment>): Promise<IAppointmentDTO> {
     console.log("data is ", data);
     const doctor = await this._doctorRepository.findOne({ _id: data.doctorId });
     console.log("doctor is ....", doctor);
@@ -272,7 +264,9 @@ export default class UserAppointmentService implements IUserAppointmentService {
     const appointment = await this._appointmentsRepository.create(data);
     console.log("Appointment created:", appointment);
 
-    return appointment;
+    const appointmentDto = await AppointmentMapper.toResponseDTO(appointment)
+
+    return appointmentDto;
   }
 
   async activeBooking(

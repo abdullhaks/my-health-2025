@@ -18,3 +18,28 @@ export interface IPayoutDocument extends Document {
 }
 
 export interface IPayouts extends IPayoutDocument {}
+
+
+export interface payoutResponseDTO{
+
+  _id: string;
+  doctorId?: string;
+  bankAccNo: string;
+  bankAccHolderName: string;
+  bankIfscCode: string;
+  totalAmount: number;
+  paid: number;
+  serviceAmount: number;
+  status: string;
+  on: Date;
+  transactionId: string;
+  invoiceLink?: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+};
+
+
+export interface PayoutRequestDTO {
+
+}

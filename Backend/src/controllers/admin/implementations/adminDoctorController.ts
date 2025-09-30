@@ -14,7 +14,7 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
 
   async getDoctors(req: Request, res: Response): Promise<void> {
     try {
-      const { page, search, limit, onlyPremium } = req.query;
+      const { page, search, limit, onlyPremium, toVerify } = req.query;
       console.log("reqest.params from get users...", search, page, limit);
 
       const pageNumber = page ? parseInt(page as string, 10) : 1;
@@ -25,7 +25,8 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
         pageNumber,
         search as string | undefined,
         limitNumber,
-        onlyPremiumBool
+        onlyPremiumBool,
+        toVerify === "true" ? true : false
       );
 
       if (!result) {

@@ -2,6 +2,8 @@ import IPrescriptionDocument from "../../../entities/prescriptionEntities";
 import IPrescriptionRepository from "../../../repositories/interfaces/IPrescriptionRepositiory";
 import IDoctorPrescriptionService from "../interfaces/IDoctorPrescriptionService";
 import { inject, injectable } from "inversify";
+import { prescriptionResponseDTO } from "../../../dto/prescriptionDto";
+import { PrescriptionMapper } from "../../../mappers/prescription.mapper";
 
 interface medication {
   name: string;
@@ -31,18 +33,29 @@ export default class DoctorPrescriptionService
     private _prescriptionRepository: IPrescriptionRepository
   ) {}
 
-  async getPrescriptions(userId: string): Promise<IPrescriptionDocument[]> {
+  async getPrescriptions(userId: string): Promise<prescriptionResponseDTO[]> {
     const response = await this._prescriptionRepository.findAll({
       userId: userId,
     });
-    return response;
+
+    const prescriptionsDTO = await Promise.all(
+      response.map(async (prescription) => {
+        return await PrescriptionMapper.toPrescriptionResponseDTO(prescription);
+      })
+    );
+
+    return prescriptionsDTO;
   }
 
-  async submitPrescription(prescriptionData: prescriptionReq): Promise<IPrescriptionDocument> {
+  async submitPrescription(prescriptionData: prescriptionReq): Promise<prescriptionResponseDTO> {
     const response = await this._prescriptionRepository.uptadeOneWithUpsert(
       { appointmentId: prescriptionData.appointmentId },
       prescriptionData
     );
-    return response;
+
+    const prescriptionDTO = await PrescriptionMapper.toPrescriptionResponseDTO(response);
+    return prescriptionDTO;
   }
+
+  
 }

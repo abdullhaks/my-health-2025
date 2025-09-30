@@ -32,22 +32,30 @@ export interface IAppointment extends IAppointmentDocument {}
 export interface IAppointmentDTO {
   _id: string;
   userId: string;
-  userName: string;
-  userEmail: string;
   doctorId: string;
-  doctorName: string;
-  doctorCategory?: string;
+  slotId: string;
+  sessionId: string;
   date: string;
   start: Date;
   end: Date;
   duration: number;
   fee: number;
+  appointmentStatus: string;
   transactionId?: string;
-  paymentStatus: "pending" | "completed" | "failed" | "refunded";
-  paymentType: "stripe" | "wallet";
-  appointmentStatus: "booked" | "cancelled" | "completed" | "pending";
+  userName: string;
+  userEmail: string;
+  doctorName: string;
+  doctorSpecialization?: string;
+  paymentType: string;
+  paymentStatus: string;
+  doctorCategory?: string;
   callStartTime?: Date;
+  callEndTime?: Date;
   createdAt: Date;
   updatedAt: Date;
-  slotId: string;
+}
+
+
+export interface IAppointmentRequestDTO {
+
 }
