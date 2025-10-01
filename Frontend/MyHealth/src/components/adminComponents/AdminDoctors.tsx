@@ -22,7 +22,7 @@ const AdminDoctors = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [onlyPremium, setOnlyPremium] = useState(false);
-  const [toVerify, setToVerify] = useState(true);
+  const [toVerify, setToVerify] = useState(false);
 
   const limit = 5;
   const debouncedSearch = useDebounce(search, 300); // Debounce search input by 300ms

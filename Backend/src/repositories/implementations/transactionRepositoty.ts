@@ -3,6 +3,7 @@ import { ITransactionDocument, transactionDocument } from "../../entities/transa
 import ITransactionRepository from "../interfaces/ITransactionRepository";
 import BaseRepository from "./baseRepository";
 import {Model} from "mongoose";
+import { ITransactions } from "../../dto/transactionDto";
 
 @injectable()
 export default class TransactionRepository
@@ -17,7 +18,10 @@ export default class TransactionRepository
     page: number,
     limit: number,
     query: any = {}
-  ): Promise<any> {
+  ): Promise<{
+        transactions:ITransactions[],
+        totalPages:number
+      }> {
     try {
       const skip = (page - 1) * limit;
       const transactions = await this._transactionModel
@@ -25,27 +29,12 @@ export default class TransactionRepository
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .lean();
 
       const total = await this._transactionModel.countDocuments(query);
       const totalPages = Math.ceil(total / limit);
 
       return {
-        transactions: transactions.map((transaction: any) => ({
-          _id: transaction._id.toString(),
-          from: transaction.from,
-          to: transaction.to,
-          method: transaction.method,
-          amount: transaction.amount,
-          paymentFor: transaction.paymentFor,
-          transactionId: transaction.transactionId,
-          invoice: transaction.invoice,
-          userId: transaction.userId,
-          doctorId: transaction.doctorId,
-          date: transaction.date,
-          createdAt: transaction.createdAt,
-          updatedAt: transaction.updatedAt,
-        })),
+        transactions:transactions,
         totalPages,
       };
     } catch (err) {

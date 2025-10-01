@@ -26,7 +26,7 @@ export default class AdminPayoutService implements IAdminPayoutService {
     pageNumber: number,
     limitNumber: number,
     filters: filter = {}
-  ): Promise<payoutResponseDTO[]> {
+  ): Promise<{payouts: payoutResponseDTO[], totalPages:number}> {
     const query: any = {};
 
     if (filters.status) {
@@ -48,13 +48,13 @@ export default class AdminPayoutService implements IAdminPayoutService {
     );
     console.log("transactions from service...", transactions);
 
-   const payoutDto = Promise.all(
-    transactions.map(async(item:IPayouts)=>{
+   const payoutDto =await Promise.all(
+    transactions.payouts.map(async(item:IPayouts)=>{
       return await PayoutMapper.toPayoutResponseDTO(item)
     })
    )
 
-    return payoutDto;
+    return {payouts:payoutDto,totalPages:transactions.totalPages};
   }
 
   async updatePayout(id: string, data: any): Promise<payoutResponseDTO> {

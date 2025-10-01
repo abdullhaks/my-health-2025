@@ -13,5 +13,8 @@ export default interface IUserTransactionsService {
     pageNumber: number,
     limitNumber: number,
     filters: filter
-  ): Promise<TransactionResponseDTO[]>;
+  ): Promise<{
+            transactions:TransactionResponseDTO[],
+            totalPages:number
+          }>;
 }

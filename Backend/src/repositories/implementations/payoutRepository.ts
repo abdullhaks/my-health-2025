@@ -2,6 +2,7 @@ import BaseRepository from "./baseRepository";
 import { inject, injectable } from "inversify";
 import { IPayoutDocument, payoutDocument } from "../../entities/payoutEntities";
 import {Model} from "mongoose"
+import { IPayouts } from "../../dto/payoutDto";
 
 @injectable()
 export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
@@ -9,7 +10,8 @@ export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
     super(_payoutModel);
   }
 
-  async getPayouts(page: number, limit: number, query: any = {}): Promise<any> {
+  async getPayouts(page: number, limit: number, query: any = {}): Promise<{payouts: IPayouts[],
+        totalPages:number}> {
     try {
       const skip = (page - 1) * limit;
       const payouts = await this._payoutModel
@@ -23,20 +25,7 @@ export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
       const totalPages = Math.ceil(total / limit);
 
       return {
-        payouts: payouts.map((payout: any) => ({
-          _id: payout._id.toString(),
-          bankAccNo: payout.bankAccNo,
-          bankAccHolderName: payout.bankAccHolderName,
-          bankIfscCode: payout.bankIfscCode,
-          totalAmount: payout.totalAmount,
-          paid: payout.paid || 0,
-          serviceAmount: payout.serviceAmount || 0,
-          status: payout.status,
-          transactionId: payout.transactionId,
-          invoiceLink: payout.invoiceLink || "",
-          createdAt: payout.createdAt,
-          updatedAt: payout.updatedAt,
-        })),
+        payouts: payouts,
         totalPages,
       };
     } catch (err) {

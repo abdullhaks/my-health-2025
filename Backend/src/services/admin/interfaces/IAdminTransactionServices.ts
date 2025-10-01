@@ -12,5 +12,8 @@ export default interface IAdminTransactionsService {
     pageNumber: number,
     limitNumber: number,
     filters: filter
-  ): Promise<TransactionResponseDTO[]>;
+  ): Promise<{
+            transactions:TransactionResponseDTO[],
+            totalPages:number
+          }>;
 }

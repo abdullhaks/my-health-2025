@@ -70,7 +70,7 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     pageNumber: number,
     limitNumber: number,
     filters: filter = {}
-  ): Promise<payoutResponseDTO[]> {
+  ): Promise<{payouts: payoutResponseDTO[], totalPages:number}> {
     
     const query: FilterQuery<IPayoutDocument> = { doctorId: doctorId };
 
@@ -93,14 +93,15 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     );
     console.log("transactions from service...", transactions);
 
-    const payoutDto = Promise.all(
-      transactions.map(async(item:IPayoutDocument)=>{
+    const payoutDto =await Promise.all(
+      transactions.payouts.map(async(item:IPayoutDocument)=>{
         return await PayoutMapper.toPayoutResponseDTO(item)
       })
 
     );
 
 
-    return payoutDto;
+    return {payouts: payoutDto,  totalPages:transactions.totalPages}
+
   }
 }

@@ -26,7 +26,10 @@ export default class UserTransactionsService
     pageNumber: number,
     limitNumber: number,
     filters: filter = {}
-  ): Promise<TransactionResponseDTO[]> {
+  ): Promise<{
+            transactions:TransactionResponseDTO[],
+            totalPages:number
+          }> {
     const query: FilterQuery<ITransactions> = { userId: userId };
 
     if (filters.method) {
@@ -50,11 +53,11 @@ export default class UserTransactionsService
     console.log("transactions from service...", transactions);
 
     const transactionsDTOs: TransactionResponseDTO[] = [];
-    for (const t of transactions) {
+    for (const t of transactions.transactions) {
       const dto = await TransactionMapper.toTransactionResponseDTO(t);
       transactionsDTOs.push(dto);
     }
 
-    return transactions;
+    return {transactions:transactionsDTOs,totalPages:transactions.totalPages};
   }
 }

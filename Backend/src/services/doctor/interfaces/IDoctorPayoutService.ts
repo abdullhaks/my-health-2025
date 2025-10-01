@@ -19,5 +19,5 @@ export default interface IDoctorPayoutService {
     pageNumber: number,
     limitNumber: number,
     filters: filter
-  ): Promise<payoutResponseDTO[]>;
+  ): Promise<{payouts: payoutResponseDTO[], totalPages:number}>;
 }

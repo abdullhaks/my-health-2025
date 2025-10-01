@@ -12,6 +12,6 @@ export default interface IAdminPayoutService {
     pageNumber: number,
     limitNumber: number,
     filters: filter
-  ): Promise<payoutResponseDTO[]>;
+  ): Promise<{payouts: payoutResponseDTO[], totalPages:number}>;
   updatePayout(id: string, data: any): Promise<payoutResponseDTO>;
 }
