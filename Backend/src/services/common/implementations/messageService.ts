@@ -1,16 +1,19 @@
+// MessageService and MessageRepository remain mostly unchanged, but added note for potential _id handling if needed for optimistic UI
+// Currently, backend generates _id, frontend uses temp and replaces by content match
+
 import { inject, injectable } from "inversify";
 import IMessageService from "../interfaces/IMessageService";
 import IMessageRepository from "../../../repositories/interfaces/IMessageRepository";
-import { IMessage } from "../../../dto/messageDTO";
-import IConversationRepository from "../../../repositories/interfaces/IConversationRepository";
 import { messageResponseDTO } from "../../../dto/messageDTO";
 import { MessageMapper } from "../../../mappers/message.mapper";
+import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
+import IConversationRepository from "../../../repositories/interfaces/IConversationRepository";
 
 @injectable()
 export default class MessageService implements IMessageService {
   constructor(
     @inject("IMessageRepository") private _messageRepository: IMessageRepository,
-    @inject("IConversationRepository") private _conversationRepostory: IConversationRepository
+    @inject("IConversationRepository") private _conversationRepository: IConversationRepository
   ) {}
 
   async sendMessage(
@@ -23,7 +26,7 @@ export default class MessageService implements IMessageService {
       throw new Error("Conversation ID, sender ID, and content are required");
     }
 
-    const messg = await this._messageRepository.createMessage({
+    const msg = await this._messageRepository.createMessage({
       conversationId,
       senderId,
       content,
@@ -32,27 +35,37 @@ export default class MessageService implements IMessageService {
       status: "sent",
     });
 
-    const messgDto = await MessageMapper.toResponseDTO(messg);
+    const msgDto = await MessageMapper.toResponseDTO(msg);
 
-    const updateconv = await this._conversationRepostory.update(conversationId,{updatedAt: new Date(), lastMessage: content});
+    if (msgDto.type === "file") {
+      msgDto.content = await getSignedImageURL(msgDto.content);
+    }
 
-    return messgDto;
+    await this._conversationRepository.update(conversationId, {
+      updatedAt: new Date(),
+      lastMessage: content,
+    });
+
+    return msgDto;
   }
 
   async getMessages(conversationId: string): Promise<messageResponseDTO[]> {
     if (!conversationId) {
       throw new Error("Conversation ID is required");
     }
-    const messges =  await this._messageRepository.getMessagesByConversation(
+    const msgs = await this._messageRepository.getMessagesByConversation(
       conversationId
     );
 
-    const messgesDto = await Promise.all(
-      messges.map(async (m) => await MessageMapper.toResponseDTO(m))
-    )
-
-    return messgesDto;
-
+    return await Promise.all(
+      msgs.map(async (m) => {
+        const dto = await MessageMapper.toResponseDTO(m);
+        if (dto.type === "file") {
+          dto.content = await getSignedImageURL(dto.content);
+        }
+        return dto;
+      })
+    );
   }
 
   async markMessagesAsSeen(

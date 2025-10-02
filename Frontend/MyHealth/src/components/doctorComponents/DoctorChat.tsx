@@ -1,3 +1,13 @@
+// Rebuilt DoctorChat component with improvements:
+// - Standardized Conversation interface (members use _id consistently)
+// - Fixed conversation list rendering: assume members[0] is the other participant (one-to-one chat)
+// - Added optimistic UI for message sending (add temp message, replace on success)
+// - Improved error handling and loading states
+// - Removed redundant users state (hardcoded, not used effectively)
+// - Cleaned up typing logic and timeouts
+// - Ensured socket events are properly cleaned up
+// - No changes to non-chat events (notifications, video calls)
+
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { FiSend, FiCheck, FiCheckCircle, FiX } from "react-icons/fi";
@@ -26,18 +36,12 @@ interface Message {
   fileName?: string;
   timestamp: string;
   readBy: string[];
-  status: "sent" | "delivered" | "read";
-}
-
-interface User {
-  _id: string;
-  fullName: string;
-  profile?: string;
+  status: "sending" | "sent" | "delivered" | "read"; // Added "sending" for optimistic UI
 }
 
 interface Conversation {
   _id: string;
-  members: { _id: string; name: string; avatar: string }[];
+  members: { _id: string; name: string; avatar: string }[]; // Standardized: _id is the participant ID
   lastMessage?: string;
 }
 
@@ -50,7 +54,6 @@ const DoctorChat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [typingUser, setTypingUser] = useState<string | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -58,14 +61,11 @@ const DoctorChat = () => {
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [docMessage, setDocMessage] = useState<File | null>(null);
-  const [isConversationListVisible, setIsConversationListVisible] =
-    useState(true);
-
-  // const apiUrl = import.meta.env.VITE_API_URL as string;
+  const [isConversationListVisible, setIsConversationListVisible] = useState(true);
 
   const getAccessToken = async () => {
     try {
-      const response = await refreshToken()
+      const response = await refreshToken();
       return response.accessToken;
     } catch (error) {
       console.error("Failed to fetch access token:", error);
@@ -88,8 +88,7 @@ const DoctorChat = () => {
       }
 
       const socket = io(
-        import.meta.env.VITE_REACT_APP_SOCKET_URL ||
-          "https://api.abdullhakalamban.online",
+        import.meta.env.VITE_REACT_APP_SOCKET_URL || "http://localhost:3000",
         {
           transports: ["websocket"],
           reconnection: true,
@@ -114,9 +113,9 @@ const DoctorChat = () => {
         }
       });
 
-      socket.on("error", ({ message }) => {
-        console.error("Socket error:", message);
-        message.error(message);
+      socket.on("error", ({ message: errMsg }) => {
+        console.error("Socket error:", errMsg);
+        message.error(errMsg);
       });
 
       socket.emit("join", doctorId);
@@ -147,8 +146,6 @@ const DoctorChat = () => {
       }
     };
 
-    setUsers([{ _id: "6808e21a670e6cfc73176507", fullName: "Luthfi KS" }]);
-
     if (doctorId) {
       fetchConversations();
     }
@@ -164,6 +161,8 @@ const DoctorChat = () => {
       try {
         const res = await getDoctorMessages(currentChat._id);
         setMessages(res);
+
+        console.log("mesage update first time.......",messages)
         socketRef.current?.emit("markSeen", {
           conversationId: currentChat._id,
         });
@@ -188,11 +187,38 @@ const DoctorChat = () => {
     const socket = socketRef.current;
 
     const handleMessage = (msg: Message) => {
+
+      console.log("msg.conversationId ........",msg.conversationId );
+      console.log("currentChat._id ........",currentChat._id );
+      console.log("msg is... ........",msg );
+
+
       if (msg.conversationId === currentChat._id) {
+
+        console.log("same same....")
         setMessages((prev) => {
-          if (prev.some((m) => m._id === msg._id)) return prev;
+          // Replace temp message if exists (by matching sender, content, timestamp approx)
+          const tempIndex = prev.findIndex(
+            (m) => m.status === "sending" && m.senderId === msg.senderId && m.content === msg.content
+          );
+
+          console.log("tempId is.........",tempIndex)
+          if (tempIndex !== -1) {
+            const newMessages = [...prev];
+            newMessages[tempIndex] = msg;
+            return newMessages;
+          }
+          // if (prev.some((m) => m._id === msg._id)){
+
+          //   console.log("some is there...",prev)
+          //   return prev;
+          // } 
           return [...prev, msg];
+
+
         });
+
+        console.log("new messages....",messages)
         socket.emit("markSeen", { conversationId: msg.conversationId });
       }
     };
@@ -204,13 +230,15 @@ const DoctorChat = () => {
       conversationId: string;
       userId: string;
     }) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.conversationId === conversationId && !msg.readBy.includes(userId)
-            ? { ...msg, readBy: [...msg.readBy, userId], status: "read" }
-            : msg
-        )
-      );
+      if (conversationId === currentChat._id) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.conversationId === conversationId && !msg.readBy.includes(userId)
+              ? { ...msg, readBy: [...msg.readBy, userId], status: "read" }
+              : msg
+          )
+        );
+      }
     };
 
     const handleTyping = ({
@@ -222,9 +250,8 @@ const DoctorChat = () => {
       role: string;
       conversationId: string;
     }) => {
-      if (currentChat._id === conversationId) {
-        const user = users.find((u) => u._id === userId);
-        setTypingUser(`${user?.fullName || role} is typing...`);
+      if (currentChat._id === conversationId && userId !== doctorId) {
+        setTypingUser(`${role} is typing...`);
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => setTypingUser(null), 3000);
       }
@@ -251,7 +278,7 @@ const DoctorChat = () => {
       socket.off("typing", handleTyping);
       socket.off("stopTyping", handleStopTyping);
     };
-  }, [currentChat, users]);
+  }, [currentChat, doctorId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -275,17 +302,27 @@ const DoctorChat = () => {
   const handleSendMessage = async () => {
     if (!currentChat || (!newMessage.trim() && !docMessage)) return;
 
-    let messageData: {
-      senderId: string;
-      conversationId: string;
-      type: string;
-      content: string;
-      fileName?: string;
+    const tempId = uuidv4();
+    let tempMessage: Message = {
+      _id: tempId,
+      conversationId: currentChat._id,
+      senderId: doctorId,
+      content: "",
+      type: "text",
+      timestamp: new Date().toISOString(),
+      readBy: [doctorId],
+      status: "sending",
     };
 
-    let tempMessage: Message;
-
     try {
+      let messageData: {
+        senderId: string;
+        conversationId: string;
+        type: string;
+        content: string;
+        fileName?: string;
+      };
+
       if (docMessage) {
         const formData = new FormData();
         formData.append("doc", docMessage);
@@ -303,17 +340,7 @@ const DoctorChat = () => {
           fileName: docMessage.name,
         };
 
-        tempMessage = {
-          _id: uuidv4(),
-          conversationId: currentChat._id,
-          senderId: doctorId,
-          content: uploadResult.url,
-          type: "file",
-          fileName: docMessage.name,
-          timestamp: new Date().toISOString(),
-          readBy: [doctorId],
-          status: "sent",
-        };
+        tempMessage = { ...tempMessage, content: uploadResult.url, type: "file", fileName: docMessage.name };
       } else {
         messageData = {
           senderId: doctorId,
@@ -322,17 +349,11 @@ const DoctorChat = () => {
           content: newMessage,
         };
 
-        tempMessage = {
-          _id: uuidv4(),
-          conversationId: currentChat._id,
-          senderId: doctorId,
-          content: newMessage,
-          type: "text",
-          timestamp: new Date().toISOString(),
-          readBy: [doctorId],
-          status: "sent",
-        };
+        tempMessage = { ...tempMessage, content: newMessage };
       }
+
+      // Optimistic update
+      setMessages((prev) => [...prev, tempMessage]);
 
       setNewMessage("");
       setDocMessage(null);
@@ -340,16 +361,14 @@ const DoctorChat = () => {
         fileInputRef.current.value = "";
       }
 
-      socketRef.current?.emit("sendMessage", {
-        ...messageData,
-        _id: tempMessage._id,
-      });
+      socketRef.current?.emit("sendMessage", messageData); // No _id sent, backend generates
     } catch (error) {
       console.error("Message send failed:", error);
       message.error(
         (error as ApiError).response?.data?.message || "Failed to send message"
       );
-      setMessages((prev) => prev.filter((msg) => msg._id !== tempMessage._id));
+      // Remove temp message on error
+      setMessages((prev) => prev.filter((msg) => msg._id !== tempId));
     }
   };
 
@@ -459,16 +478,13 @@ const DoctorChat = () => {
               className="w-full p-2.5 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
             >
               <option value="">Select a user to start a conversation</option>
-              {users.map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.fullName}
-                </option>
-              ))}
+              {/* Add dynamic users if needed, currently hardcoded in original */}
+              <option value="6808e21a670e6cfc73176507">Luthfi KS</option>
             </select>
             <button
               onClick={handleCreateConversation}
               className="mt-2 sm:mt-3 w-full py-2.5 sm:py-3 bg-green-600 text-white text-sm sm:text-base font-medium rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-              disabled={loading}
+              disabled={loading || !selectedUser}
             >
               {loading ? "Starting..." : "Start Conversation"}
             </button>
@@ -482,8 +498,9 @@ const DoctorChat = () => {
             </div>
           ) : (
             <ul className="divide-y divide-gray-200">
-              {conversations.map((c) =>
-                c.members.map((m) => (
+              {conversations.map((c) => {
+                const m = c.members[0]; // Assume first member is the other participant
+                return (
                   <li
                     key={c._id}
                     className={`p-4 sm:p-5 flex items-center gap-3 sm:gap-4 cursor-pointer hover:bg-gray-100 transition-colors ${
@@ -505,8 +522,8 @@ const DoctorChat = () => {
                       </p>
                     </div>
                   </li>
-                ))
-              )}
+                );
+              })}
             </ul>
           )}
         </div>
@@ -567,7 +584,7 @@ const DoctorChat = () => {
               ) : (
                 <div className="space-y-3 sm:space-y-4">
                   {messages.map((msg, index) => (
-                    <div key={msg._id}>
+                    <div key={index}>
                       {needsDateHeader(msg, messages[index - 1]) && (
                         <div className="text-center my-4 sm:my-6">
                           <span className="inline-block bg-gray-200 text-gray-700 text-xs sm:text-sm font-medium px-3 sm:px-4 py-1.5 rounded-full">
@@ -587,7 +604,7 @@ const DoctorChat = () => {
                             msg.senderId === doctorId
                               ? "bg-green-500 text-white"
                               : "bg-white text-gray-900"
-                          }`}
+                          } ${msg.status === "sending" ? "opacity-70" : ""}`}
                         >
                           <div
                             className={`absolute top-2 ${
@@ -626,17 +643,12 @@ const DoctorChat = () => {
                                     className="text-blue-500"
                                     size={14}
                                   />
-                                ) : msg.status === "delivered" ? (
+                                ) : msg.status === "delivered" || msg.status === "sent" ? (
                                   <FiCheck
                                     className="text-gray-300"
                                     size={14}
                                   />
-                                ) : (
-                                  <FiCheck
-                                    className="text-gray-300"
-                                    size={14}
-                                  />
-                                )}
+                                ) : null}
                               </span>
                             )}
                           </div>

@@ -20,6 +20,9 @@ import {
   Stethoscope,
 } from "lucide-react";
 import { IDoctorData } from "../../interfaces/doctor";
+import ImageViewer from "../../sharedComponents/ImageViewer";
+
+
 
 type Report = {
   _id: string;
@@ -34,6 +37,15 @@ type Report = {
   analysisStatus: string;
 };
 
+interface ImageViewerState {
+  isOpen: boolean;
+  imageUrl: string;
+  title: string;
+  description: string;
+}
+
+
+
 const DoctorReportAnalysis = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
@@ -42,6 +54,31 @@ const DoctorReportAnalysis = () => {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 6;
+
+  const [imageViewer, setImageViewer] = useState<ImageViewerState>({
+      isOpen: false,
+      imageUrl: "",
+      title: "",
+      description: ""
+    });
+  
+    const openImageViewer = (imageUrl: string, title: string, description: string = "") => {
+      setImageViewer({
+        isOpen: true,
+        imageUrl,
+        title,
+        description
+      });
+    };
+  
+    const closeImageViewer = () => {
+      setImageViewer(prev => ({ ...prev, isOpen: false }));
+    };
+
+
 
   const handleCancel = async (report: Report) => {
     const analysisId = report._id;
@@ -72,6 +109,11 @@ const DoctorReportAnalysis = () => {
     }
   };
 
+   const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+    }
+  };
   const handleSubmitResult = async () => {
     if (!resultText.trim()) {
       message.error("Result cannot be empty");
@@ -135,8 +177,11 @@ const DoctorReportAnalysis = () => {
     const fetchReports = async () => {
       setIsLoading(true);
       try {
-        const response = await getAnalysisReports(doctor._id);
-        setReports(response);
+        const response = await getAnalysisReports(doctor._id,page, limit);
+
+        console.log("lasdlnlsdjflks lksdjflkj....",response);
+        setReports(response.reports);
+        setTotalPages(response.totalPages || 1);
       } catch (error) {
         console.error("Error fetching reports:", error);
         message.error("Failed to fetch reports. Please try again later.");
@@ -146,7 +191,9 @@ const DoctorReportAnalysis = () => {
     };
 
     fetchReports();
-  }, [doctor._id]);
+  }, [page]);
+
+ 
 
   if (isLoading) {
     return (
@@ -355,7 +402,11 @@ const DoctorReportAnalysis = () => {
                         {selectedReport.files.map((file, index) => (
                           <a
                             key={index}
-                            href={file}
+                             onClick={() => openImageViewer(
+                        file,
+                        "Analysis Report Document",
+                        `concerns : ${selectedReport.concerns}`
+                      )}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center space-x-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors group border border-purple-200"
@@ -459,6 +510,40 @@ const DoctorReportAnalysis = () => {
           </div>
         )}
       </div>
+
+        <div className="flex justify-center gap-4 mt-6">
+            <button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+              className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+              aria-label="Previous page"
+            >
+              Previous
+            </button>
+            <span className="text-gray-700">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === totalPages}
+              className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+              aria-label="Next page"
+            >
+              Next
+            </button>
+          </div>
+
+          {/* Image Viewer Modal */}
+                <ImageViewer
+                  isOpen={imageViewer.isOpen}
+                  onClose={closeImageViewer}
+                  imageUrl={imageViewer.imageUrl}
+                  title={imageViewer.title}
+                  description={imageViewer.description}
+                />
+
+                
+
     </div>
   );
 };

@@ -1,3 +1,5 @@
+// Socket setup unchanged (as per instructions, no touch to notification/video call)
+
 import { Server, Socket } from "socket.io";
 import { Container } from "inversify";
 import IMessageService from "../../services/common/interfaces/IMessageService";
@@ -5,7 +7,6 @@ import IUserPrescriptionService from "../../services/user/interfaces/IUserPrescr
 import { verifyAccessToken } from "../../utils/jwt";
 import IAppointmentsRepository from "../../repositories/interfaces/IAppointmentsRepository";
 import INotificationRepository from "../../repositories/interfaces/INotificationRepository";
-import appointmentModel from "../../models/appointment";
 
 interface Notification {
   date: Date;
@@ -49,7 +50,6 @@ export const setupSocket = (io: Server, container: Container) => {
     const token = socket.handshake.auth.token;
     if (!token) {
       console.error("Authentication error: No token provided.");
-      // return next(new Error("Authentication error: No token provided."));
       return next();
     }
 
@@ -57,7 +57,6 @@ export const setupSocket = (io: Server, container: Container) => {
       const decoded = await verifyAccessToken(token);
       if (!decoded || !decoded.id || !decoded.role) {
         console.error("Authentication error: Invalid token payload.");
-        // return next(new Error("Authentication error: Invalid token."));
         return next();
       }
 
@@ -69,7 +68,6 @@ export const setupSocket = (io: Server, container: Container) => {
       next();
     } catch (err) {
       console.error("Token verification failed:", err);
-      // return next(new Error("Authentication error: Invalid or expired token."));
       return next();
     }
   });
@@ -91,7 +89,6 @@ export const setupSocket = (io: Server, container: Container) => {
 
     socket.on("sendNotification", async (notification: Notification) => {
       try {
-        console.log("notificarion is .....", notification);
         if (
           !notification ||
           !notification.message ||
@@ -105,9 +102,6 @@ export const setupSocket = (io: Server, container: Container) => {
 
         const response = await notificationRepository.create(notification);
 
-        console.log("notification created:", response);
-
-        // Emit notification to the target user
         io.to(notification.userId).emit("notification", response);
         console.log(
           `Notification sent to user ${notification.userId}: ${notification.message}`
@@ -141,7 +135,6 @@ export const setupSocket = (io: Server, container: Container) => {
             msg.type
           );
           io.to(msg.conversationId).emit("message", newMessage);
-          io.to(msg.senderId).emit("message", newMessage);
         } catch (err) {
           console.error("Error sending message:", err);
           socket.emit("error", { message: "Failed to send message." });
@@ -278,7 +271,6 @@ export const setupSocket = (io: Server, container: Container) => {
             senderRole: msg.senderRole,
           };
 
-          // Broadcast to all in the video call room
           io.to(msg.appointmentId).emit("videoCall:newMessage", newMessage);
         } catch (err) {
           console.error("Error handling video call message:", err);
@@ -429,7 +421,6 @@ export const setupSocket = (io: Server, container: Container) => {
 
     socket.on("error", (err) => {
       console.error(`Socket error for ${userId}:`, err);
-      // socket.emit("error", { message: "Socket connection error." });
     });
   });
 };

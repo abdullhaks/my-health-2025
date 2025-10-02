@@ -1,7 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "antd";
-import { getDoctor } from "../../api/user/userApi";
+import { createDoctorConversation, getDoctor } from "../../api/user/userApi";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { IUserData } from "../../interfaces/user";
 
 interface Doctor {
   _id: string;
@@ -28,6 +30,8 @@ const UserDoctorDetails = () => {
   const { doctorId } = useParams<{ doctorId: string }>();
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [loading, setLoading] = useState(true);
+    const user = useSelector((state: IUserData) => state.user.user);
+  
 
   useEffect(() => {
     const fetchDoctorDetails = async () => {
@@ -71,8 +75,11 @@ const UserDoctorDetails = () => {
     });
   };
 
-  const handleChatClick = () => {
-    navigate("/chat", { state: { doctorId: doctor._id } });
+  const handleChatClick = async() => {
+
+    const selected =  await createDoctorConversation(doctor._id,user._id );
+
+    navigate("/user/chat", { state: { conversationId: selected._id || "" } });
   };
 
   const handleReportAnalysis = () => {

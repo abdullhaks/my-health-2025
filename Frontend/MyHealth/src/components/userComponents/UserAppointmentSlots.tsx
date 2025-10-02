@@ -248,7 +248,18 @@ const UserAppointmentSlots = () => {
   ]);
 
   const handleBookSlot = (slot: AppointmentSlot) => {
-    navigate("/user/appointment-confirmation", { state: { doctorId, slot } });
+     const queryParams = new URLSearchParams({
+      doctorId: doctorId || "",
+      slotId: slot.id,
+      start: slot.start.toISOString(),
+      end: slot.end.toISOString(),
+      duration: slot.duration.toString(),
+      fee: slot.fee.toString(),
+      sessionId: slot.sessionId,
+      status: slot.status,
+    }).toString();
+
+    navigate(`/user/appointment-confirmation?${queryParams}`);
   };
 
   const formatTime = (date: Date) =>

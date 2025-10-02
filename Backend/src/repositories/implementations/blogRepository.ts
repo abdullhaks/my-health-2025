@@ -35,7 +35,7 @@ export default class BlogsRepository
       };
     } catch (error) {
       console.log(error);
-      throw new Error("Failed to fetch users");
+      throw new Error("Failed to fetch blogs");
     }
   }
 

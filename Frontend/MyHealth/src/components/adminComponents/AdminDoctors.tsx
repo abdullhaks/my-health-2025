@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaLock,FaUnlock } from "react-icons/fa";
 import { getDoctors, manageDoctors } from "../../api/admin/adminApi";
-import { Link } from "react-router-dom";
 import { Table, Button, Popconfirm, Input, Checkbox, Pagination } from "antd";
 import { useDebounce } from "../../hooks/debounceHook";
 import { SearchOutlined } from "@ant-design/icons";
@@ -126,13 +125,13 @@ const AdminDoctors = () => {
         }else{
         return (
          
-        <Link
+        <p
           
-          to={`/admin/doctor/${record._id}`}
-          className={`text-sm sm:text-base font-semibold underline transition-colors text-red-600 hover:text-red-800"`}
+          onClick={() => window.location.href = `/admin/doctor/${record._id}`}
+          className={`text-sm sm:text-base font-semibold cursor-pointer underline transition-colors text-red-600 hover:text-red-800"`}
         >
-          {adminVerified === 0 ? "Verify" : adminVerified === 1 ? "Verified" : "Rejected"}
-        </Link>
+          Rejected
+        </p>
         )
       }
       }

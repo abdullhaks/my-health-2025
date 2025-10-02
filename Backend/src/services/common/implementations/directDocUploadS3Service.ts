@@ -8,7 +8,7 @@ export default class DirectDocUploadS3Service
   async directUpload(
     file: { buffer: Buffer; originalname: string; mimetype: string },
     location: string
-  ): Promise<{ message: string; url: string }> {
+  ): Promise<{ message: string; signedUrl: string,fileKey:string }> {
     if (!file) {
       throw new Error("Document is required for upload");
     }
@@ -32,7 +32,8 @@ export default class DirectDocUploadS3Service
 
     return {
       message: "Document uploaded successfully",
-      url: signedUrl,
+      signedUrl: signedUrl,
+      fileKey:fileUrl
     };
   }
 }

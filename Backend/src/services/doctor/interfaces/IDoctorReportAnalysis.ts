@@ -2,7 +2,9 @@ import { IReportAnalysis } from "../../../dto/reportAnalysisDTO";
 import { reportAnalysisResponseDTO } from "../../../dto/reportAnalysisDTO";
 
 export default interface IDoctorReportAnalysisService {
-  getReports(doctorId: string): Promise<reportAnalysisResponseDTO[]>;
+  getReports(doctorId: string,pageNumber: number,limitNumber: number): 
+  Promise<{ reports: reportAnalysisResponseDTO[]; totalPages: number }>;
+    
   submitAnalysisReports(
     analysisId: string,
     result: string

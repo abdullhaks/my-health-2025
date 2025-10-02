@@ -300,13 +300,16 @@ export const getDoctorAppointments = async (
   }
 };
 
-export const getAnalysisReports = async (doctorId: string) => {
+export const getAnalysisReports = async (doctorId: string,page:number, limit:number) => {
   try {
     console.log("doctorId id", doctorId);
 
     const response = await doctorInstance.get(ROUTES.doctor.getAnalysisReport, {
-      params: { doctorId },
+      params: { doctorId,page, limit },
     });
+
+        console.log("analysis result from api....",response)
+
     return response.data;
   } catch (error) {
     console.log("Error in get sessions", error);

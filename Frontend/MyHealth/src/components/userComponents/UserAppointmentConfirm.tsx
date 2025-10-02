@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   getDoctor,
   createOneTimePayment,
@@ -28,17 +28,11 @@ interface Doctor {
   category?: string;
 }
 
-interface AppointmentConfirmationProps {
-  doctorId: string;
-  slot: AppointmentSlot;
-}
-
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const UserAppointmentConfirmation = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { doctorId, slot } = location.state as AppointmentConfirmationProps;
+  const [searchParams] = useSearchParams();
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -46,6 +40,40 @@ const UserAppointmentConfirmation = () => {
     "idle" | "processing" | "success" | "error"
   >("idle");
   const user = useSelector((state: IUserData) => state.user.user);
+
+  // Extract slot and doctorId from query parameters
+  const doctorId = searchParams.get("doctorId");
+  const slot: AppointmentSlot | null = (() => {
+    const slotId = searchParams.get("slotId");
+    const start = searchParams.get("start");
+    const end = searchParams.get("end");
+    const duration = searchParams.get("duration");
+    const fee = searchParams.get("fee");
+    const sessionId = searchParams.get("sessionId");
+    const status = searchParams.get("status");
+
+    if (
+      !slotId ||
+      !start ||
+      !end ||
+      !duration ||
+      !fee ||
+      !sessionId ||
+      !status
+    ) {
+      return null;
+    }
+
+    return {
+      id: slotId,
+      start: new Date(start),
+      end: new Date(end),
+      duration: parseInt(duration),
+      fee: parseInt(fee),
+      sessionId,
+      status: status as "available" | "booked",
+    };
+  })();
 
   useEffect(() => {
     if (!doctorId || !slot) {
@@ -81,6 +109,8 @@ const UserAppointmentConfirmation = () => {
     });
 
   const handlePayment = async () => {
+    if (!slot || !doctorId) return;
+
     try {
       setPaymentStatus("processing");
       setErrorMessage("");
@@ -115,11 +145,13 @@ const UserAppointmentConfirmation = () => {
   };
 
   const handleWalletPayment = async () => {
+    if (!slot || !doctorId) return;
+
     try {
       setPaymentStatus("processing");
       setErrorMessage("");
 
-      var tempDate = new Date(slot.start).toISOString().split("T")[0];
+      const tempDate = new Date(slot.start).toISOString().split("T")[0];
       const data = {
         doctorId,
         userId: user._id,
@@ -176,9 +208,9 @@ const UserAppointmentConfirmation = () => {
           <div className="text-center text-gray-500 py-4 text-sm sm:text-base">
             Loading...
           </div>
-        ) : !doctor ? (
+        ) : !doctor || !slot ? (
           <div className="text-center text-gray-500 py-4 text-sm sm:text-base">
-            No doctor details available.
+            No doctor or slot details available.
           </div>
         ) : (
           <div className="space-y-6 sm:space-y-8">

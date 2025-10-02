@@ -29,5 +29,34 @@ export default class ReportAnalysisRepository
       console.error("Error in aggregate:", error);
       throw new Error("Failed to perform aggregation");
     }
-  }
+  };
+
+
+    async getReports(
+      doctorId: string,
+      pageNumber: number,
+      limitNumber: number
+    ): Promise<{ reports: IReportAnalysisDocument[]; totalPages: number }> {
+      try {
+        const query: any = { doctorId: doctorId };
+  
+        const skip = (pageNumber - 1) * limitNumber;
+  
+        const reports = await this._reportModel
+          .find(query)
+          .skip(skip)
+          .limit(limitNumber);
+
+  
+        const total = await this._reportModel.countDocuments(query);
+        return {
+
+          reports,
+          totalPages: Math.ceil(total / limitNumber),
+        };
+      } catch (error) {
+        console.log(error);
+        throw new Error("Failed to fetch reports");
+      }
+    }
 }

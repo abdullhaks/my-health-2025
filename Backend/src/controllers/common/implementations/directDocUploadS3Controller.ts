@@ -63,7 +63,8 @@ export default class DirectDocUploadS3Controller
       );
       res.status(HttpStatusCode.OK).json({
         message: uploadResult.message,
-        url: uploadResult.url,
+        url: uploadResult.signedUrl,
+        fileKey: uploadResult.fileKey
       });
     } catch (error) {
       console.error("Error in direct file upload:", error);

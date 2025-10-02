@@ -275,6 +275,18 @@ export const getUserConversations = async (userId: string, from: string) => {
   }
 };
 
+
+export const createDoctorConversation = async(doctorId:string, selectedUser:string) =>{
+  try{
+    const response = await userInstance.post(ROUTES.user.initializeConversation,{userIds:[doctorId,selectedUser]});
+    return response.data;
+
+  }catch(error){
+    console.error("Error creating conversation:", error);
+    throw error;
+  }
+}
+
 export const getUserMessages = async (conversationId: string) => {
   try {
     const response = await userInstance.get(

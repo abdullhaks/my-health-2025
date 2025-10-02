@@ -1,9 +1,16 @@
+// Rebuilt ConversationRepository with manual population fix
+// Now fetches other member manually instead of invalid populate
+// Returns members as array of one (the other participant)
+// Standardized return { _id: string, name: string, avatar: string }
+// Assumes mongoose models are registered as 'User' and 'Doctor'
+
 import { injectable, inject } from "inversify";
-import { IConversationDocument, conversationDocument} from "../../entities/conversationEntities";
+import { IConversationDocument, conversationDocument } from "../../entities/conversationEntities";
 import BaseRepository from "./baseRepository";
 import IConversationRepository from "../interfaces/IConversationRepository";
 import { getSignedImageURL } from "../../middlewares/common/uploadS3";
-import {Model} from "mongoose"
+import { Model } from "mongoose";
+import mongoose from "mongoose";
 
 @injectable()
 export default class ConversationRepository
@@ -41,25 +48,27 @@ export default class ConversationRepository
     }
     const conversations = await this._conversationModel
       .find({ members: userId })
-      .sort({ updatedAt: -1 })
-      .populate({
-        path: "members",
-        select: "_id fullName profile",
-        model: from,
-      });
+      .sort({ updatedAt: -1 });
 
-    // Await all avatar URLs before returning
+    const OtherModel = mongoose.model(from); // 'User' or 'Doctor'
+
     return Promise.all(
-      conversations.map(async (conv: any) => ({
-        _id: conv._id,
-        members: await Promise.all(
-          conv.members.map(async (member: any) => ({
-            userId: member._id,
-            name: member.fullName,
-            avatar: await getSignedImageURL(member.profile),
-          }))
-        ),
-      }))
+      conversations.map(async (conv: any) => {
+        const otherMemberId = conv.members.find((m: string) => m !== userId);
+        const otherMember = await OtherModel.findById(otherMemberId, '_id fullName profile');
+        
+        const memberDto = otherMember ? {
+          _id: otherMember._id.toString(),
+          name: otherMember.fullName,
+          avatar: await getSignedImageURL(otherMember.profile),
+        } : null;
+
+        return {
+          _id: conv._id.toString(),
+          members: memberDto ? [memberDto] : [],
+          lastMessage: conv.lastMessage,
+        };
+      })
     );
   }
 }

@@ -7,4 +7,10 @@ export default interface IReportAnalysisRepository
   aggregate<T = IReportAnalysisDocument>(
     pipeline: PipelineStage[]
   ): Promise<T[]>;
+
+  getReports(
+      doctorId: string,
+      pageNumber: number,
+      limitNumber: number
+    ): Promise<{ reports: IReportAnalysisDocument[]; totalPages: number }>;
 }

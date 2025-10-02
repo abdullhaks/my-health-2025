@@ -4,6 +4,7 @@ import IReportAnalysisRepository from "../../../repositories/interfaces/IReportA
 import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import { IReportAnalysis, reportAnalysisResponseDTO } from "../../../dto/reportAnalysisDTO";
 import { ReportAnalysisMapper } from "../../../mappers/reportAnalysis.mapper";
+import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 
 @injectable()
 export default class DoctorReportAnalysisService
@@ -15,19 +16,43 @@ export default class DoctorReportAnalysisService
     @inject("IUserRepository") private _UserRepository: IUserRepository
   ) {}
 
-  async getReports(doctorId: string): Promise<reportAnalysisResponseDTO[]> {
+  async getReports(doctorId: string,pageNumber: number,limitNumber: number):
+   Promise<{ reports: reportAnalysisResponseDTO[]; totalPages: number }> {
     try {
-      const response = await this._ReportAnalysisRepository.findAll({
-        doctorId: doctorId,
-      });
+      const response = await this._ReportAnalysisRepository.getReports(
+      doctorId,
+      pageNumber,
+      limitNumber
+    );
 
-      const reportAnalysisDto = await Promise.all(
-        response.map(async (report) => {
-          return await ReportAnalysisMapper.toReportAnalysisResponseDTO(report);
+       const reportDto = await Promise.all(
+        response.reports.map(async (item) => {
+          const dto = await ReportAnalysisMapper.toReportAnalysisResponseDTO(item);
+
+ 
+
+          const signedFiles = await Promise.all(
+            dto.files.map(async (file) => {
+              try {
+                return await getSignedImageURL(file);
+              } catch (error) {
+                console.error(`Error generating signed URL for file ${file}:`, error);
+                return file; 
+              }
+            })
+          );
+
+
+          
+          return { ...dto, files: signedFiles };
         })
       );
+      
+    console.log("reportDto.....",reportDto);
 
-      return reportAnalysisDto;
+      const resp = {reports:reportDto,totalPages:response.totalPages}
+  
+      return resp;
 
     } catch (error) {
       console.error("Error in get sessions", error);

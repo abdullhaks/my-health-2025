@@ -16,11 +16,18 @@ export default class DoctorReportAnalyisController
 
   async getReports(req: Request, res: Response): Promise<void> {
     try {
-      const doctorId = req.query.doctorId;
+      const {doctorId, page, limit} = req.query;
+      const pageNumber = page ? parseInt(page as string, 10) : 1;
+      const limitNumber = limit ? parseInt(limit as string, 10) : 10;
+
       if (doctorId) {
         const response = await this._doctorReportAnalyisService.getReports(
-          doctorId.toString()
+          doctorId.toString(),
+          pageNumber,
+          limitNumber
         );
+
+        console.log("analysis result from contorller....",response)
         res.status(HttpStatusCode.OK).json(response);
         return;
       }

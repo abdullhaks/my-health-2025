@@ -20,6 +20,7 @@ export const ROUTES = {
     logout: "/user/logout",
     doctors: "/user/doctors",
     conversation: (userId: string) => `/user/conversation/${userId}`,
+    initializeConversation: "/user/conversation",
     message: (conversationId: string) => `/user/message/${conversationId}`,
     sessions: "/user/sessions",
     bookedSlots: "/user/bookedSlots",

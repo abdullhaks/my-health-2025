@@ -1,9 +1,11 @@
+// MessageRepository unchanged
+
 import { injectable, inject } from "inversify";
 import { IMessageDocument, messageDocument } from "../../entities/messageEntities";
-import {conversationDocument} from "../../entities/conversationEntities"
+import { conversationDocument } from "../../entities/conversationEntities";
 import BaseRepository from "./baseRepository";
 import IMessageRepository from "../interfaces/IMessageRepository";
-import {Model} from "mongoose";
+import { Model } from "mongoose";
 
 @injectable()
 export default class MessageRepository
