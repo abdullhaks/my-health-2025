@@ -29,6 +29,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { IUserData } from "../../interfaces/user";
 import { ApiError } from "../../interfaces/error";
 import { ArrowLeft } from "lucide-react";
+import ImageViewer from "../../sharedComponents/ImageViewer";
 
 interface Message {
   _id: string;
@@ -45,6 +46,13 @@ interface Message {
 interface Conversation {
   _id: string;
   members: { _id: string; name: string; avatar: string }[]; // Standardized
+}
+
+interface ImageViewerState {
+  isOpen: boolean;
+  imageUrl: string;
+  title: string;
+  description: string;
 }
 
 const UserChat = () => {
@@ -67,6 +75,25 @@ const UserChat = () => {
   const hasInitializedConversation = useRef(false);
   const [activeAppointment, setActiveAppointment] = useState<boolean>(false);
   const [isConversationListVisible, setIsConversationListVisible] = useState(true);
+ const [imageViewer, setImageViewer] = useState<ImageViewerState>({
+    isOpen: false,
+    imageUrl: "",
+    title: "",
+    description: ""
+  });
+
+  const openImageViewer = (imageUrl: string, title: string, description: string = "") => {
+    setImageViewer({
+      isOpen: true,
+      imageUrl,
+      title,
+      description
+    });
+  };
+
+  const closeImageViewer = () => {
+    setImageViewer(prev => ({ ...prev, isOpen: false }));
+  };
 
   const getAccessToken = async () => {
     try {
@@ -263,7 +290,7 @@ const UserChat = () => {
 
     const socket = socketRef.current;
 
-    const handleMessage = (msg: Message) => {
+    const handleMessage = async(msg: Message) => {
       if (msg.conversationId === currentChat._id) {
         setMessages((prev) => {
           const tempIndex = prev.findIndex(
@@ -278,6 +305,9 @@ const UserChat = () => {
           return [...prev, msg];
         });
         socket.emit("markSeen", { conversationId: msg.conversationId });
+
+        const res = await getUserConversations(userId, "Doctor");
+          setConversations(res);
       }
     };
 
@@ -394,7 +424,7 @@ const UserChat = () => {
           senderId: userId,
           conversationId: currentChat._id,
           type: "file",
-          content: uploadResult.url,
+          content: uploadResult.fileKey,
           fileName: docMessage.name,
         };
 
@@ -420,6 +450,9 @@ const UserChat = () => {
       }
 
       socketRef.current?.emit("sendMessage", messageData);
+
+      const res = await getUserConversations(userId, "Doctor");
+          setConversations(res);
     } catch (error) {
       console.error("Message send failed:", error);
       message.error(
@@ -621,11 +654,17 @@ const UserChat = () => {
                             } border-b-8 border-b-transparent`}
                           />
                           {msg.type === "file" ? (
-                            <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3 cursor-pointer"
+                              onClick={() => openImageViewer(
+                                msg.content,
+                                "Myhealth-Chat document",
+                                `Time: ${formatDateHeader(msg.timestamp)},${formatMessageTime(msg.timestamp)} `
+                              )}
+                              >
                               <IoDocumentAttachOutline className="text-lg sm:text-xl" />
                               <a
-                                href={msg.content}
-                                target="_blank"
+                               
+                              
                                 rel="noopener noreferrer"
                                 className="text-sm sm:text-base underline truncate max-w-[200px] sm:max-w-[300px]"
                               >
@@ -755,6 +794,18 @@ const UserChat = () => {
           </div>
         )}
       </div>
+
+
+
+      <ImageViewer
+              isOpen={imageViewer.isOpen}
+              onClose={closeImageViewer}
+              imageUrl={imageViewer.imageUrl}
+              title={imageViewer.title}
+              description={imageViewer.description}
+            />
+
+            
     </div>
   );
 };

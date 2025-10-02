@@ -26,6 +26,7 @@ import doodle from "../../assets/bg_print.png";
 import { IDoctorData } from "../../interfaces/doctor";
 import { ApiError } from "../../interfaces/error";
 import { ArrowLeft } from "lucide-react";
+import ImageViewer from "../../sharedComponents/ImageViewer";
 
 interface Message {
   _id: string;
@@ -45,6 +46,15 @@ interface Conversation {
   lastMessage?: string;
 }
 
+
+interface ImageViewerState {
+  isOpen: boolean;
+  imageUrl: string;
+  title: string;
+  description: string;
+}
+
+
 const DoctorChat = () => {
   const doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
   const doctorId = doctor?._id;
@@ -62,6 +72,27 @@ const DoctorChat = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [docMessage, setDocMessage] = useState<File | null>(null);
   const [isConversationListVisible, setIsConversationListVisible] = useState(true);
+
+   const [imageViewer, setImageViewer] = useState<ImageViewerState>({
+      isOpen: false,
+      imageUrl: "",
+      title: "",
+      description: ""
+    });
+  
+    const openImageViewer = (imageUrl: string, title: string, description: string = "") => {
+      setImageViewer({
+        isOpen: true,
+        imageUrl,
+        title,
+        description
+      });
+    };
+  
+    const closeImageViewer = () => {
+      setImageViewer(prev => ({ ...prev, isOpen: false }));
+    };
+
 
   const getAccessToken = async () => {
     try {
@@ -186,7 +217,7 @@ const DoctorChat = () => {
 
     const socket = socketRef.current;
 
-    const handleMessage = (msg: Message) => {
+    const handleMessage = async(msg: Message) => {
 
       console.log("msg.conversationId ........",msg.conversationId );
       console.log("currentChat._id ........",currentChat._id );
@@ -220,6 +251,9 @@ const DoctorChat = () => {
 
         console.log("new messages....",messages)
         socket.emit("markSeen", { conversationId: msg.conversationId });
+
+         const res = await getDoctorConversations(doctorId, "User");
+        setConversations(res);
       }
     };
 
@@ -361,7 +395,10 @@ const DoctorChat = () => {
         fileInputRef.current.value = "";
       }
 
-      socketRef.current?.emit("sendMessage", messageData); // No _id sent, backend generates
+      socketRef.current?.emit("sendMessage", messageData); 
+
+      const res = await getDoctorConversations(doctorId, "User");
+        setConversations(res);
     } catch (error) {
       console.error("Message send failed:", error);
       message.error(
@@ -616,11 +653,15 @@ const DoctorChat = () => {
                             } border-b-8 border-b-transparent`}
                           />
                           {msg.type === "file" ? (
-                            <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3 cursor-pointer"
+                               onClick={() => openImageViewer(
+                                msg.content,
+                                "Myhealth-Chat document",
+                                `Time: ${formatDateHeader(msg.timestamp)},${formatMessageTime(msg.timestamp)} `
+                              )}>
                               <IoDocumentAttachOutline className="text-lg sm:text-xl" />
                               <a
-                                href={msg.content}
-                                target="_blank"
+                              
                                 rel="noopener noreferrer"
                                 className="text-sm sm:text-base underline truncate max-w-[200px] sm:max-w-[300px]"
                               >
@@ -739,6 +780,18 @@ const DoctorChat = () => {
           </div>
         )}
       </div>
+
+
+
+      <ImageViewer
+        isOpen={imageViewer.isOpen}
+        onClose={closeImageViewer}
+        imageUrl={imageViewer.imageUrl}
+        title={imageViewer.title}
+        description={imageViewer.description}
+      />
+
+      
     </div>
   );
 };
