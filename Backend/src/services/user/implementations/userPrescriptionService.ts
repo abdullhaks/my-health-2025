@@ -78,7 +78,12 @@ export default class UserPrescriptionService
       { sort: { createdAt: -1 } }
     );
 
-    const prescriptionDTO = await PrescriptionMapper.toPrescriptionResponseDTO(prescription!);
+    let prescriptionDTO = null;
+
+    if(prescription){
+     prescriptionDTO = await PrescriptionMapper.toPrescriptionResponseDTO(prescription!);
+    }
+
 
     console.log("prescription is ....", prescription);
     return prescriptionDTO || null;

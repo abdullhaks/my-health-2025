@@ -7,8 +7,12 @@ import {
   getBookedSlots,
   getUnavailableDays,
   getUnavailableSessions,
+  progressingPayment,
 } from "../../api/user/userApi";
 import { IAppointmentData } from "../../interfaces/appointment";
+import { useSelector } from "react-redux";
+import { IUserData } from "../../interfaces/user";
+import { message } from "antd";
 
 interface Session {
   _id?: string;
@@ -32,6 +36,7 @@ interface AppointmentSlot {
 }
 
 const UserAppointmentSlots = () => {
+  const user = useSelector((state: IUserData) => state.user.user);
   const navigate = useNavigate();
   const {doctorId} = useParams<{ doctorId: string }>();
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -247,9 +252,15 @@ const UserAppointmentSlots = () => {
     unAvailableSessions,
   ]);
 
-  const handleBookSlot = (slot: AppointmentSlot) => {
+  const handleBookSlot = async(slot: AppointmentSlot) => {
+    if (!doctorId) {
+      setErrorMessage(
+        "No doctor selected. Please go back and select a doctor."
+      );
+      return;
+    }
      const queryParams = new URLSearchParams({
-      doctorId: doctorId || "",
+      doctorId: doctorId,
       slotId: slot.id,
       start: slot.start.toISOString(),
       end: slot.end.toISOString(),
@@ -258,8 +269,20 @@ const UserAppointmentSlots = () => {
       sessionId: slot.sessionId,
       status: slot.status,
     }).toString();
-
+    
+    const response = await progressingPayment(doctorId,user._id,slot.id);
+    if(response.paymenStatus==="start"){
+    message.warning("complete the payment within 3 minutes");
     navigate(`/user/appointment-confirmation?${queryParams}`);
+    }else if(response.paymenStatus==="booked"){
+      message.warning("sorry,this slot nearly booked. please select next possible one");
+      window.location.reload();
+    }else if(response.paymenStatus==="progressing"){
+      message.warning("someone is currently on booking this slot.please wait 3 minutes and try again or please select next possible one ")
+    }else{
+      message.error("something went wrong. please try agian later")
+    }
+
   };
 
   const formatTime = (date: Date) =>

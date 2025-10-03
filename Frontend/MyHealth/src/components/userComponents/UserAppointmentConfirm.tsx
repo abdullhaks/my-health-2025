@@ -4,10 +4,12 @@ import {
   getDoctor,
   createOneTimePayment,
   walletPayment,
+  progressingPayment,
 } from "../../api/user/userApi";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSelector } from "react-redux";
 import { IUserData } from "../../interfaces/user";
+import { message } from "antd";
 
 interface AppointmentSlot {
   id: string;
@@ -112,7 +114,6 @@ const UserAppointmentConfirmation = () => {
     if (!slot || !doctorId) return;
 
     try {
-      setPaymentStatus("processing");
       setErrorMessage("");
 
       const amountInPaise = slot.fee * 100;
@@ -129,14 +130,29 @@ const UserAppointmentConfirmation = () => {
         type: "appointment",
       };
 
-      const data = await createOneTimePayment(amountInPaise, metadata);
-      const stripe = await stripePromise;
+       const response = await progressingPayment(doctorId,user._id,slot.id);
+          if(response.paymenStatus==="start"){
+          setPaymentStatus("processing");
 
-      if (stripe) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("Stripe initialization failed.");
-      }
+          message.warning("complete the payment within 3 minutes");
+          const data = await createOneTimePayment(amountInPaise, metadata);
+            const stripe = await stripePromise;
+
+            if (stripe) {
+              window.location.href = data.url;
+            } else {
+              throw new Error("Stripe initialization failed.");
+            }
+          }else if(response.paymenStatus==="booked"){
+            message.warning("sorry,this slot nearly booked. please select next possible one");
+            window.location.reload();
+          }else if(response.paymenStatus==="progressing"){
+            message.warning("someone is currently on booking this slot.please wait 3 minutes and try again or please select next possible one ")
+          }else{
+            message.error("something went wrong. please try agian later")
+          }
+
+      
     } catch (error) {
       console.error("Payment error:", error);
       setPaymentStatus("error");
@@ -148,7 +164,6 @@ const UserAppointmentConfirmation = () => {
     if (!slot || !doctorId) return;
 
     try {
-      setPaymentStatus("processing");
       setErrorMessage("");
 
       const tempDate = new Date(slot.start).toISOString().split("T")[0];
@@ -169,11 +184,27 @@ const UserAppointmentConfirmation = () => {
         appointmentStatus: "booked",
       };
 
-      const response = await walletPayment(data);
+      const response = await progressingPayment(doctorId,user._id,slot.id);
+          if(response.paymenStatus==="start"){
+          setPaymentStatus("processing");
 
-      if (response.appointment) {
-        navigate("/user/payment-success");
-      }
+          message.warning("complete the payment within 3 minutes");
+          const response = await walletPayment(data);
+
+            if (response.appointment) {
+          message.success("slot booked successfully");
+
+              navigate("/user/payment-success");
+            }
+          }else if(response.paymenStatus==="booked"){
+            message.warning("sorry,this slot nearly booked. please select next possible one");
+            window.location.reload();
+          }else if(response.paymenStatus==="progressing"){
+            message.warning("someone is currently on booking this slot.please wait 3 minutes and try again or please select next possible one ")
+          }else{
+            message.error("something went wrong. please try agian later")
+          }
+      
     } catch (error) {
       console.error("Payment error:", error);
       setPaymentStatus("error");

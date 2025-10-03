@@ -130,6 +130,8 @@ userRoutes.post("/cancelAnalysisReports", verifyAccessTokenMidleware("user"), (r
 
 userRoutes.get("/bookedSlots",verifyAccessTokenMidleware("user"),(req,res)=>sessionCtrl.getBookedSlots(req,res))
 
+userRoutes.post("/progressingPayment",verifyAccessTokenMidleware("user"),(req,res)=>paymentCtrl.progressingPayment(req,res))
+
 userRoutes.post("/walletPayment",verifyAccessTokenMidleware("user"),(req,res)=> appointmentCtrl.walletPayment(req,res))
 
 userRoutes.get("/notifications",verifyAccessTokenMidleware("user"),(req,res)=> notificationCtrl.getNewNotifications(req,res) )

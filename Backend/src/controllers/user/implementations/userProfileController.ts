@@ -21,10 +21,16 @@ export default class UserProfileController implements IUserProfileCtrl {
       const dobStr = new Date(userData.dob).toLocaleDateString();
 
       const [month, day, year] = dobStr.split("/");
-      userData.dob = `${year}-${month.padStart(2, "0")}-${day.padStart(
+
+      if(userData.dob.trim().length){
+        userData.dob = `${year}-${month.padStart(2, "0")}-${day.padStart(
         2,
         "0"
       )}`;
+      }else{
+        userData.dob=""
+      }
+      
 
       const userId = req.params.id;
       const result = await this._profileService.updateProfile(userId, userData);

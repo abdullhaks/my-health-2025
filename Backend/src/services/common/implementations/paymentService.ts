@@ -11,6 +11,7 @@ import IAppointmentsRepository from "../../../repositories/interfaces/IAppointme
 import IReportAnalysisRepository from "../../../repositories/interfaces/IReportAnalysisRepository";
 import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRepository";
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
+import IProgressPaymentRepository from "../../../repositories/interfaces/IprogressPaymentRepository";
 
 @injectable()
 export default class PaymentService implements IPaymentService {
@@ -26,7 +27,11 @@ export default class PaymentService implements IPaymentService {
     @inject("IAnalyticsRepository")
     private _analyticsRepository: IAnalyticsRepository,
     @inject("ITransactionRepository")
-    private _transactionRepository: ITransactionRepository
+    private _transactionRepository: ITransactionRepository,
+    @inject("IProgressPaymentRepository")
+    private _progressPaymentRepository:IProgressPaymentRepository
+
+
   ) {}
 
   async handleWebhookEvent(event: any): Promise<{ received: boolean }> {
@@ -64,8 +69,12 @@ export default class PaymentService implements IPaymentService {
             console.log("user is ", user);
 
             if (!user) {
-              console.error("User not found:", metadata.userId);
-              throw new Error("User not found.");
+              console.error('Invalid slot reservation for session:', session.id);
+              
+              // Refund the payment automatically
+              await stripe.refunds.create({ payment_intent: session.payment_intent as string });
+              
+              throw new Error('Slot reservation invalid. Payment refunded.');
             }
 
             const doctor = await this._doctorRepository.findOne({
@@ -74,8 +83,24 @@ export default class PaymentService implements IPaymentService {
             console.log("doctor is ", doctor);
 
             if (!doctor) {
-              console.error("Doctor not found:", metadata.doctorId);
-              throw new Error("Doctor not found.");
+              console.error('Invalid slot reservation for session:', session.id);
+              
+              // Refund the payment automatically
+              await stripe.refunds.create({ payment_intent: session.payment_intent as string });
+              
+              throw new Error('Slot reservation invalid. Payment refunded.');
+            }
+
+            let booked = await  this._appointmentsRepository.findOne
+            ({doctorId:doctor._id,sessionId:metadata.sessionId,slotId: metadata.slotId,appointmentStatus: "booked"});
+
+            if (booked){
+              console.error('Invalid slot reservation for session:', session.id);
+              
+              // Refund the payment automatically
+              await stripe.refunds.create({ payment_intent: session.payment_intent as string });
+              
+              throw new Error('Slot reservation invalid. Payment refunded.');
             }
 
             var tempDate = new Date(metadata.start).toISOString().split("T")[0];
@@ -257,5 +282,29 @@ export default class PaymentService implements IPaymentService {
     }
 
     return { received: true };
-  }
+  };
+
+
+async progressingPayment(doctorId:string,userId:string,slotId:string):Promise<{paymenStatus:string}>{
+
+  if (!doctorId || !userId || !slotId ) {
+      throw new Error("some credentials are missing try again");
+    };
+
+    let checkBooked = await this._appointmentsRepository.findOne({doctorId:doctorId,slotId:slotId,appointmentStatus:"booked"});
+
+    if(checkBooked) return {paymenStatus:"booked"}
+
+    let check = await this._progressPaymentRepository.findOne({slotId:slotId,doctorId:doctorId,userId:{$ne:userId}});
+    if(check) return {paymenStatus:"progressing"};
+
+    await this._progressPaymentRepository.deleteAll({doctorId:doctorId,userId:userId})
+    let startPayment = await this._progressPaymentRepository.create({doctorId:doctorId,userId:userId,slotId:slotId})
+    if(startPayment) return {paymenStatus:"start"};
+
+    throw new Error("something went wrong try again");
+    
+}
+
+
 }

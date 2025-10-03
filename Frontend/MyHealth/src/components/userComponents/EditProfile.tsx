@@ -63,8 +63,10 @@ const EditProfileModal = ({
       newErrors.fullName = "Full name is required";
     }else if (formData.fullName.trim().length > 30) {
       newErrors.fullName = "Full name must be at most 30 characters";
-    }else if (!/^\+?[0-9\s]{10,15}$/.test(formData.phone.replace(/\s/g, ""))){
+    }else if(formData.phone.length){ 
+      if(!/^\+?[0-9\s]{10,15}$/.test(formData.phone.replace(/\s/g, ""))){
       newErrors.phone = "Invalid phone number format";
+    }
     }else if(formData.medicalTags && formData.medicalTags.length > 40){
       newErrors.medicalTags = "Character limit exceeded";
     }

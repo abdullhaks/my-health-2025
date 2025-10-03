@@ -72,8 +72,36 @@ export default class PaymentController implements IPaymentCtrl {
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: MESSAGES.server.serverError });
     }
-  }
+  };
+
+
+
+   async  progressingPayment(req: Request, res: Response): Promise<void> {
+    const { doctorId,userId,slotId } = req.body;
+    console.log("doctorId,userId,slotId ",doctorId,userId,slotId )
+    try {
+      
+      const response = await this._paymentService.progressingPayment(doctorId,userId,slotId);
+
+      res.status(HttpStatusCode.OK).json(response);
+
+
+    } catch (err) {
+      console.error("payment progressing failed", err);
+      res
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+        .json({ message: MESSAGES.server.serverError });
+    }
+  };
 }
+
+
+
+
+
+
+
+
 
 // export const stripeWebhookController = async (req: Request, res: Response):Promise<void> => {
 //     const sig = req.headers["stripe-signature"] as string;

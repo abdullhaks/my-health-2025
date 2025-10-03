@@ -18,6 +18,7 @@ import prescriptionModel from "../models/prescription";
 import payoutModel from "../models/payout";
 import unAvailableDayModel from "../models/unAvailableDay";
 import unAvailableSessionModel from "../models/unAvailableSession";
+import progressPaymentModel from "../models/progressingPayment";
 
 //controllers..................................................................
 import UserAuthController from "../controllers/user/implementations/userAuthController";
@@ -242,6 +243,10 @@ import UnAvailableDayRepository from "../repositories/implementations/unAvailabl
 import IUnAvailableSessionRepository from "../repositories/interfaces/IUnAvailableSessionRepository";
 import UnAvailableSessionRepository from "../repositories/implementations/unAvailableSessionRepository";
 
+
+import IProgressPaymentRepository from "../repositories/interfaces/IprogressPaymentRepository";
+import ProgressPaymentRepository from "../repositories/implementations/progressPaymentRepository";
+
 //.................................................................................
 
 
@@ -266,6 +271,7 @@ container.bind("prescriptionModel").toConstantValue(prescriptionModel);
 container.bind("payoutModel").toConstantValue(payoutModel);
 container.bind("unAvailableDayModel").toConstantValue(unAvailableDayModel);
 container.bind("unAvailableSessionModel").toConstantValue(unAvailableSessionModel);
+container.bind("progressPaymentModel").toConstantValue(progressPaymentModel)
 
 
 
@@ -384,7 +390,7 @@ container.bind<IPayoutRepository>("IPayoutRepository").to(PayoutRepository);
 container.bind<IOtpRepository>("IOtpRepository").to(OtpRepository);
 container.bind<IUnAvailableDayRepository>("IUnAvailableDayRepository").to(UnAvailableDayRepository);
 container.bind<IUnAvailableSessionRepository>("IUnAvailableSessionRepository").to(UnAvailableSessionRepository)
-
+container.bind<IProgressPaymentRepository>("IProgressPaymentRepository").to(ProgressPaymentRepository)
 
 
 export default container;

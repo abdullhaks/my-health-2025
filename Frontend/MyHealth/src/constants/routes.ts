@@ -43,6 +43,7 @@ export const ROUTES = {
     latestDoctorPrescription : "/user/latestDoctorPrescription",
     activeBooking:"/user/activeBooking",    
     getTransactions: "/user/getTransactions",
+    progressingPayment:"/user/progressingPayment"
     
   },
 

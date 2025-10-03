@@ -313,6 +313,20 @@ export const getSessions = async (doctorId: string) => {
   }
 };
 
+
+export const progressingPayment = async (doctorId:string,userId:string,slotId:string)=>{
+ try {
+    console.log("doctorid,userId,slotID", doctorId,userId,slotId);
+
+    const response = await userInstance.post(ROUTES.user.progressingPayment, { doctorId,userId,slotId });
+    return response.data;
+  } catch (error) {
+    console.log("Error in payment progressing..", error);
+    throw error;
+  }
+
+}
+
 export const createOneTimePayment = async (
   amount: number,
   metadata: createOneTimePaymentMetaData
