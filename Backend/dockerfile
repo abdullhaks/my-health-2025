@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # 6. Build TypeScript -> JavaScript with increased memory
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build 
 
 # --------------------
 # Production stage

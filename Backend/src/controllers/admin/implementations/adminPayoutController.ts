@@ -11,7 +11,11 @@ export default class AdminPayoutController implements IAdminPayoutController {
     @inject("IAdminPayoutService")
     private _adminPayoutService: IAdminPayoutService
   ) {}
-
+/**
+ * metod to get payout details
+ * @param req 
+ * @param res 
+ */
   async getPayouts(req: Request, res: Response): Promise<void> {
     try {
       const { page, limit, status, startDate, endDate } = req.query;

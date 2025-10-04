@@ -36,6 +36,9 @@ export default class AdminAppointmentController
         filters
       );
 
+
+      
+
       res.status(HttpStatusCode.OK).json(appointments);
     } catch (err) {
       console.error("Error in fetching user appointments:", err);
