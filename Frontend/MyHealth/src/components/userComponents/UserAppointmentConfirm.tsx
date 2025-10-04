@@ -294,9 +294,11 @@ const UserAppointmentConfirmation = () => {
                 </p>
               </div>
             </div>
+                 <h2 className="text-yellow-400 font-bold">now this platform running on test mode. use our dummy card number <span className="text-red-400">4242 4242 4242 4242</span> for your payments, Thank You. </h2>
 
             {/* Action Buttons */}
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+             
               <button
                 onClick={() => navigate(-1)}
                 className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 active:scale-95"

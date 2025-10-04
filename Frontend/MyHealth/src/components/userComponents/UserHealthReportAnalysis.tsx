@@ -288,6 +288,7 @@ const UserHealthReportAnalysis = () => {
         )} */}
 
         {/* Payment Button */}
+        <h2 className="text-yellow-400 font-bold">now this platform running on test mode. use our dummy card number <span className="text-red-400">4242 4242 4242 4242</span> for your payments, Thank You. </h2>
         <button
           onClick={handlePayment}
           disabled={uploading || paymentStatus === "processing"}
