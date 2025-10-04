@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, memo } from "react";
-import { FaEye, FaHeart } from "react-icons/fa";
+import { FaEye, FaHeart, FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { getBlogs } from "../../api/user/userApi";
 
@@ -15,6 +15,23 @@ interface Blog {
   authorId: string;
 }
 
+// Custom debounce hook
+const useDebounce = (value: string, delay: number): string => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 // Blog Card Component
 const BlogCard = memo(
   ({ blog, onView }: { blog: Blog; onView: (blog: Blog) => void }) => (
@@ -26,7 +43,7 @@ const BlogCard = memo(
         onClick={() => onView(blog)}
         loading="lazy"
       />
-      <div className="p-2 space-y-2">
+      <div className="p-4 space-y-2">
         <h3 className="font-semibold text-lg text-gray-800 line-clamp-2">
           {blog.title}
         </h3>
@@ -65,10 +82,13 @@ const UserBlogs = () => {
   const navigate = useNavigate();
   const limit = 9;
 
+  // Debounce the search input with 300ms delay
+  const debouncedSearch = useDebounce(search, 300);
+
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await getBlogs(search, page, limit);
+      const response = await getBlogs(debouncedSearch, page, limit);
       setBlogs(response.blogs || []);
       setTotalPages(response.totalPages || 1);
       setError(null);
@@ -78,7 +98,7 @@ const UserBlogs = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, [page, debouncedSearch]);
 
   useEffect(() => {
     fetchBlogs();
@@ -106,14 +126,24 @@ const UserBlogs = () => {
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-800">Blogs</h1>
-        <input
-          type="text"
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search blogs by title..."
-          className="w-full sm:w-64 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Search blogs"
-        />
+        <div className="relative w-full sm:w-80">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <FaSearch className="text-gray-400" aria-hidden="true" />
+          </div>
+          <input
+            type="text"
+            value={search}
+            onChange={handleSearchChange}
+            placeholder="Search blogs by title..."
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+            aria-label="Search blogs by title"
+          />
+          {loading && search && (
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <div className="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            </div>
+          )}
+        </div>
       </div>
 
       {error && (
@@ -121,10 +151,12 @@ const UserBlogs = () => {
           {error}
         </div>
       )}
-      {loading ? (
+      {loading && !search ? (
         <div className="text-center text-gray-500 py-4">Loading...</div>
       ) : blogs.length === 0 ? (
-        <div className="text-center text-gray-500 py-4">No blogs found.</div>
+        <div className="text-center text-gray-500 py-4">
+          {search ? `No blogs found for "${search}".` : "No blogs found."}
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

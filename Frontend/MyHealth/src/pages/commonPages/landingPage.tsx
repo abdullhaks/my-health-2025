@@ -441,9 +441,9 @@ const LandingPage = () => {
                   y: -2,
                 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate("/user/signup")}
+                onClick={() => navigate("/doctor/signup")}
               >
-                Get Started
+                Get Start As Doctor
                 <motion.div
                   className="ml-2 sm:ml-3"
                   animate={{ x: [0, 5, 0] }}
@@ -463,7 +463,7 @@ const LandingPage = () => {
                 onClick={() => navigate("/user/login")}
               >
                 <Video className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
-                Book Appointment
+                Book My Appointment
               </motion.button>
             </motion.div>
           </motion.div>
