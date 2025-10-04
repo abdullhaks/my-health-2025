@@ -13,4 +13,10 @@ export default interface IReportAnalysisRepository
       pageNumber: number,
       limitNumber: number
     ): Promise<{ reports: IReportAnalysisDocument[]; totalPages: number }>;
+
+  getUserReports(
+      userId: string,
+      pageNumber: number,
+      limitNumber: number
+    ): Promise<{ reports: IReportAnalysisDocument[]; totalPages: number }> 
 }

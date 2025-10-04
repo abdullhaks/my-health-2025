@@ -409,12 +409,12 @@ export const directFileUpload = async (formData: FormData) => {
   }
 };
 
-export const getAnalysisReports = async (userId: string) => {
+export const getAnalysisReports = async (userId: string,page:number, limit:number) => {
   try {
     console.log("userId id", userId);
 
     const response = await userInstance.get(ROUTES.user.getAnalysisReport, {
-      params: { userId },
+      params: { userId,page,limit },
     });
     return response.data;
   } catch (error) {

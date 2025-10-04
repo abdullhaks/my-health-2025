@@ -3,8 +3,9 @@ import IUserReportAnalysisService from "../interfaces/IUserReportAnalysis";
 import IReportAnalysisRepository from "../../../repositories/interfaces/IReportAnalysisRepository";
 import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
-import { IReportAnalysis } from "../../../dto/reportAnalysisDTO";
+import { IReportAnalysis, reportAnalysisResponseDTO } from "../../../dto/reportAnalysisDTO";
 import { IUser } from "../../../dto/userDTO";
+import { ReportAnalysisMapper } from "../../../mappers/reportAnalysis.mapper";
 
 @injectable()
 export default class UserReportAnalysisService
@@ -16,12 +17,40 @@ export default class UserReportAnalysisService
     @inject("IUserRepository") private _UserRepository: IUserRepository
   ) {}
 
-  async getReports(userId: string): Promise<IReportAnalysis[]> {
+  async getReports(userId: string,page:number,limit:number): Promise<{ reports: reportAnalysisResponseDTO[]; totalPages: number }> {
     try {
-      const response = await this._ReportAnalysisRepository.findAll({
-        userId: userId,
-      });
-      return response;
+      const response = await this._ReportAnalysisRepository.getUserReports(
+        userId,
+        page,
+        limit
+      );
+
+
+       const reportDto = await Promise.all(
+              response.reports.map(async (item) => {
+                const dto = await ReportAnalysisMapper.toReportAnalysisResponseDTO(item);
+      
+       
+      
+                const signedFiles = await Promise.all(
+                  dto.files.map(async (file) => {
+                    try {
+                      return await getSignedImageURL(file);
+                    } catch (error) {
+                      console.error(`Error generating signed URL for file ${file}:`, error);
+                      return file; 
+                    }
+                  })
+                );
+      
+      
+                
+                return { ...dto, files: signedFiles };
+              })
+            );
+      const resp = {reports:reportDto,totalPages:response.totalPages}
+  
+      return resp;
     } catch (error) {
       console.error("Error in get sessions", error);
       throw new Error("Failed to get consultation sessions");

@@ -75,8 +75,7 @@ export default class PaymentService implements IPaymentService {
               await stripe.refunds.create({ payment_intent: session.payment_intent as string });
               
               throw new Error('Slot reservation invalid. Payment refunded.');
-            }
-
+            };
             const doctor = await this._doctorRepository.findOne({
               _id: metadata.doctorId,
             });

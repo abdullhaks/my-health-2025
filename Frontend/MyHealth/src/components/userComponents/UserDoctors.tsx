@@ -135,7 +135,7 @@ const Doctors = () => {
             <div className="col-span-full flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500"></div>
             </div>
-          ) : doctors.length === 0 ? (
+          ) : !doctors || doctors.length === 0 ? (
             <div className="col-span-full text-center py-12 text-gray-500">
               <p className="text-base sm:text-lg">No doctors found.</p>
             </div>

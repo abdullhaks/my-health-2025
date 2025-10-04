@@ -403,10 +403,10 @@ const DoctorReportAnalysis = () => {
                           <a
                             key={index}
                              onClick={() => openImageViewer(
-                        file,
-                        "Analysis Report Document",
-                        `concerns : ${selectedReport.concerns}`
-                      )}
+                              file,
+                              "Analysis Report Document",
+                              `concerns : ${selectedReport.concerns}`
+                            )}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center space-x-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors group border border-purple-200"

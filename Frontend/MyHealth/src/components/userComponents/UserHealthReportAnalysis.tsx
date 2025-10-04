@@ -120,11 +120,11 @@ const UserHealthReportAnalysis = () => {
         formData.append("doc", file);
         formData.append("location", "healthReports");
         const uploadResult = await directFileUpload(formData);
-        if (!uploadResult?.url) {
+        if (!uploadResult?.fileKey) {
           throw new Error("Failed to upload file");
         }
 
-        return uploadResult.url;
+        return uploadResult.fileKey;
       });
 
       const uploadedFiles = await Promise.all(urls);

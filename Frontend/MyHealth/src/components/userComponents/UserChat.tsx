@@ -1,12 +1,4 @@
-// Rebuilt UserChat component with improvements:
-// - Standardized Conversation interface (members use _id consistently, removed userId)
-// - Fixed conversation list rendering: members[0] is the other participant
-// - Added optimistic UI for message sending
-// - Improved error handling, loading, and typing logic
-// - Removed redundant users state and commented search/new chat (users can't start arbitrary chats)
-// - Ensured activeAppointment check only affects sending, not viewing
-// - Used api functions consistently (replaced hardcoded axios.post with createOrGet logic, but since no createUserConversation api, kept similar)
-// - No changes to non-chat events
+
 
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";

@@ -16,10 +16,15 @@ export default class UserReportAnalyisController
 
   async getReports(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.query.userId;
+      const {userId,page, limit} = req.query;
+       const pageNumber = page ? parseInt(page as string, 10) : 1;
+      const limitNumber = limit ? parseInt(limit as string, 10) : 10;
+
       if (userId) {
         const response = await this._reportAnalyisService.getReports(
-          userId.toString()
+          userId.toString(),
+          pageNumber, 
+          limitNumber
         );
         res.status(HttpStatusCode.OK).json(response);
         return;

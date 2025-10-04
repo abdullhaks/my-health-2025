@@ -11,7 +11,7 @@ export class ReportAnalysisMapper {
             userId: r.userId.toString(),
             concerns: r.concerns,
             files: r.files,
-            doctorName: r.doctorId.toString(),
+            doctorName: r.doctorName.toString(),
             doctorCategory: r.doctorCategory,
             createdAt: r.createdAt,
             fee: r.fee,
