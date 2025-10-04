@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { ITransactionDocument, transactionDocument } from "../../entities/transactionsEntities";
 import ITransactionRepository from "../interfaces/ITransactionRepository";
 import BaseRepository from "./baseRepository";
-import {Model} from "mongoose";
+import {FilterQuery, Model} from "mongoose";
 import { ITransactions } from "../../dto/transactionDto";
 
 @injectable()
@@ -17,7 +17,7 @@ export default class TransactionRepository
   async getAllTransactions(
     page: number,
     limit: number,
-    query: any = {}
+    query: FilterQuery<ITransactionDocument> = {}
   ): Promise<{
         transactions:ITransactions[],
         totalPages:number

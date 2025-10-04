@@ -5,6 +5,7 @@ import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import { IMessageDocument } from "../../../entities/messageEntities";
 import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import { IDoctor } from "../../../dto/doctorDTO";
+import { IUser } from "../../../dto/userDTO";
 
 @injectable()
 export default class DetailsService implements IDetailsService {
@@ -35,6 +36,9 @@ export default class DetailsService implements IDetailsService {
         verificationId,
         walletBalance,
         subscriptionId,
+        bankAccHolderName,
+        bankAccNo,
+        bankIfscCode,
         ...rest
       } = response.toObject();
 
@@ -62,7 +66,7 @@ export default class DetailsService implements IDetailsService {
     }
   }
 
-  async getUser(userId: string): Promise<IDoctor> {
+  async getUser(userId: string): Promise<IUser> {
     try {
       console.log("user id from service... ", userId);
 

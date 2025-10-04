@@ -6,8 +6,9 @@ import IMessageRepository from "../../../repositories/interfaces/IMessageReposit
 import { IMessage } from "../../../dto/messageDTO";
 import { messageResponseDTO } from "../../../dto/messageDTO";
 import { MessageMapper } from "../../../mappers/message.mapper";
-import { conversationResponseDTO } from "../../../dto/conversationDTO";
-import { ConversationMapper } from "../../../mappers/conversation.mapper";
+import { ConversationResponseDTO,conversationResponseDTO_Temp } from "../../../dto/conversationDTO";
+import { ConversationMapper,Conversations_Mapper } from "../../../mappers/conversation.mapper";
+
 
 
 
@@ -19,7 +20,7 @@ export default class DoctorChatService implements IDoctorChatService {
     @inject("IMessageRepository") private _messageRepository: IMessageRepository
   ) {}
 
- async createOrGetConversation(userIds: string[]): Promise<conversationResponseDTO> {
+ async createOrGetConversation(userIds: string[]): Promise<conversationResponseDTO_Temp> {
      if (!userIds || userIds.length !== 2) {
        throw new Error("Exactly two user IDs are required");
      }
@@ -42,7 +43,7 @@ export default class DoctorChatService implements IDoctorChatService {
      return consvDto
    }
 
-    async getUserConversations(userId: string,from: string): Promise<conversationResponseDTO[]> {
+    async getUserConversations(userId: string,from: string): Promise<ConversationResponseDTO[]> {
       if (!userId) {
         throw new Error("User ID is required");
       }
@@ -52,7 +53,7 @@ export default class DoctorChatService implements IDoctorChatService {
       );
   
       const convDto = Promise.all (
-        convs.map((item)=>ConversationMapper.toResponseDTO(item))
+        convs.map((item)=>Conversations_Mapper.toResponseDTO(item))
       );
   
       return convDto;

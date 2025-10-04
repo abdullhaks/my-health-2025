@@ -1,10 +1,27 @@
 import Stripe from "stripe";
+import { ISubscriptionMetaData, IMetaData } from "../../entities/paymentEntities";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-04-30.basil",
 });
 
 export default stripe;
+
+
+const normalizeMetadata = (metadata: IMetaData | ISubscriptionMetaData): Record<string, string> => {
+  const result: Record<string, string> = {};
+  Object.entries(metadata).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      if (value instanceof Date) {
+        result[key] = value.toISOString();
+      } else {
+        result[key] = String(value);
+      }
+    }
+  });
+  return result;
+};
+
 
 export const makePayment = async ({
   priceId,
@@ -15,7 +32,7 @@ export const makePayment = async ({
 }: {
   priceId: string;
   mode?: "subscription" | "payment";
-  metadata?: Record<string, any>;
+  metadata?: ISubscriptionMetaData;
   successPath?: string;
   cancelPath?: string;
 }) => {
@@ -25,7 +42,7 @@ export const makePayment = async ({
     mode,
     success_url: `${process.env.CLIENT_URL}${successPath}?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.CLIENT_URL}${cancelPath}`,
-    metadata,
+    metadata: normalizeMetadata(metadata),
   });
 
   return session;
@@ -40,7 +57,7 @@ export const makeOneTimePayment = async ({
 }: {
   amount: number;
   currency?: string;
-  metadata?: Record<string, any>;
+  metadata?: IMetaData;
   successPath?: string;
   cancelPath?: string;
 }) => {
@@ -71,7 +88,7 @@ export const makeOneTimePayment = async ({
     },
     success_url: `${process.env.CLIENT_URL}${successPath}?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.CLIENT_URL}${cancelPath}`,
-    metadata,
+    metadata:normalizeMetadata(metadata)
   });
 
   return session;

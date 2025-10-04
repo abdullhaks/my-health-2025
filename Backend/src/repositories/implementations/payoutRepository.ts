@@ -1,7 +1,7 @@
 import BaseRepository from "./baseRepository";
 import { inject, injectable } from "inversify";
 import { IPayoutDocument, payoutDocument } from "../../entities/payoutEntities";
-import {Model} from "mongoose"
+import {FilterQuery, Model} from "mongoose"
 import { IPayouts } from "../../dto/payoutDto";
 
 @injectable()
@@ -10,7 +10,7 @@ export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
     super(_payoutModel);
   }
 
-  async getPayouts(page: number, limit: number, query: any = {}): Promise<{payouts: IPayouts[],
+  async getPayouts(page: number, limit: number, query: FilterQuery<IPayoutDocument> = {}): Promise<{payouts: IPayouts[],
         totalPages:number}> {
     try {
       const skip = (page - 1) * limit;

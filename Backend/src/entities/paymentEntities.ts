@@ -20,7 +20,11 @@ export interface IMetaData {
   role?: string;
 }
 
-
+export interface ISubscriptionMetaData {
+  doctorId?:string,
+  type?: string,
+  role?: string,
+}
 
 export interface IWalletPaymentData{
         doctorId:string;

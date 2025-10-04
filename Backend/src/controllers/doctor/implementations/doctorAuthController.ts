@@ -140,7 +140,8 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
         ?.graduationCertificate?.[0];
       const verificationIdFile = (req.files as MulterFiles)
         ?.verificationId?.[0];
-
+      const profileFile = (req.files as MulterFiles)
+              ?.profile?.[0];
       const certificates = {
         registrationCertificate: registrationCertificateFile
           ? {
@@ -161,6 +162,13 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
               buffer: verificationIdFile.buffer,
               originalname: verificationIdFile.originalname,
               mimetype: verificationIdFile.mimetype,
+            }
+          : undefined,
+          profile: profileFile
+          ? {
+              buffer: profileFile.buffer,
+              originalname: profileFile.originalname,
+              mimetype: profileFile.mimetype,
             }
           : undefined,
       };

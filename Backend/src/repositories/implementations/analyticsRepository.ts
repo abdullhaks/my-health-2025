@@ -2,7 +2,8 @@ import { inject, injectable } from "inversify";
 import { IAnalyticsDocument , analyticsDocument} from "../../entities/analyticsEntities";
 import IAnalyticsRepository from "../interfaces/IAnalyticsRepository";
 import BaseRepository from "./baseRepository";
-import { Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
+import { UpdateQuery } from "mongoose";
 
 @injectable()
 export default class AnalyticsRepository
@@ -14,8 +15,8 @@ export default class AnalyticsRepository
   }
 
   async uptadeOneWithUpsert(
-    filter: any,
-    update: any
+    filter: FilterQuery<IAnalyticsDocument>,
+    update: UpdateQuery<IAnalyticsDocument>
   ): Promise<IAnalyticsDocument> {
     try {
       const options = { upsert: true, new: true, strict: false };

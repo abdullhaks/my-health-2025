@@ -7,5 +7,8 @@ export default interface INotificationRepository
     id: string,
     limit: number,
     notificationSet: number
-  ): Promise<any>;
+  ): Promise<{
+        notifications: INotificationDocument[];
+        totalPages: number;
+      }>;
 }

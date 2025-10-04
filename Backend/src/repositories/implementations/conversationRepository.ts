@@ -1,8 +1,4 @@
-// Rebuilt ConversationRepository with manual population fix
-// Now fetches other member manually instead of invalid populate
-// Returns members as array of one (the other participant)
-// Standardized return { _id: string, name: string, avatar: string }
-// Assumes mongoose models are registered as 'User' and 'Doctor'
+
 
 import { injectable, inject } from "inversify";
 import { IConversationDocument, conversationDocument } from "../../entities/conversationEntities";
@@ -11,6 +7,8 @@ import IConversationRepository from "../interfaces/IConversationRepository";
 import { getSignedImageURL } from "../../middlewares/common/uploadS3";
 import { Model } from "mongoose";
 import mongoose from "mongoose";
+import { ConversationResponseDTO } from "../../dto/conversationDTO";
+
 
 @injectable()
 export default class ConversationRepository
@@ -42,7 +40,7 @@ export default class ConversationRepository
     });
   }
 
-  async getUserConversations(userId: string, from: string): Promise<any[]> {
+  async getUserConversations(userId: string, from: string): Promise<ConversationResponseDTO[]> {
     if (!userId) {
       throw new Error("User ID is required");
     }
@@ -52,8 +50,8 @@ export default class ConversationRepository
 
     const OtherModel = mongoose.model(from); // 'User' or 'Doctor'
 
-    return Promise.all(
-      conversations.map(async (conv: any) => {
+    return await Promise.all(
+      conversations.map(async (conv) => {
         const otherMemberId = conv.members.find((m: string) => m !== userId);
         const otherMember = await OtherModel.findById(otherMemberId, '_id fullName profile');
         

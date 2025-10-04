@@ -36,5 +36,10 @@ export interface advertisementResponseDTO {
 }
 
 export interface advertisementRequestDTO {
-
+title:string;
+videoUrl:string;
+location:object;
+author:string;
+authorId:string;
+tags:Array<string>;
 }

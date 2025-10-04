@@ -1,5 +1,6 @@
 import { IPayouts } from "../../../dto/payoutDto";
 import { payoutResponseDTO } from "../../../dto/payoutDto";
+import { payoutUpdateData } from "../../../entities/payoutEntities";
 
 
 interface filter {
@@ -13,5 +14,5 @@ export default interface IAdminPayoutService {
     limitNumber: number,
     filters: filter
   ): Promise<{payouts: payoutResponseDTO[], totalPages:number}>;
-  updatePayout(id: string, data: any): Promise<payoutResponseDTO>;
+  updatePayout(id: string, data: payoutUpdateData): Promise<payoutResponseDTO>;
 }

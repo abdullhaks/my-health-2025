@@ -1,6 +1,6 @@
 import { IAppointment , IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IUser } from "../../../dto/userDTO";
-import { IDoctor } from "../../../dto/doctorDTO";
+import { DoctorResponseDTO, IDoctor, SecureDoctorResponseDTO } from "../../../dto/doctorDTO";
 import { IWalletPaymentData } from "../../../entities/paymentEntities";
 
 interface DetailAppointment extends IAppointmentDTO {
@@ -17,7 +17,7 @@ export default interface IUserAppointmentService {
     page: number,
     limit: number
   ): Promise<{
-    doctors: IDoctor[] | null;
+    doctors: SecureDoctorResponseDTO[] | undefined;
     total: number;
     page: number;
     totalPages: number;

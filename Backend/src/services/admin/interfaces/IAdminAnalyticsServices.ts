@@ -7,6 +7,6 @@ export default interface IAdminAnalyticsServices {
     filter: string
   ): Promise<{ name: string; value: number }[]>;
   getTotalAnalytics(): Promise<analyticsResponseDTO>;
-  appointmentStats(filter: string): Promise<any>;
-  reportsStats(filter: string): Promise<any>;
+  appointmentStats(filter: string): Promise<{ day: string; appointments: number }[]>;
+  reportsStats(filter: string): Promise<{ day: string; pending: number; submited: number }[]>;
 }

@@ -11,6 +11,30 @@ import { PipelineStage } from "mongoose";
 import { analyticsResponseDTO } from "../../../dto/analyticsDto";
 import { AnalyticsMapper } from "../../../mappers/analytics.mapper";
 
+// Define interfaces for aggregation pipeline stages
+interface MatchStage {
+  createdAt?: { $gte: Date; $lte: Date };
+  date?: { $gte: string; $lte: string };
+  appointmentStatus?: { $in: string[] };
+  analysisStatus?: { $in: string[] };
+}
+
+interface GroupStage {
+  _id: string | { $dateToString: { format: string; date: string | { $toDate: string } } } | { $year: string };
+  count?: { $sum: number };
+  pending?: { $sum: { $cond: [{ $eq: [string, string] }, number, number] } };
+  submited?: { $sum: { $cond: [{ $eq: [string, string] }, number, number] } };
+}
+
+interface ProjectStage {
+  name?: string | { $toString: string };
+  value?: string;
+  day?: string | { $toString: string };
+  appointments?: string;
+  pending?: string;
+  submited?: string;
+}
+
 @injectable()
 export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
   constructor(
@@ -29,10 +53,10 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
   ): Promise<{ name: string; value: number }[]> {
     try {
       const now = new Date();
-      let matchStage: any = {};
-      let groupStage: any = {};
-      let projectStage: any = {};
-      let sortStage: any = { $sort: { _id: 1 } };
+      let matchStage: MatchStage = {};
+      let groupStage: GroupStage;
+      let projectStage: ProjectStage = {};
+      let sortStage: PipelineStage.Sort = { $sort: { _id: 1 } };
 
       switch (filter) {
         case "day": {
@@ -109,7 +133,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
           throw new Error("Invalid filter");
       }
 
-      const pipeline = [
+      const pipeline: PipelineStage[] = [
         { $match: matchStage },
         { $group: groupStage },
         sortStage,
@@ -133,10 +157,10 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
   ): Promise<{ name: string; value: number }[]> {
     try {
       const now = new Date();
-      let matchStage: any = {};
-      let groupStage: any = {};
-      let projectStage: any = {};
-      let sortStage: any = { $sort: { _id: 1 } };
+      let matchStage: MatchStage = {};
+      let groupStage: GroupStage;
+      let projectStage: ProjectStage = {};
+      let sortStage: PipelineStage.Sort = { $sort: { _id: 1 } };
 
       switch (filter) {
         case "day": {
@@ -213,7 +237,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
           throw new Error("Invalid filter");
       }
 
-      const pipeline = [
+      const pipeline: PipelineStage[] = [
         { $match: matchStage },
         { $group: groupStage },
         sortStage,
@@ -240,12 +264,11 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
       if (!response) {
         throw new Error("internal error in getTotalAnalytics");
       }
-      const analyticsDto = await AnalyticsMapper.toResponseDTO(response)
+      const analyticsDto = await AnalyticsMapper.toResponseDTO(response);
 
       return analyticsDto;
-      
     } catch (err) {
-      console.log("error in getTotalAnalytics service", err);
+      console.error("error in getTotalAnalytics service", err);
       throw new Error("error in getTotalAnalytics service");
     }
   }
@@ -256,12 +279,12 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
     try {
       const now = new Date();
       let startDate: Date;
-      let matchStage: any = {
+      let matchStage: MatchStage = {
         appointmentStatus: { $in: ["booked", "completed"] },
       };
-      let groupStage: any;
+      let groupStage: GroupStage;
       let sortStage: PipelineStage.Sort = { $sort: { _id: 1 } };
-      let projectStage: any = { day: "$_id", appointments: "$count" };
+      let projectStage: ProjectStage = { day: "$_id", appointments: "$count" };
 
       switch (filter) {
         case "day":
@@ -325,13 +348,13 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         { $project: projectStage },
       ];
 
-      let rawData = await this._appointmentRepository.aggregate(pipeline);
+      const rawData: { day: string; appointments: number }[] = await this._appointmentRepository.aggregate(pipeline);
 
       let result: { day: string; appointments: number }[] = [];
 
       if (filter === "day") {
         const dayMap = new Map(
-          rawData.map((r: any) => [r.day, r.appointments])
+          rawData.map((r: { day: string; appointments: number }) => [r.day, r.appointments])
         );
         for (let i = 0; i < 15; i++) {
           const d = new Date(startDate);
@@ -341,7 +364,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         }
       } else if (filter === "month") {
         const monthMap = new Map(
-          rawData.map((r: any) => [r.day, r.appointments])
+          rawData.map((r: { day: string; appointments: number }) => [r.day, r.appointments])
         );
         for (let i = 0; i < 12; i++) {
           const d = new Date(startDate);
@@ -354,7 +377,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         }
       } else if (filter === "year") {
         const yearMap = new Map(
-          rawData.map((r: any) => [r.day, r.appointments])
+          rawData.map((r: { day: string; appointments: number }) => [r.day, r.appointments])
         );
         for (let i = 0; i < 8; i++) {
           const d = new Date(startDate);
@@ -377,12 +400,12 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
     try {
       const now = new Date();
       let startDate: Date;
-      let matchStage: any = {
+      let matchStage: MatchStage = {
         analysisStatus: { $in: ["pending", "submited"] },
       };
-      let groupStage: any;
+      let groupStage: GroupStage;
       let sortStage: PipelineStage.Sort = { $sort: { _id: 1 } };
-      let projectStage: any = {
+      let projectStage: ProjectStage = {
         day: "$_id",
         pending: "$pending",
         submited: "$submited",
@@ -458,13 +481,13 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         { $project: projectStage },
       ];
 
-      let rawData = await this._reportAnalysisRepository.aggregate(pipeline);
+      const rawData: { day: string; pending: number; submited: number }[] = await this._reportAnalysisRepository.aggregate(pipeline);
 
       let result: { day: string; pending: number; submited: number }[] = [];
 
       if (filter === "day") {
         const dayMap = new Map(
-          rawData.map((r: any) => [
+          rawData.map((r: { day: string; pending: number; submited: number }) => [
             r.day,
             { pending: r.pending, submited: r.submited },
           ])
@@ -480,7 +503,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         }
       } else if (filter === "month") {
         const monthMap = new Map(
-          rawData.map((r: any) => [
+          rawData.map((r: { day: string; pending: number; submited: number }) => [
             r.day,
             { pending: r.pending, submited: r.submited },
           ])
@@ -499,7 +522,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         }
       } else if (filter === "year") {
         const yearMap = new Map(
-          rawData.map((r: any) => [
+          rawData.map((r: { day: string; pending: number; submited: number }) => [
             r.day,
             { pending: r.pending, submited: r.submited },
           ])

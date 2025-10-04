@@ -1,5 +1,6 @@
 import BaseRepository from "../implementations/baseRepository";
 import { IConversationDocument } from "../../entities/conversationEntities";
+import { ConversationResponseDTO } from "../../dto/conversationDTO";
 
 export default interface IConversationRepository
   extends BaseRepository<IConversationDocument> {
@@ -10,5 +11,5 @@ export default interface IConversationRepository
   getUserConversations(
     userId: string,
     from: string
-  ): Promise<IConversationDocument[]>;
+  ): Promise<ConversationResponseDTO[]>;
 }

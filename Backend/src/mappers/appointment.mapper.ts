@@ -26,7 +26,7 @@ export class AppointmentMapper {
                 callEndTime: appointment.callEndTime,
                 createdAt: appointment.createdAt,
                 updatedAt: appointment.updatedAt,
-
+                
 
         }
 

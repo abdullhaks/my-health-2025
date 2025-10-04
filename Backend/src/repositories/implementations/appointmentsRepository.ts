@@ -140,7 +140,7 @@ export default class AppointmentsRepository
     }
   }
 
-  async aggregate<T = any>(pipeline: PipelineStage[]): Promise<T[]> {
+  async aggregate<T>(pipeline: PipelineStage[]): Promise<T[]> {
     try {
       const resp = await this._appointmentModel.aggregate(pipeline);
       console.log("pipeline is .....", pipeline);

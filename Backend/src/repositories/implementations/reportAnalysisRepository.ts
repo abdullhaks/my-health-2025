@@ -5,7 +5,7 @@ import {
 } from "../../entities/reportAnalysisEntities";
 import BaseRepository from "./baseRepository";
 import IReportAnalysisRepository from "../interfaces/IReportAnalysisRepository";
-import { Model, PipelineStage } from "mongoose";
+import { FilterQuery, Model, PipelineStage } from "mongoose";
 
 @injectable()
 export default class ReportAnalysisRepository
@@ -19,7 +19,7 @@ export default class ReportAnalysisRepository
     super(_reportModel);
   }
 
-  async aggregate<T = any>(pipeline: PipelineStage[]): Promise<T[]> {
+  async aggregate<T>(pipeline: PipelineStage[]): Promise<T[]> {
     try {
       const resp = await this._reportModel.aggregate(pipeline);
       console.log("pipeline is .....", pipeline);
@@ -38,7 +38,7 @@ export default class ReportAnalysisRepository
       limitNumber: number
     ): Promise<{ reports: IReportAnalysisDocument[]; totalPages: number }> {
       try {
-        const query: any = { doctorId: doctorId };
+        const query: FilterQuery<IReportAnalysisDocument> = { doctorId: doctorId };
   
         const skip = (pageNumber - 1) * limitNumber;
   

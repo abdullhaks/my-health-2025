@@ -3,8 +3,8 @@
 import { inject, injectable } from "inversify";
 import IConversationService from "../interfaces/IConversationService";
 import IConversationRepository from "../../../repositories/interfaces/IConversationRepository";
-import { conversationResponseDTO } from "../../../dto/conversationDTO";
-import { ConversationMapper } from "../../../mappers/conversation.mapper";
+import { ConversationResponseDTO,conversationResponseDTO_Temp } from "../../../dto/conversationDTO";
+import { ConversationMapper,Conversations_Mapper } from "../../../mappers/conversation.mapper";
 
 @injectable()
 export default class ConversationService implements IConversationService {
@@ -13,7 +13,7 @@ export default class ConversationService implements IConversationService {
     private _conversationRepository: IConversationRepository
   ) {}
 
-  async createOrGetConversation(userIds: string[]): Promise<conversationResponseDTO> {
+  async createOrGetConversation(userIds: string[]): Promise<conversationResponseDTO_Temp> {
     if (!userIds || userIds.length !== 2) {
       throw new Error("Exactly two user IDs are required");
     }
@@ -29,7 +29,7 @@ export default class ConversationService implements IConversationService {
     return await ConversationMapper.toResponseDTO(conv);
   }
 
-  async getUserConversations(userId: string, from: string): Promise<conversationResponseDTO[]> {
+  async getUserConversations(userId: string, from: string): Promise<ConversationResponseDTO[]> {
     if (!userId) {
       throw new Error("User ID is required");
     }
@@ -39,7 +39,7 @@ export default class ConversationService implements IConversationService {
     );
 
     return await Promise.all(
-      convs.map((item) => ConversationMapper.toResponseDTO(item))
+      convs.map((item) => Conversations_Mapper.toResponseDTO(item))
     );
   }
 }

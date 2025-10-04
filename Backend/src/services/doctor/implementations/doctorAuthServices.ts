@@ -58,6 +58,11 @@ interface ICertificates {
     originalname: string;
     mimetype: string;
   };
+  profile: {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+  };
 }
 
 @injectable()
@@ -204,6 +209,13 @@ export default class DoctorAuthService implements IDoctorAuthService {
       certificates.graduationCertificate.mimetype
     );
 
+    const profileUrl = await uploadFileToS3(
+      certificates.profile.buffer,
+      certificates.profile.originalname,
+      "doctors/graduation-certificates",
+      certificates.profile.mimetype
+    );
+
     const registrationCertUrl = await uploadFileToS3(
       certificates.registrationCertificate.buffer,
       certificates.registrationCertificate.originalname,
@@ -228,12 +240,12 @@ export default class DoctorAuthService implements IDoctorAuthService {
       email: doctor.email,
       password: doctor.password,
       graduation: doctor.graduation,
-      graduationCertificate: graduationCertUrl,
+      graduationCertificate: graduationCertUrl.uniqueFileName,
       category: doctor.category,
       registerNo: doctor.registerNo,
-      registrationCertificate: registrationCertUrl,
-      experience: doctor.experience,
-      verificationId: verificationIdUrl,
+      registrationCertificate: registrationCertUrl.uniqueFileName,
+      verificationId: verificationIdUrl.uniqueFileName,
+      profile:profileUrl.uniqueFileName
     };
 
     const response = await this._doctorRepository.create(newDoctor);

@@ -2,7 +2,7 @@ import BaseRepository from "./baseRepository";
 import { inject, injectable } from "inversify";
 import { IBlogDocument, blogDocument } from "../../entities/blogEntities";
 import IBlogRepository from "../interfaces/IBlogRepository";
-import { Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
 
 @injectable()
 export default class BlogsRepository
@@ -19,7 +19,7 @@ export default class BlogsRepository
     limitNumber: number
   ): Promise<{ blogs: IBlogDocument[]; totalPages: number }> {
     try {
-      const query: any = { authorId: authorId };
+      const query: FilterQuery<IBlogDocument> = { authorId: authorId };
 
       const skip = (pageNumber - 1) * limitNumber;
 
@@ -45,7 +45,7 @@ export default class BlogsRepository
     limitNumber: number
   ): Promise<{ blogs: IBlogDocument[]; totalPages: number }> {
     try {
-      const query: any = search
+      const query: FilterQuery<IBlogDocument>  = search
         ? { title: { $regex: search, $options: "i" } } // Case-insensitive search on title
         : {};
 

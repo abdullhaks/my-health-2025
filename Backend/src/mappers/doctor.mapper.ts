@@ -1,4 +1,4 @@
-import { IDoctor } from "../dto/doctorDTO";
+import { IDoctor, SecureDoctorResponseDTO } from "../dto/doctorDTO";
 import { DoctorResponseDTO } from "../dto/doctorDTO";
 
 // Domain User → safe public DTO
@@ -40,5 +40,38 @@ export class DoctorMapper {
       createdAt: d.createdAt,
       updatedAt: d.updatedAt,
     };
-  }
+  };
+
+
+  static async toSecureDoctorResponseDTO(d: IDoctor): Promise<SecureDoctorResponseDTO> {
+    return {
+      _id: d._id.toString(),
+      fullName: d.fullName,
+      email: d.email,
+      profile: d.profile,
+      phone: d.phone,
+      location: d.location
+        ? {
+            type: "Point",
+            text: d.location.text,
+            coordinates: d.location.coordinates,
+          }
+        : { type: "Point", text: "", coordinates: [0, 0] },
+      gender: d.gender,
+      dob: d.dob,
+      isBlocked: d.isBlocked,
+      premiumMembership: d.premiumMembership,
+      adminVerified: d.adminVerified,
+      graduation: d.graduation,
+      category: d.category,
+      registerNo: d.registerNo,
+      experience: d.experience,
+      reportAnalysisFees: d.reportAnalysisFees,
+      specializations: d.specializations,
+      createdAt: d.createdAt,
+      updatedAt: d.updatedAt,
+    };
+  };
+
+
 }

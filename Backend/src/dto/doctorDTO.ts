@@ -56,6 +56,29 @@ export interface DoctorResponseDTO {
   bankIfscCode?: string;
   createdAt: Date;
   updatedAt: Date;
+};
+
+
+export interface SecureDoctorResponseDTO {
+  _id: string;
+  fullName: string;
+  email: string;
+  profile: string;
+  phone: string;
+  location: ILocation;
+  gender: string;
+  dob: string;
+  isBlocked: boolean;
+  premiumMembership: boolean;
+  adminVerified: number;
+  graduation: string;
+  category: string;
+  registerNo: string;
+  experience: number;
+  reportAnalysisFees: number;
+  specializations: ISpecializations[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface AuthResponseDTO {

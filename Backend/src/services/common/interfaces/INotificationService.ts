@@ -1,9 +1,12 @@
+import { UpdateResult } from "../../../dto/commonResponseDto";
+import { notificationResponseDTO } from "../../../dto/notificationDto";
+
 export default interface INotificationServices {
-  createNotification(notification: any): Promise<any>;
-  readAllNotifications(id: string): Promise<any>;
+
+  readAllNotifications(id: string): Promise<UpdateResult>;
   getNewNotifications(
     id: string,
     newMsgs: boolean
-  ): Promise<any>;
-  getAllNotifications(id: string): Promise<any>;
+  ): Promise<notificationResponseDTO[]>;
+  getAllNotifications(id: string): Promise<notificationResponseDTO[]>;
 }

@@ -6,6 +6,8 @@ import IDoctorRepository from "../../../repositories/interfaces/IDoctorRepositor
 import { IPayouts } from "../../../dto/payoutDto";
 import { payoutResponseDTO } from "../../../dto/payoutDto";
 import { PayoutMapper } from "../../../mappers/payout.mapper";
+import { FilterQuery } from "mongoose";
+import { IPayoutDocument, payoutUpdateData } from "../../../entities/payoutEntities";
 
 interface filter {
   status?: string;
@@ -27,7 +29,7 @@ export default class AdminPayoutService implements IAdminPayoutService {
     limitNumber: number,
     filters: filter = {}
   ): Promise<{payouts: payoutResponseDTO[], totalPages:number}> {
-    const query: any = {};
+    const query: FilterQuery<IPayoutDocument> = {};
 
     if (filters.status) {
       console.log("status....", filters.status);
@@ -57,7 +59,7 @@ export default class AdminPayoutService implements IAdminPayoutService {
     return {payouts:payoutDto,totalPages:transactions.totalPages};
   }
 
-  async updatePayout(id: string, data: any): Promise<payoutResponseDTO> {
+  async updatePayout(id: string, data: payoutUpdateData): Promise<payoutResponseDTO> {
     const resp = await this._payoutRepository.update(id, data);
     console.log("payourt respo is ", resp);
 

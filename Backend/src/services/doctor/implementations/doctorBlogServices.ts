@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import IDoctorBlogService from "../interfaces/IDoctorBlogServices";
 import IBlogRepository from "../../../repositories/interfaces/IBlogRepository";
-import { IBlog } from "../../../dto/blogDto";
+import { blogRequestDTO, IBlog } from "../../../dto/blogDto";
 import { blogResponseDTO} from "../../../dto/blogDto";
 import { BlogMapper } from "../../../mappers/blog.mapper";
 
@@ -11,7 +11,7 @@ export default class DoctorBlogService implements IDoctorBlogService {
     @inject("IBlogRepository") private _blogRepository: IBlogRepository
   ) {}
 
-  async createBlog(blogData: any): Promise<blogResponseDTO> {
+  async createBlog(blogData: blogRequestDTO): Promise<blogResponseDTO> {
 
     const response = await this._blogRepository.create(blogData);
     const blogDto = await BlogMapper.toResponseDTO(response);

@@ -1,4 +1,5 @@
 import { Document, Types } from "mongoose";
+import { IPrescription } from "./prescriptionDto";
 
 export interface IAppointmentDocument extends Document {
   _id: Types.ObjectId;
@@ -53,6 +54,12 @@ export interface IAppointmentDTO {
   callEndTime?: Date;
   createdAt: Date;
   updatedAt: Date;
+  
+}
+
+export interface IDetailAppointmentDTO extends IAppointmentDTO{
+  profile?:string;
+  prescriptions?:Array<IPrescription>
 }
 
 

@@ -1,9 +1,9 @@
-import { IBlog } from "../../../dto/blogDto";
+import { blogRequestDTO, IBlog } from "../../../dto/blogDto";
 import { blogResponseDTO } from "../../../dto/blogDto";
 
 
 export default interface IDoctorBlogService {
-  createBlog(blogData: any): Promise<blogResponseDTO>;
+  createBlog(blogData: blogRequestDTO): Promise<blogResponseDTO>;
   getBLogs(
     authorId: string,
     pageNumber: number,

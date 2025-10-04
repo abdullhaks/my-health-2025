@@ -5,6 +5,7 @@ import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import IDoctorRepository from "../../../repositories/interfaces/IDoctorRepository";
 import { AppointmentMapper } from "../../../mappers/appointment.mapper";
+import { FilterQuery } from "mongoose";
 
 interface filter {
   status?: string;
@@ -32,7 +33,7 @@ export default class AdminAppointmentService
     appointments: IAppointmentDTO[] | null;
     totalPages: number | null;
   }> {
-    const query: any = {};
+    const query: FilterQuery<IAppointment> = {};
 
     if (filters.status) {
       query.appointmentStatus = filters.status;

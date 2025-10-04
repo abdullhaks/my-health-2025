@@ -3,6 +3,7 @@ import { IOtpDocument } from "../../models/otp";
 import BaseRepository from "./baseRepository";
 import IOtpRepository from "../interfaces/IOtpRepository";
 import {Model} from "mongoose";
+import { otpDocument } from "../../entities/otpEntities";
 
 @injectable()
 export default class OtpRepository
@@ -13,7 +14,7 @@ export default class OtpRepository
     super(_otpModel);
   }
 
-  async findLatestOtpByEmail(email: string): Promise<any> {
+  async findLatestOtpByEmail(email: string): Promise<IOtpDocument> {
     try {
       const otpRecord = await this._otpModel
         .findOne({ email })

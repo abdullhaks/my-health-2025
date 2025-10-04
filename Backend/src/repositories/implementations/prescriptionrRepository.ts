@@ -3,7 +3,7 @@ import { prescriptionDocument } from "../../entities/prescriptionEntities";
 import IPrescriptionRepository from "../interfaces/IPrescriptionRepositiory";
 import BaseRepository from "./baseRepository";
 import { inject, injectable } from "inversify";
-import {Model} from "mongoose";
+import {FilterQuery, Model, UpdateQuery} from "mongoose";
 
 @injectable()
 export default class PrescriptionRepository
@@ -15,8 +15,8 @@ export default class PrescriptionRepository
   }
 
   async uptadeOneWithUpsert(
-    filter: any,
-    update: any
+    filter: FilterQuery<IPrescriptionDocument>,
+    update: UpdateQuery<IPrescriptionDocument>
   ): Promise<IPrescriptionDocument> {
     try {
       const options = { upsert: true, new: true, strict: false };

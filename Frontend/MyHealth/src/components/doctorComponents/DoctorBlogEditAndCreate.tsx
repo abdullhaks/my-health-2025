@@ -277,10 +277,10 @@ const DoctorBlogEditAndCreate = () => {
       uploadFormData.append("location", "blog-images");
 
       const uploadResult = await directFileUpload(uploadFormData);
-      if (!uploadResult?.url) {
+      if (!uploadResult?.publicLink) {
         throw new Error(`Failed to upload ${type}`);
       }
-      return uploadResult.url;
+      return uploadResult.publicLink;
     } finally {
       setUploadProgress((prev) => ({ ...prev, [type]: false }));
     }

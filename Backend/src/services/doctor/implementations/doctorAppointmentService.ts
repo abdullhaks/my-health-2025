@@ -11,6 +11,8 @@ import IPrescriptionRepository from "../../../repositories/interfaces/IPrescript
 import { prescriptionResponseDTO } from "../../../dto/prescriptionDto";
 import { PrescriptionMapper } from "../../../mappers/prescription.mapper";
 import { AppointmentMapper } from "../../../mappers/appointment.mapper";
+import { FilterQuery } from "mongoose";
+import { IAppointmentDocument } from "../../../entities/appointmentEntities";
 
 interface IAppointmentWithPrescription extends IAppointmentDTO {
   prescriptions?: prescriptionResponseDTO;
@@ -47,7 +49,7 @@ export default class DoctorAppointmentService
   }> {
     console.log("Doctor ID from service...", doctorId);
 
-    const query: any = { doctorId };
+    const query: FilterQuery<IAppointmentDocument> = { doctorId };
     if (filters.appointmentStatus) {
       query.appointmentStatus = filters.appointmentStatus;
     }
@@ -76,7 +78,7 @@ export default class DoctorAppointmentService
       );
 
       await Promise.all(
-        expiredAppointments.map(async (appointment: any) => {
+        expiredAppointments.map(async (appointment: IAppointmentDocument) => {
           await this._userRepository.update(appointment.userId, {
             $inc: { walletBalance: appointment.fee },
           });
@@ -106,30 +108,20 @@ export default class DoctorAppointmentService
       )
 
 
-      const profile = new Map();
-
-      let updatedAppointments = await Promise.all(
-        appointDto.map(async (item: any) => {
-          if (profile.has(item.userId)) {
-            item.profile = profile.get(item.userId);
-            return item;
-          } else {
+      const profile = new Map<string, string>();
+        const updatedAppointments = await Promise.all(
+          appointDto.map(async (item) => {
+            if (profile.has(item.doctorId)) {
+              return { ...item, profile: profile.get(item.doctorId) };
+            }
             const user = await this._userRepository.findOne({
               _id: item.userId,
             });
-            if (user) {
-              const url = await getSignedImageURL(user.profile);
-              if (url) {
-                profile.set(item.userId, url);
-                item.profile = url;
-              } else {
-                item.profile = "";
-              }
-            }
-            return item;
-          }
-        })
-      );
+            const profileImg = user ? await getSignedImageURL(user.profile) || "" : "";
+            profile.set(item.doctorId, profileImg);
+            return { ...item, profile: profileImg };
+          })
+        );
 
       const prescriptions = new Map();
 
@@ -167,7 +159,7 @@ export default class DoctorAppointmentService
 
       // const typedAppointments: IAppointmentWithPrescription[] =
       //   updatedAppointments.map(
-      //     (item: any) => item as IAppointmentWithPrescription
+      //     (item) => item as IAppointmentWithPrescription
       //   );
       return { appointments: nwUpdatedAppointments, totalPages };
       

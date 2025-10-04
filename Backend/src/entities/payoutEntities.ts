@@ -17,3 +17,11 @@ export interface IPayoutDocument extends Document {
   updatedAt: Date;
 }
 export interface payoutDocument extends IPayoutDocument {}
+
+export interface payoutUpdateData {
+          status: string,
+          paid?: number,
+          transactionId?: string,
+          invoiceLink?: string |null,
+          on: Date | string,
+        };

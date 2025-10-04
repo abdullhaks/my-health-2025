@@ -1,6 +1,9 @@
 import { inject, injectable } from "inversify";
 import INotificationServices from "../interfaces/INotificationService";
 import INotificationRepository from "../../../repositories/interfaces/INotificationRepository";
+import { notificationResponseDTO } from "../../../dto/notificationDto";
+import { NotificationMapper } from "../../../mappers/notification.mapper";
+import { UpdateResult } from "../../../dto/commonResponseDto";
 
 @injectable()
 export default class NotificationService implements INotificationServices {
@@ -9,19 +12,26 @@ export default class NotificationService implements INotificationServices {
     private _notificationRepository: INotificationRepository
   ) {}
 
-  async createNotification(notification: any): Promise<any> {}
 
-  async getAllNotifications(id: string): Promise<any> {
+
+  async getAllNotifications(id: string): Promise<notificationResponseDTO[]> {
     console.log("noti id is service......", id);
 
     const response = await this._notificationRepository.findAll({ userId: id });
-    return response;
+
+    const notifiecationDto = await Promise.all(
+      response.map(async(noti)=> await  NotificationMapper.toResponseDTO(noti))
+    )
+    
+ 
+
+    return notifiecationDto;
   }
 
   async getNewNotifications(
     id: string,
     newMsgs: boolean
-  ): Promise<any> {
+  ): Promise<notificationResponseDTO[]> {
 
     console.log("noti id is service......", id, newMsgs);
     
@@ -33,21 +43,32 @@ export default class NotificationService implements INotificationServices {
       if(!response.length){
         const nwResp = await this._notificationRepository.findAll({ userId: id },{sort: { createdAt: -1 },limit:10});
       console.log("new noti is service......nwResp", nwResp);
+
+      const notifiecationDto = await Promise.all(
+      nwResp.map(async(noti)=> await  NotificationMapper.toResponseDTO(noti)) )
         
-        return nwResp;
-      }
-      return response
+        return notifiecationDto;
+      };
+
+
+      const notifiecationDto = await Promise.all(
+      response.map(async(noti)=> await  NotificationMapper.toResponseDTO(noti)) )
+      
+      return notifiecationDto
     }else{
       const response = await this._notificationRepository.findAll({ userId: id },{sort: { createdAt: -1 }});
       console.log("new noti is service......response2", response);
+
+      const notifiecationDto = await Promise.all(
+      response.map(async(noti)=> await  NotificationMapper.toResponseDTO(noti)) )
       
-      return response;
+      return notifiecationDto;
 
     }
 
   }
 
-  async readAllNotifications(id: string): Promise<any> {
+  async readAllNotifications(id: string): Promise<UpdateResult> {
 
     const response = await this._notificationRepository.updateMany(
       { userId: id, isRead: false },

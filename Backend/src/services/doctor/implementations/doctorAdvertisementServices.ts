@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import IDoctorAdvertisementService from "../interfaces/IDoctorAdvertisementServices";
 import IAdvertisementRepository from "../../../repositories/interfaces/IAdvertisementRepository";
-import { IAdvertisement } from "../../../dto/advertisementDto";
+import { advertisementRequestDTO, IAdvertisement } from "../../../dto/advertisementDto";
 import { advertisementResponseDTO } from "../../../dto/advertisementDto";
 import { AdvertisementMapper } from "../../../mappers/advertisement.mapper";
 
@@ -20,7 +20,7 @@ export default class DoctorAdvertisementService
     private _advertisementRepository: IAdvertisementRepository
   ) {}
 
-  async createAdvertisement(addData: any): Promise<advertisementResponseDTO> {
+  async createAdvertisement(addData: advertisementRequestDTO): Promise<advertisementResponseDTO> {
     if (addData.tags.length) {
       addData.tags = addData.tags.map((item: string) => item.toLowerCase());
     }

@@ -8,10 +8,11 @@ import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRep
 import ITransactionRepository from "../../../repositories/interfaces/ITransactionRepository";
 import { IAppointment, IAppointmentDTO } from "../../../dto/appointmentDTO";
 import { IUser } from "../../../dto/userDTO";
-import { IDoctor } from "../../../dto/doctorDTO";
+import { IDoctor, SecureDoctorResponseDTO } from "../../../dto/doctorDTO";
 import appointmentModel from "../../../models/appointment";
 import { FilterQuery } from "mongoose";
 import { AppointmentMapper } from "../../../mappers/appointment.mapper";
+import { DoctorMapper } from "../../../mappers/doctor.mapper";
 
 interface DetailAppointment extends IAppointmentDTO {
   profile?: string;
@@ -38,7 +39,7 @@ export default class UserAppointmentService implements IUserAppointmentService {
     page: number,
     limit: number
   ): Promise<{
-    doctors: IDoctor[] | null;
+    doctors: SecureDoctorResponseDTO[] | undefined;
     total: number;
     page: number;
     totalPages: number;
@@ -52,25 +53,35 @@ export default class UserAppointmentService implements IUserAppointmentService {
       limit
     );
 
+    let doctors;
     if (response.doctors && response.doctors.length > 0) {
+      const doctorDto = await Promise.all(
+          response.doctors.map(async(doc)=>await DoctorMapper.toSecureDoctorResponseDTO(doc))
+        );
+      console.log("doctorDto from backend.......", doctorDto);
+
       const result = await Promise.all(
-        response.doctors.map(async (doctor: IDoctor) => {
-          const { password, ...userWithoutPassword } = doctor.toObject();
-          if (userWithoutPassword.profile) {
-            userWithoutPassword.profile = await getSignedImageURL(
+        doctorDto.map(async (doctor:SecureDoctorResponseDTO ) => {
+          
+          if (doctor.profile) {
+            doctor.profile = await getSignedImageURL(
               doctor.profile
             );
           }
-          return userWithoutPassword;
+          return doctor;
         })
       );
 
       console.log("doctors list from backend.......", result);
 
-      response.doctors = result;
+      doctors = result;
     }
 
-    return response;
+    return {doctors: doctors,
+    total: response.total,
+    page: response.page,
+    totalPages: response.totalPages }
+
   }
 
   async getUserAppointments(
