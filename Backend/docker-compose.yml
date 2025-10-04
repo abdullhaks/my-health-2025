@@ -1,0 +1,15 @@
+
+version: '3.8'
+
+services:
+  myhealth-backend:
+    image: ${DOCKERHUB_USERNAME}/myhealth-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: always
+    container_name: myhealth-backend
