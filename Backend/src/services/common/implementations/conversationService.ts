@@ -30,7 +30,11 @@ export default class ConversationService implements IConversationService {
   }
 
   async getUserConversations(userId: string, from: string): Promise<ConversationResponseDTO[]> {
+        console.log("hereree 2")
+
     if (!userId) {
+        console.log("hereree 3")
+
       throw new Error("User ID is required");
     }
     const convs = await this._conversationRepository.getUserConversations(

@@ -46,8 +46,11 @@ export default class ConversationController implements IConversationCtrl {
       const doctorId = req.params.doctorId;
       let from = req.query.from as string | undefined;
       console.log("from doc... is ...", from);
+      console.log("doctorId... is ...", doctorId);
 
       if (!doctorId || !from) {
+
+        console.log("hereree 1")
         res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ message: "Doctor ID is required and doc location" });

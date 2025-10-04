@@ -1,12 +1,3 @@
-// Rebuilt DoctorChat component with improvements:
-// - Standardized Conversation interface (members use _id consistently)
-// - Fixed conversation list rendering: assume members[0] is the other participant (one-to-one chat)
-// - Added optimistic UI for message sending (add temp message, replace on success)
-// - Improved error handling and loading states
-// - Removed redundant users state (hardcoded, not used effectively)
-// - Cleaned up typing logic and timeouts
-// - Ensured socket events are properly cleaned up
-// - No changes to non-chat events (notifications, video calls)
 
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -15,7 +6,7 @@ import { IoDocumentAttachOutline } from "react-icons/io5";
 import { io, Socket } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import {
-  createDoctorConversation,
+  // createDoctorConversation,
   directFileUpload,
   getDoctorConversations,
   getDoctorMessages,
@@ -62,9 +53,9 @@ const DoctorChat = () => {
   const [currentChat, setCurrentChat] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [typingUser, setTypingUser] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<string>("");
+  // const [selectedUser, setSelectedUser] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
@@ -409,24 +400,24 @@ const DoctorChat = () => {
     }
   };
 
-  const handleCreateConversation = async () => {
-    if (!selectedUser) {
-      message.error("Please select a user to start a conversation");
-      return;
-    }
+  // const handleCreateConversation = async () => {
+  //   if (!selectedUser) {
+  //     message.error("Please select a user to start a conversation");
+  //     return;
+  //   }
 
-    try {
-      const response = await createDoctorConversation(doctorId, selectedUser);
-      const newConversation = response.data;
-      setConversations((prev) => [...prev, newConversation]);
-      setCurrentChat(newConversation);
-      setSelectedUser("");
-      setIsConversationListVisible(false);
-    } catch (error) {
-      console.error("Failed to create conversation:", error);
-      message.error("Failed to create conversation. Please try again.");
-    }
-  };
+  //   try {
+  //     const response = await createDoctorConversation(doctorId, selectedUser);
+  //     const newConversation = response.data;
+  //     setConversations((prev) => [...prev, newConversation]);
+  //     setCurrentChat(newConversation);
+  //     setSelectedUser("");
+  //     setIsConversationListVisible(false);
+  //   } catch (error) {
+  //     console.error("Failed to create conversation:", error);
+  //     message.error("Failed to create conversation. Please try again.");
+  //   }
+  // };
 
   const handleTyping = () => {
     if (!currentChat || !socketRef.current) return;
@@ -501,7 +492,7 @@ const DoctorChat = () => {
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">
             Conversations
           </h2>
-          <input
+          {/* <input
             type="text"
             placeholder="Search patients..."
             value={searchTerm}
@@ -515,7 +506,7 @@ const DoctorChat = () => {
               className="w-full p-2.5 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
             >
               <option value="">Select a user to start a conversation</option>
-              {/* Add dynamic users if needed, currently hardcoded in original */}
+             
               <option value="6808e21a670e6cfc73176507">Luthfi KS</option>
             </select>
             <button
@@ -525,8 +516,10 @@ const DoctorChat = () => {
             >
               {loading ? "Starting..." : "Start Conversation"}
             </button>
-          </div>
+          </div> */}
+          
         </div>
+
         {/* Conversation List */}
         <div className="flex-1 overflow-y-auto">
           {loading ? (
@@ -549,7 +542,7 @@ const DoctorChat = () => {
                     }}
                   >
                     <img
-                      src={m.avatar}
+                      src={m.avatar||`https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png`}
                       alt={m.name}
                       className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200"
                     />

@@ -41,25 +41,38 @@ export default class ConversationRepository
   }
 
   async getUserConversations(userId: string, from: string): Promise<ConversationResponseDTO[]> {
+        console.log("hereree 4")
+
     if (!userId) {
+        console.log("hereree 5")
+
       throw new Error("User ID is required");
     }
     const conversations = await this._conversationModel
       .find({ members: userId })
       .sort({ updatedAt: -1 });
 
+
+      console.log("conversations......",conversations)
+
     const OtherModel = mongoose.model(from); // 'User' or 'Doctor'
+      console.log("OtherModel......",OtherModel)
+
 
     return await Promise.all(
       conversations.map(async (conv) => {
         const otherMemberId = conv.members.find((m: string) => m !== userId);
         const otherMember = await OtherModel.findById(otherMemberId, '_id fullName profile');
         
+        console.log("other memebr.....",otherMember);
+
         const memberDto = otherMember ? {
           _id: otherMember._id.toString(),
           name: otherMember.fullName,
-          avatar: await getSignedImageURL(otherMember.profile),
+          avatar: otherMember.profile?await getSignedImageURL(otherMember.profile):"",
         } : null;
+
+        console.log("memberDto .....",memberDto);
 
         return {
           _id: conv._id.toString(),
