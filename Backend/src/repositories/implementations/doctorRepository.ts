@@ -132,6 +132,8 @@ export default class DoctorRepository
   }
 
   async verifyDoctorByAdmin(id: string): Promise<IDoctor | null> {
+
+    console.log("id in repo....", id);
     try {
       const resp = await this._doctorModel.findByIdAndUpdate(
         id,

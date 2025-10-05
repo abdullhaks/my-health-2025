@@ -63,7 +63,7 @@ export default class AdminDoctorService implements IAdminDoctorService {
   }
 
   async verifyDoctor(id: string): Promise<IDoctor> {
-    const response = await this._doctorRepository.verifyDoctor(id);
+    const response = await this._doctorRepository.verifyDoctorByAdmin(id);
 
     if (!response) {
       throw new Error("doctor verifying failed");

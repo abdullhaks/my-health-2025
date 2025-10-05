@@ -204,7 +204,12 @@ const AdminDoctors = () => {
           <label className="flex items-center text-sm sm:text-base text-gray-700">
             <Checkbox
               checked={toVerify}
-              onChange={(e) => setToVerify(e.target.checked)}
+              onChange={(e) => {
+                setToVerify(e.target.checked)
+                setPage(1)
+              }
+              
+              }
               className="mr-2"
             />
             to verify
