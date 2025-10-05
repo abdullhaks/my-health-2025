@@ -63,7 +63,11 @@ export default class AdminDoctorService implements IAdminDoctorService {
   }
 
   async verifyDoctor(id: string): Promise<IDoctor> {
-    const response = await this._doctorRepository.verifyDoctorByAdmin(id);
+    const response = await this._doctorRepository.update(
+        id,
+        { adminVerified: 1 }
+
+    )
 
     if (!response) {
       throw new Error("doctor verifying failed");
@@ -72,7 +76,8 @@ export default class AdminDoctorService implements IAdminDoctorService {
   }
 
   async declineDoctor(id: string, reason: string): Promise<IDoctor> {
-    const response = await this._doctorRepository.declineDoctor(id, reason);
+    const response = await this._doctorRepository.update(id,
+        { adminVerified: 3, rejectionReason: reason });
 
     if (!response) {
       throw new Error("doctor declining failed");

@@ -11,8 +11,6 @@ export interface ISpecializations {
   certificate: string;
 }
 export interface IDoctorDocument extends Document {
-  doctor: unknown;
-
   _id: Types.ObjectId;
   fullName: string;
   email: string;
