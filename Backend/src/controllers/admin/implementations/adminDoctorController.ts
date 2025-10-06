@@ -66,6 +66,8 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
   async verifyDoctor(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+
+      console.log("doctor id for verify...", id);
       const response = await this._adminDoctorService.verifyDoctor(id);
       if (!response) {
         res
