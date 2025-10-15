@@ -233,7 +233,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
 
   async makeDayUnavailable(
     doctorId: string,
-    day: Date
+    day: string
   ): Promise<{
     unavailableDay: IUnAvailableDayDocument | null;
     cancelledAppoitments: cancelledSessions[] | [];
@@ -259,7 +259,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
       const expiredAppointments = await this._appointmentRepository.findAll({
         doctorId: doctorId,
         appointmentStatus: "booked",
-        date: localDate,
+        date: day,
       });
 
       // Then, update their status
@@ -303,7 +303,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
 
       const unavailableDay = await this._unAvailableDayRepository.create({
         doctorId: doctorId,
-        day: localDate,
+        day: day,
       });
 
       return { unavailableDay, cancelledAppoitments };
@@ -315,7 +315,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
 
   async makeDayAvailable(
     doctorId: string,
-    day: Date
+    day: string
   ): Promise<IUnAvailableDayDocument | null> {
     console.log("day for available day.....", day);
     // Convert to local date string "YYYY-MM-DD"
@@ -324,10 +324,10 @@ export default class DoctorSessionService implements IDoctorSessionService {
     const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
     const dd = String(dateObj.getDate()).padStart(2, "0");
     const nDate = `${yyyy}-${mm}-${dd}`;
-    console.log("nDate is", nDate);
+    console.log("day is", day);
     const reponse = await this._unAvailableDayRepository.findOne({
       doctorId: doctorId,
-      day: nDate,
+      day: day,
     });
     if (reponse) {
       const result = await this._unAvailableDayRepository.delete(
@@ -364,7 +364,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
 
   async unAvailableSessions(
     doctorId: string,
-    day: Date,
+    day: string,
     sessionId: string
   ): Promise<{
     unAvailableSessions: IUnAvailableSessionDocument | null;
@@ -395,7 +395,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
       const expiredAppointments = await this._appointmentRepository.findAll({
         doctorId: doctorId,
         appointmentStatus: "booked",
-        date: localDate,
+        date: day,
         sessionId: sessionId,
       });
 
@@ -404,7 +404,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
           {
             doctorId: doctorId,
             appointmentStatus: "booked",
-            date: localDate,
+            date: day,
             sessionId: sessionId,
           },
           { appointmentStatus: "cancelled", paymentStatus: "refunded" }
@@ -441,7 +441,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
       const unAvailableSessions =
         await this._unAvailableSessionRepository.create({
           doctorId: doctorId,
-          day: localDate,
+          day: day,
           sessionId: sessionId,
         });
       return { unAvailableSessions, cancelledAppoitments };
@@ -453,7 +453,7 @@ export default class DoctorSessionService implements IDoctorSessionService {
 
   async makeSessionsAvailable(
     doctorId: string,
-    day: Date,
+    day: string,
     sessionId: string
   ): Promise<IUnAvailableSessionDocument | null> {
     console.log("day is ....  ", day);
@@ -461,13 +461,13 @@ export default class DoctorSessionService implements IDoctorSessionService {
     const yyyy = dateOnly.getFullYear();
     const mm = String(dateOnly.getMonth() + 1).padStart(2, "0");
     const dd = String(dateOnly.getDate()).padStart(2, "0");
-    let localDate = `${yyyy}-${mm}-${dd}`;
+    let dayNm = `${yyyy}-${mm}-${dd}`;
 
-    console.log("localDate for make session available is", localDate);
+    console.log("day for make session available is", day);
 
     const reponse = await this._unAvailableSessionRepository.findOne({
       doctorId: doctorId,
-      day: localDate,
+      day: day,
       sessionId: sessionId,
     });
     console.log("session resp is ", reponse);

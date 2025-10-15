@@ -26,19 +26,19 @@ export default interface IDoctorSessionService {
   }>;
   makeDayUnavailable(
     doctorId: string,
-    day: Date
+    day:  string
   ): Promise<{
     unavailableDay: IUnAvailableDayDocument | null;
     cancelledAppoitments: cancelledSessions[] | [];
   }>;
   makeDayAvailable(
     doctorId: string,
-    day: Date
+    day:  string
   ): Promise<IUnAvailableDayDocument | null>;
   getUnavailableDays(doctorId: string): Promise<String[] | null>;
   unAvailableSessions(
     doctorId: string,
-    day: Date,
+    day:  string,
     sessionId: string
   ): Promise<{
     unAvailableSessions: IUnAvailableSessionDocument | null;
@@ -46,7 +46,7 @@ export default interface IDoctorSessionService {
   }>;
   makeSessionsAvailable(
     doctorId: string,
-    day: Date,
+    day: string,
     sessionId: string
   ): Promise<IUnAvailableSessionDocument | null>;
   getUnavailablSessions(

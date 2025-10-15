@@ -148,10 +148,10 @@ export default class DoctorSessionController implements IDoctorSessionCtrl {
       console.log("doctorId and day are:", doctorId, date);
 
       if (doctorId && date) {
-        const dateObj = new Date(date.toString());
+        // const dateObj = new Date(date.toString());
         const response = await this._doctorSessionService.makeDayAvailable(
           doctorId.toString(),
-          dateObj
+          date.toString()
         );
         res.status(HttpStatusCode.OK).json(response);
         //  res.status(HttpStatusCode.OK);
@@ -216,12 +216,12 @@ export default class DoctorSessionController implements IDoctorSessionCtrl {
     try {
       const { doctorId, date, sessionId } = req.query;
       console.log("doctorId and day are:", doctorId, date, sessionId);
-      const dateObj = date ? new Date(date.toString()) : undefined;
-      console.log("dateObj is", dateObj);
-      if (doctorId && dateObj && sessionId) {
+      // const dateObj = date ? new Date(date.toString()) : undefined;
+      // console.log("dateObj is", dateObj);
+      if (doctorId && date && sessionId) {
         const response = await this._doctorSessionService.makeSessionsAvailable(
           doctorId.toString(),
-          dateObj,
+          date.toString(),
           sessionId.toString()
         );
         res.status(HttpStatusCode.OK).json(response);

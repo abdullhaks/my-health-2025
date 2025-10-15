@@ -644,7 +644,7 @@ export const getUnavailableSlots = async (
 
 export const makeSessionUnavailable = async (
   doctorId: string,
-  date: Date,
+  date: string,
   sessionId: string
 ) => {
   try {
@@ -682,7 +682,7 @@ export const getUnavailableSessions = async (doctorId: string) => {
 
 export const makeSessionAvailable = async (
   doctorId: string,
-  date: Date,
+  date: string,
   sessionId: string
 ) => {
   try {
@@ -700,7 +700,7 @@ export const makeSessionAvailable = async (
   }
 };
 
-export const makeDayUnavailable = async (doctorId: string, date: Date) => {
+export const makeDayUnavailable = async (doctorId: string, date: string) => {
   try {
     console.log("makeDayUnavailable data is......", doctorId, date);
     const response = await doctorInstance.post(ROUTES.doctor.unAvailableDays, {
@@ -727,7 +727,7 @@ export const getUnavailableDays = async (doctorId: string) => {
   }
 };
 
-export const makeDayAvailable = async (doctorId: string, date: Date) => {
+export const makeDayAvailable = async (doctorId: string, date: string) => {
   try {
     console.log("data id", doctorId, date);
     const response = await doctorInstance.delete(

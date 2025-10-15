@@ -494,6 +494,13 @@ const DoctorSlots = () => {
     }
   };
 
+const getLocalDateStr = (date: Date): string => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
   const handleDeleteSession = async (id: string) => {
     try {
       const deleting = await deleteSession(id);
@@ -508,55 +515,54 @@ const DoctorSlots = () => {
   };
 
   const handleSessionAction = async (
-    sessionSlots: DaySessionSlots | Session,
-    date: Date,
-    action: "unavailable" | "available"
-  ) => {
-    const session =
-      "session" in sessionSlots ? sessionSlots.session : sessionSlots;
-    try {
-      if (action === "unavailable") {
-        const updatedUnavailableSessions = await makeSessionUnavailable(
-          doctorId,
-          date,
-          session._id || ""
-        );
-        notify(updatedUnavailableSessions.cancelledAppoitments);
-        message.success("Session made unavailable for this date");
-      } else {
-        await makeSessionAvailable(doctorId, date, session._id || "");
-        message.success("Session made available for this date");
-      }
-      const getUpdatedUnAvailableSessions = await getUnavailableSessions(
-        doctorId
+  sessionSlots: DaySessionSlots | Session,
+  date: Date,
+  action: "unavailable" | "available"
+) => {
+  const session = "session" in sessionSlots ? sessionSlots.session : sessionSlots;
+  const localDateStr = getLocalDateStr(date);  // Compute string here
+  try {
+    if (action === "unavailable") {
+      const updatedUnavailableSessions = await makeSessionUnavailable(
+        doctorId,
+        localDateStr,  // Send string
+        session._id || ""
       );
-      setUnAvailableSessions(getUpdatedUnAvailableSessions);
-    } catch (error) {
-      console.error("Error performing session action:", error);
-      message.error("Failed to perform session action");
+      notify(updatedUnavailableSessions.cancelledAppoitments);  // Typo: should be cancelledAppointments?
+      message.success("Session made unavailable for this date");
+    } else {
+      await makeSessionAvailable(doctorId, localDateStr, session._id || "");  // Send string
+      message.success("Session made available for this date");
     }
-  };
+    const getUpdatedUnAvailableSessions = await getUnavailableSessions(doctorId);
+    setUnAvailableSessions(getUpdatedUnAvailableSessions);
+  } catch (error) {
+    console.error("Error performing session action:", error);
+    message.error("Failed to perform session action");
+  }
+};
 
-  const handleDayAction = async (
-    action: "unavailable" | "available",
-    date: Date
-  ) => {
-    try {
-      if (action === "unavailable") {
-        const updation = await makeDayUnavailable(doctorId, date);
-        notify(updation.cancelledAppoitments);
-        message.success("Day made unavailable");
-      } else {
-        await makeDayAvailable(doctorId, date);
-        message.success("Day made available");
-      }
-      const updatedUnavailableDays = await getUnavailableDays(doctorId);
-      setUnAvailableDays(updatedUnavailableDays);
-    } catch (error) {
-      console.error("Error performing day action:", error);
-      message.error("Failed to perform day action");
+const handleDayAction = async (
+  action: "unavailable" | "available",
+  date: Date
+) => {
+  const localDateStr = getLocalDateStr(date);  // Compute string here
+  try {
+    if (action === "unavailable") {
+      const updation = await makeDayUnavailable(doctorId, localDateStr);  // Send string
+      notify(updation.cancelledAppoitments);  // Typo: cancelledAppointments?
+      message.success("Day made unavailable");
+    } else {
+      await makeDayAvailable(doctorId, localDateStr);  // Send string
+      message.success("Day made available");
     }
-  };
+    const updatedUnavailableDays = await getUnavailableDays(doctorId);
+    setUnAvailableDays(updatedUnavailableDays);
+  } catch (error) {
+    console.error("Error performing day action:", error);
+    message.error("Failed to perform day action");
+  }
+};
 
   const formatTime12Hour = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
