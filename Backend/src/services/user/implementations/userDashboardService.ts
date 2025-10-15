@@ -41,11 +41,9 @@ export default class UserDashboardService implements IUserDashboardService {
       }
 
       let blogs = await this._blogRepository.getBlogsByTimePeriod(startDate);
-      console.log("intial blogs........",blogs)
 
       if(blogs.length === 0){
         blogs = await this._blogRepository.findAll({}, { sort: { createdAt: -1 }, limit: 3 });
-      console.log("then... blogs........",blogs)
 
       };
 

@@ -51,8 +51,7 @@ export default class DoctorProfileController implements IDoctorProfileCtrl {
         return;
       }
 
-      console.log("Session details:", session);
-      console.log("i am here");
+   
       res.status(HttpStatusCode.OK).json({ url: session.url });
     } catch (err) {
       console.error("Stripe error:", err);
@@ -64,7 +63,6 @@ export default class DoctorProfileController implements IDoctorProfileCtrl {
 
   async verifyingSubscription(req: Request, res: Response): Promise<void> {
     const { sessionId, doctorId } = req.body;
-    console.log("sessoin id is ...", sessionId);
 
     try {
       const response = await this._doctorProfileService.verifySubscription(
@@ -87,9 +85,7 @@ export default class DoctorProfileController implements IDoctorProfileCtrl {
       const updatedFields = req.body;
       const uploadedImageKey = req.body.uploadedImageKey;
 
-      console.log("Doctor ID IS ", req.params, id);
-      console.log("updatedField is ", updatedFields);
-      console.log("uploadedImageKey is ", uploadedImageKey);
+ 
 
       const updatedDoctor = await this._doctorProfileService.updateDoctorDp(
         id,

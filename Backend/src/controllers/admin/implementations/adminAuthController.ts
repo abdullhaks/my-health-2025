@@ -16,11 +16,9 @@ export default class AdminAuthController implements IAuthCtrl {
       const isProduction = process.env.NODE_ENV === 'production';
       const { email, password } = req.body;
 
-      console.log("email and password are ", email, password);
 
       const result = await this._adminAuthService.login({ email, password });
 
-      console.log("result is ", result);
 
       if (!result) {
         res
@@ -151,7 +149,6 @@ export default class AdminAuthController implements IAuthCtrl {
 
       const { accessToken } = result;
 
-      console.log("result from ctrl is afrt destructr...", accessToken);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -173,7 +170,6 @@ export default class AdminAuthController implements IAuthCtrl {
 
     async adminLogout(req: Request, res: Response): Promise<void> {
       try {
-        console.log("log out ............ ctrl....");
         res.clearCookie("refreshToken", {
           httpOnly: true,
           sameSite: "none",

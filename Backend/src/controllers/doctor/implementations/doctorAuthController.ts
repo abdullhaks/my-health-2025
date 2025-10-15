@@ -33,7 +33,6 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
         password,
       });
 
-      console.log("result is ", result);
 
       if (!result) {
         res
@@ -173,12 +172,7 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
           : undefined,
       };
 
-      console.log(
-        "files are",
-        certificates.registrationCertificate,
-        certificates.graduationCertificate,
-        certificates.verificationId
-      );
+      
 
 
       const response = await this._doctorAuthService.signup(
@@ -202,7 +196,6 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
     try {
       const { otp, email } = req.body;
 
-      console.log(`otp is ${otp} & email is ${email}`);
 
       const otpRecord = await this._doctorAuthService.verifyOtp(email, otp);
       res.status(HttpStatusCode.OK).json({ otp, email });
@@ -240,7 +233,6 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
    
          if (!refreshToken) {
 
-          console.log("no refresh token........................");
            res
              .status(HttpStatusCode.FORBIDDEN)
              .json({ msg: "refresh token not found" });
@@ -249,7 +241,6 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
    
          const result = await this._doctorAuthService.refreshToken(refreshToken);
    
-         console.log("result from ctrl is ...", result);
    
          if (!result) {
            res
@@ -260,7 +251,6 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
    
          const { accessToken } = result;
    
-         console.log("result from ctrl is afrt destructr...", accessToken);
    
          res.cookie("accessToken", accessToken, {
            httpOnly: true,

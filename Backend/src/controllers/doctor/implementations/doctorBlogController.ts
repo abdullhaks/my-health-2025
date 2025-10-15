@@ -13,8 +13,7 @@ export default class DoctorBlogController implements IDoctorBlogCtrl {
 
   async createBlog(req: Request, res: Response): Promise<void> {
     try {
-      console.log("Request body:", req.body);
-      console.log("Request body keys:", Object.keys(req.body));
+   
 
       // Since FormData fields are parsed into req.body as an object
       const {
@@ -49,7 +48,6 @@ export default class DoctorBlogController implements IDoctorBlogCtrl {
         tags: tags,
       };
 
-      console.log("Blog data to save:", blogData);
 
       const response = await this._doctorBlogService.createBlog(blogData);
       if (!response) {
@@ -142,7 +140,6 @@ export default class DoctorBlogController implements IDoctorBlogCtrl {
         tags: tags,
       };
 
-      console.log("Blog data to update......:", blogData);
 
       const response = await this._doctorBlogService.updateBLog(
         blogId,

@@ -27,7 +27,6 @@ export default class DoctorReportAnalyisController
           limitNumber
         );
 
-        console.log("analysis result from contorller....",response)
         res.status(HttpStatusCode.OK).json(response);
         return;
       }

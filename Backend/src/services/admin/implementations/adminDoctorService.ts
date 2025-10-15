@@ -64,13 +64,11 @@ export default class AdminDoctorService implements IAdminDoctorService {
 
   async verifyDoctor(id: string): Promise<IDoctor> {
 
-    console.log("id from service verify...", id);
     const response = await this._doctorRepository.update(id,
         { adminVerified: 1 }
 
     )
 
-    console.log("response from service verify...", response);
 
     if (!response) {
       throw new Error("doctor verifying failed");
@@ -102,19 +100,15 @@ export default class AdminDoctorService implements IAdminDoctorService {
   }
 
   async block(id: string): Promise<IDoctor | null> {
-    console.log("id from block....", id);
     const response = await this._doctorRepository.blockDoctor(id);
 
-    console.log("blocked result is ", response);
 
     return response;
   }
 
   async unblock(id: string): Promise<IDoctor | null> {
-    console.log("id from block....", id);
     const response = await this._doctorRepository.unblockDoctor(id);
 
-    console.log("blocked result is ", response);
 
     return response;
   }

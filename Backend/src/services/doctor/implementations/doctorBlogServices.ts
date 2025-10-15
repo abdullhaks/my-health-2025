@@ -28,7 +28,6 @@ export default class DoctorBlogService implements IDoctorBlogService {
       pageNumber,
       limitNumber
     );
-    console.log("blog response....", response);
 
     const blogDto =await Promise.all(
       response.blogs.map(async(item)=> await BlogMapper.toResponseDTO(item))

@@ -43,10 +43,7 @@ export default class DoctorPrescriptionController
 
   async submitPrescription(req: Request, res: Response): Promise<void> {
     try {
-      console.log(
-        "prescriptionData from backend is ",
-        req.body.prescriptionData
-      );
+   
       const { prescriptionData } = req.body;
 
       const response = await this._doctorPrescriptionService.submitPrescription(

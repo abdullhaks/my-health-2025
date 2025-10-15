@@ -15,7 +15,6 @@ export default class DoctorChatController implements IDoctorChatCtrl {
     try {
       const { userIds } = req.body;
 
-      console.log("usearids from contorller ....", userIds);
 
       if (!Array.isArray(userIds) || userIds.length !== 2) {
         res
@@ -44,7 +43,6 @@ export default class DoctorChatController implements IDoctorChatCtrl {
     try {
       const doctorId = req.params.doctorId;
       let from = req.query.from as string | undefined;
-      console.log("from doc... is ...", from);
 
       if (!doctorId || !from) {
         res
@@ -71,17 +69,10 @@ export default class DoctorChatController implements IDoctorChatCtrl {
 
   async sendMessage(req: Request, res: Response): Promise<void> {
     try {
-      console.log("Request body:", req.body);
-      // console.log("Authenticated userId:", req.userId);
+     
 
       const { conversationId, senderId, content } = req.body;
 
-      console.log(
-        "conversationId, senderId, content:",
-        conversationId,
-        senderId,
-        content
-      );
 
       if (!conversationId || !senderId || !content) {
         res

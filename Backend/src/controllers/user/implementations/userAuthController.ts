@@ -22,10 +22,8 @@ export default class UserAuthController implements IUserAuthCtrl {
     try {
       const loginDTO: UserLoginRequestDTO = req.body;
 
-      console.log("loginDTO...........", loginDTO);
       const result = await this._userService.login(loginDTO);
 
-      console.log("result is ", result);
 
       if (!result) {
         res
@@ -65,7 +63,6 @@ export default class UserAuthController implements IUserAuthCtrl {
     try {
       const { userEmail } = req.cookies;
 
-      console.log("user email from auth ctrl....", userEmail);
       if (!userEmail) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "Unauthorized" });
         return;
@@ -83,7 +80,6 @@ export default class UserAuthController implements IUserAuthCtrl {
 
   async userLogout(req: Request, res: Response): Promise<void> {
     try {
-      console.log("log out ............ ctrl....");
       res.clearCookie("refreshToken", {
         httpOnly: true,
         sameSite: "none",
@@ -121,11 +117,9 @@ export default class UserAuthController implements IUserAuthCtrl {
 
       const userDetails = { fullName, email, password, confirmPassword };
 
-      console.log("user details is ", userDetails);
 
       const user = await this._userService.signup(userDetails);
 
-      console.log("user  is ", user);
 
       res.status(HttpStatusCode.CREATED).json(user);
     } catch (error) {
@@ -140,7 +134,6 @@ export default class UserAuthController implements IUserAuthCtrl {
     try {
       const { otp, email } = req.body;
 
-      console.log(`otp is ${otp} & email is ${email}`);
 
       const otpRecord = await this._userService.verifyOtp(email, otp);
       res.status(HttpStatusCode.OK).json({ otp, email });
@@ -242,7 +235,6 @@ export default class UserAuthController implements IUserAuthCtrl {
 
   async resetPassword(req: Request, res: Response): Promise<void> {
     try {
-      console.log("body is from reser password ", req.body);
 
       const { email } = req.params;
       const { newPassword, confirmPassword } = req.body.formData;
@@ -280,8 +272,6 @@ export default class UserAuthController implements IUserAuthCtrl {
 
       const result = await this._userService.refreshToken(refreshToken);
 
-      console.log("result from ctrl is ...", result);
-
       if (!result) {
         res
           .status(HttpStatusCode.UNAUTHORIZED)
@@ -290,8 +280,6 @@ export default class UserAuthController implements IUserAuthCtrl {
       }
 
       const { accessToken } = result;
-
-      console.log("result from ctrl is afrt destructr...", accessToken);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -355,7 +343,6 @@ export default class UserAuthController implements IUserAuthCtrl {
         }
       );
 
-      console.log("user res is ......", userRes.data);
       const { email, name, picture } = userRes.data;
 
       // Find or create user
@@ -371,7 +358,6 @@ export default class UserAuthController implements IUserAuthCtrl {
         
       }
 
-      console.log("User is ............", user);
 
       // Issue your tokens
       const myAccessToken = generateAccessToken({

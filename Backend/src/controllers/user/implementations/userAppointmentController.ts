@@ -114,7 +114,6 @@ export default class UserAppointmentController implements IUserAppointmentCtrl {
 
   async cancelAppointment(req: Request, res: Response): Promise<void> {
     try {
-      console.log("appointment id is ctrl...", req.query.appointmentId);
 
       const appoinmentId = req.query.appointmentId;
 
@@ -134,7 +133,6 @@ export default class UserAppointmentController implements IUserAppointmentCtrl {
   async walletPayment(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
-      console.log("data in backend is :.....", data);
       const response = await this._appointmentService.walletPayment(data);
 
       res.status(HttpStatusCode.CREATED).json({ appointment: response });
@@ -149,7 +147,6 @@ export default class UserAppointmentController implements IUserAppointmentCtrl {
   async activeBooking(req: Request, res: Response): Promise<void> {
     try {
       const { userId, doctorId } = req.query;
-      console.log("data is ctrl", userId, doctorId);
       const response = await this._appointmentService.activeBooking(
         String(userId),
         String(doctorId)

@@ -48,7 +48,6 @@ export default class DoctorDashboardService implements IDoctorDashboardService {
           { sort: { date: 1 } }
         );
 
-      console.log("upcomings are....", upcomingAppointmentsCount);
 
       const dateAppointmentCountMap = new Map<string, number>();
 
@@ -60,11 +59,6 @@ export default class DoctorDashboardService implements IDoctorDashboardService {
         }
       }
 
-      console.log("upcomingAppointmentsCount..", upcomingAppointmentsCount);
-      console.log("dateAppointmentCountMap..", dateAppointmentCountMap);
-      console.log("dateAppointmentCountMap entries....", [
-        ...dateAppointmentCountMap.entries(),
-      ]);
 
       // 2. Count of today’s booked appointments
       const todayAppointmentsCount = await this._appointmentRepository
@@ -75,7 +69,6 @@ export default class DoctorDashboardService implements IDoctorDashboardService {
         })
         .then((appointments) => appointments?.length);
 
-      console.log("todayAppointmentsCount..", todayAppointmentsCount);
 
       // 3. Count of pending report analyses
       const pendingReportsCount = await this._reportAnalysisRepository
@@ -163,8 +156,6 @@ export default class DoctorDashboardService implements IDoctorDashboardService {
             $lte: endDate.toISOString().split("T")[0],
           },
         });
-
-        console.log("appointments for month filter...", appointments);
 
         const monthMap = new Map<number, number>();
         for (const a of appointments) {

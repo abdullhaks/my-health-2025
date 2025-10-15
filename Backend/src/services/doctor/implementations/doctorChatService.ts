@@ -25,11 +25,9 @@ export default class DoctorChatService implements IDoctorChatService {
        throw new Error("Exactly two user IDs are required");
      }
  
-     console.log("userIds.....", userIds);
      const existing =
        await this._conversationRepository.findConversationByMembers(userIds);
  
-     console.log("existin conversation is ", existing);
      if (existing){
        const conversationDto = await ConversationMapper.toResponseDTO(existing)
  

@@ -48,7 +48,6 @@ export default class DoctorReportAnalysisService
         })
       );
       
-    console.log("reportDto.....",reportDto);
 
       const resp = {reports:reportDto,totalPages:response.totalPages}
   
@@ -93,14 +92,7 @@ export default class DoctorReportAnalysisService
         throw new Error("Invalid parameters for cancelling analysis report");
       }
 
-      console.log(
-        "Cancelling analysis report with ID:",
-        analysisId,
-        "for user ID:",
-        userId,
-        "with fee:",
-        fee
-      );
+   
       const walletUpdate = await this._UserRepository.update(userId, {
         $inc: { walletBalance: fee },
       });

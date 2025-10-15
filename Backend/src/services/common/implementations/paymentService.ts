@@ -38,9 +38,6 @@ export default class PaymentService implements IPaymentService {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      // console.log("event is..................", event);
-      console.log("session is..................", session);
-
       const metadata = session.metadata;
       var invoiceUrl: string | null | undefined;
 
@@ -57,16 +54,12 @@ export default class PaymentService implements IPaymentService {
       switch (metadata.role) {
         case "user":
           if (metadata.type === "appointment") {
-            console.log(
-              "Processing one-time appointment payment for user:",
-              metadata
-            );
+          
 
             const user = await this._userRepository.findOne({
               _id: metadata.userId,
             });
 
-            console.log("user is ", user);
 
             if (!user) {
               console.error('Invalid slot reservation for session:', session.id);
@@ -79,7 +72,6 @@ export default class PaymentService implements IPaymentService {
             const doctor = await this._doctorRepository.findOne({
               _id: metadata.doctorId,
             });
-            console.log("doctor is ", doctor);
 
             if (!doctor) {
               console.error('Invalid slot reservation for session:', session.id);
@@ -147,12 +139,7 @@ export default class PaymentService implements IPaymentService {
               userId: metadata.userId.toString(),
             });
 
-            console.log("Appointment created:", appointment);
           } else if (metadata.type === "report_analysis") {
-            console.log(
-              "Processing report analysis payment for user:",
-              metadata
-            );
 
             const user = await this._userRepository.findOne({
               _id: metadata.userId,
@@ -211,8 +198,6 @@ export default class PaymentService implements IPaymentService {
             subscription.latest_invoice as string
           );
 
-          console.log("subscription is ", subscription);
-          console.log("invoice data is ", invoice);
 
           const subscriptionData: Partial<ISubscriptionDocument> = {
             sessionId: session.id,
@@ -235,13 +220,11 @@ export default class PaymentService implements IPaymentService {
             doctor: session.metadata?.doctorId || undefined,
           };
 
-          console.log("session data after webhook event ", session);
 
           if (subscriptionData.doctor) {
             const subResp = await this._paymentRepository.create(
               subscriptionData
             );
-            console.log("subResp....is...", subResp);
 
             const docResp = await this._doctorRepository.update(
               subscriptionData.doctor.toString(),
@@ -250,7 +233,6 @@ export default class PaymentService implements IPaymentService {
                 subscriptionId: subscriptionData.stripeSubscriptionId,
               }
             );
-            console.log("docResp....is...", docResp);
 
             const transaction = await this._transactionRepository.create({
               from: "doctor",
@@ -272,10 +254,8 @@ export default class PaymentService implements IPaymentService {
             throw new Error("Invalid doctor ID.");
           }
 
-          // await this._paymentRepository.
           break;
         case "admin":
-          //   await handleAdminPayment(session);
           break;
       }
     }

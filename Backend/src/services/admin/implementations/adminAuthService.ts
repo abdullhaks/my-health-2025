@@ -20,8 +20,6 @@ import { adminResponseDTO } from "../../../dto/adminDTO";
 import { AdminMapper } from "../../../mappers/admin.mapper";
 
 
-console.log("Admin auth service is running....");
-
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
@@ -41,14 +39,12 @@ export default class AdminAuthService implements IAdminAuthService {
     accessToken: string;
     refreshToken: string;
   }> {
-    console.log("admin data from service....", adminData);
 
     if (!adminData.email || !adminData.password) {
       throw new Error("Please provide all required fields");
     }
 
     const admin = await this._adminRepository.findByEmail(adminData.email);
-    console.log("Existing user: ", admin);
 
     if (!admin) {
       throw new Error("Invalid credentials");
@@ -109,7 +105,6 @@ export default class AdminAuthService implements IAdminAuthService {
     }
 
     const recoveryPassword = generateRandomPassword(10);
-    console.log("Generated recovery password:", recoveryPassword);
 
     const recoveryRecord = new RecoveryPasswordModel({
       email,
@@ -148,7 +143,6 @@ export default class AdminAuthService implements IAdminAuthService {
   }
 
   async refreshToken(refreshToken: string): Promise<IResponseDTO> {
-    console.log("Refresh token from service: ", refreshToken);
     if (!refreshToken) {
       throw new Error("Refresh token not found");
     }

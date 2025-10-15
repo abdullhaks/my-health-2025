@@ -21,14 +21,12 @@ export default class DirectDocUploadS3Service
     );
 
     if (!links.fileUrl || !links.uniqueFileName) {
-      console.log("here....1")
       throw new Error("Failed to upload document to S3");
     }
 
     let signedUrl: string = await getSignedImageURL(links.uniqueFileName);
 
     if (!signedUrl) {
-      console.log("here....2")
 
       throw new Error("Failed to upload document to S3");
     }

@@ -45,12 +45,7 @@ export default class PaymentController implements IPaymentCtrl {
     res: Response
   ): Promise<void> {
     const { amount, metadata } = req.body;
-    console.log(
-      "Creating one-time payment session with amount:",
-      amount,
-      "and metadata:",
-      metadata
-    );
+   
 
     const successPath = `/${metadata.role}/payment-success`;
     const cancelPath = `/${metadata.role}/payment-cancelled`;
@@ -64,7 +59,6 @@ export default class PaymentController implements IPaymentCtrl {
         cancelPath,
       });
 
-      console.log("One-time payment session:", session);
       res.status(HttpStatusCode.OK).json({ url: session.url });
     } catch (err) {
       console.error("Stripe one-time payment error:", err);
@@ -78,7 +72,6 @@ export default class PaymentController implements IPaymentCtrl {
 
    async  progressingPayment(req: Request, res: Response): Promise<void> {
     const { doctorId,userId,slotId } = req.body;
-    console.log("doctorId,userId,slotId ",doctorId,userId,slotId )
     try {
       
       const response = await this._paymentService.progressingPayment(doctorId,userId,slotId);

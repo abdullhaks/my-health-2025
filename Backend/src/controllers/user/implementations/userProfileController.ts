@@ -14,8 +14,6 @@ export default class UserProfileController implements IUserProfileCtrl {
 
   async updateProfile(req: Request, res: Response): Promise<void> {
     try {
-      console.log("user data is ", req.body);
-      console.log("user id is ", req.params.id);
 
       const userData = req.body;
       const dobStr = new Date(userData.dob).toLocaleDateString();
@@ -50,9 +48,6 @@ export default class UserProfileController implements IUserProfileCtrl {
       const updatedFields = req.body;
       const uploadedImageKey = req.body.uploadedImageKey;
 
-      console.log("USER ID IS ", req.params, id);
-      console.log("updatedField is ", updatedFields);
-      console.log("uploadedImageKey is ", uploadedImageKey);
 
       const updatedUser = await this._profileService.updateUserDp(
         id,
@@ -74,7 +69,6 @@ export default class UserProfileController implements IUserProfileCtrl {
       const { id } = req.params;
       const data = req.body.data;
 
-      console.log("id and data is ", id, data);
       const response = await this._profileService.changePassword(id, data);
 
       if (!response) {

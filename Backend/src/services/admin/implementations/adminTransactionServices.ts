@@ -49,7 +49,6 @@ export default class AdminTransactionsService
       limitNumber,
       query
     );
-    console.log("transactions from service...", transactions);
 
     const transactionsDTOs: TransactionResponseDTO[] = [];
     for (const t of transactions.transactions) {

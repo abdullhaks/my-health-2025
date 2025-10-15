@@ -64,7 +64,6 @@ export const setupSocket = (io: Server, container: Container) => {
         userId: decoded.id,
         role: decoded.role as "doctor" | "user",
       };
-      console.log(`Socket authenticated: ${decoded.id} (${decoded.role})`);
       next();
     } catch (err) {
       console.error("Token verification failed:", err);
@@ -74,7 +73,6 @@ export const setupSocket = (io: Server, container: Container) => {
 
   io.on("connection", (socket: AuthenticatedSocket) => {
     const { userId, role } = socket.data;
-    console.log(`${role} connected: ${userId} (Socket ID: ${socket.id})`);
 
     socket.join(userId);
 
@@ -84,7 +82,6 @@ export const setupSocket = (io: Server, container: Container) => {
         return;
       }
       socket.join(conversationId);
-      console.log(`${role} ${userId} joined conversation: ${conversationId}`);
     });
 
     socket.on("sendNotification", async (notification: Notification) => {
@@ -103,9 +100,7 @@ export const setupSocket = (io: Server, container: Container) => {
         const response = await notificationRepository.create(notification);
 
         io.to(notification.userId).emit("notification", response);
-        console.log(
-          `Notification sent to user ${notification.userId}: ${notification.message}`
-        );
+       
       } catch (err) {
         console.error("Error sending notification:", err);
         socket.emit("error", { message: "Failed to send notification." });
@@ -235,15 +230,11 @@ export const setupSocket = (io: Server, container: Container) => {
         }
         const room = rooms.get(appointmentId)!;
         room.users.add(userId);
-        console.log(
-          `${role} ${userId} joined video call room: ${appointmentId}. Current room size: ${room.users.size}`
-        );
+       
 
         if (role === "doctor" && room.users.size >= 2) {
           socket.emit("startCall", { appointmentId });
-          console.log(
-            `Notified doctor ${userId} to start call for ${appointmentId}.`
-          );
+         
         }
       } catch (err) {
         console.error(
@@ -282,27 +273,22 @@ export const setupSocket = (io: Server, container: Container) => {
     );
 
     socket.on("user:call", ({ to, offer }) => {
-      console.log(`Received user:call from ${userId} to ${to}`);
       io.to(to).emit("incomming:call", { from: userId, offer });
     });
 
     socket.on("call:accepted", ({ to, ans }) => {
-      console.log(`Received call:accepted from ${userId} to ${to}`);
       io.to(to).emit("call:accepted", { from: userId, ans });
     });
 
     socket.on("peer:nego:needed", ({ to, offer }) => {
-      console.log(`Received peer:nego:needed from ${userId} to ${to}`);
       io.to(to).emit("peer:nego:needed", { from: userId, offer });
     });
 
     socket.on("peer:nego:done", ({ to, ans }) => {
-      console.log(`Received peer:nego:done from ${userId} to ${to}`);
       io.to(to).emit("peer:nego:final", { ans });
     });
 
     socket.on("ice:candidate", ({ to, candidate }) => {
-      console.log(`Received ICE candidate from ${userId} to ${to}`);
       io.to(to).emit("ice:candidate", { from: userId, candidate });
     });
 
@@ -314,11 +300,7 @@ export const setupSocket = (io: Server, container: Container) => {
         muted: boolean;
       }) => {
         const { appointmentId, type, muted } = data;
-        console.log(
-          `${userId} toggled ${type} to ${
-            muted ? "muted" : "unmuted"
-          } for ${appointmentId}.`
-        );
+       
         socket.to(appointmentId).emit("mute", { userId, type, muted });
       }
     );
@@ -339,18 +321,15 @@ export const setupSocket = (io: Server, container: Container) => {
         }
 
         if (!rooms.has(appointmentId)) {
-          console.log(`No room found for ${appointmentId} in leaveCall`);
           return;
         }
 
         const room = rooms.get(appointmentId)!;
 
         if (!room.users.has(userId)) {
-          console.log(`User ${userId} not in room ${appointmentId}`);
           return;
         }
 
-        console.log(`${role} ${userId} requesting to leave ${appointmentId}`);
 
         if (role === "doctor") {
           try {
@@ -363,20 +342,15 @@ export const setupSocket = (io: Server, container: Container) => {
                 }
               );
 
-              console.log("appointment updated after call:", updating);
               socket.emit("callEnded");
               socket.to(appointmentId).emit("callEnded");
               rooms.delete(appointmentId);
-              console.log(
-                `Call completed for ${appointmentId} by doctor ${userId}`
-              );
+            
             } else {
               socket.to(appointmentId).emit("doctorLeft", { userId });
               room.users.delete(userId);
               socket.emit("leaveForced");
-              console.log(
-                `Doctor ${userId} leaving ${appointmentId} without prescription`
-              );
+            
             }
           } catch (err) {
             console.error(
@@ -391,29 +365,23 @@ export const setupSocket = (io: Server, container: Container) => {
           // user
           socket.to(appointmentId).emit("userLeft", { userId });
           room.users.delete(userId);
-          console.log(`User ${userId} leaving ${appointmentId}`);
         }
 
         if (room.users.size === 0) {
           rooms.delete(appointmentId);
-          console.log(`Room ${appointmentId} emptied and deleted`);
         }
       }
     );
 
     socket.on("disconnect", () => {
-      console.log(`${role} disconnected: ${userId} (Socket ID: ${socket.id})`);
       rooms.forEach((room, appointmentId) => {
         if (room.users.has(userId)) {
           room.users.delete(userId);
           const leaveEvent = role === "user" ? "userLeft" : "doctorLeft";
           socket.to(appointmentId).emit(leaveEvent, { userId });
-          console.log(
-            `Emitted ${leaveEvent} for ${userId} in ${appointmentId} due to disconnect`
-          );
+         
           if (room.users.size === 0) {
             rooms.delete(appointmentId);
-            console.log(`Room ${appointmentId} is now empty and deleted.`);
           }
         }
       });

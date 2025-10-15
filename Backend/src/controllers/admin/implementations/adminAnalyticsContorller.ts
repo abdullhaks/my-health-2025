@@ -4,6 +4,7 @@ import IAdminAnalyticsServices from "../../../services/admin/interfaces/IAdminAn
 import { Request, Response } from "express";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
+import { CustomError } from "../../../utils/interfaces";
 
 injectable();
 export default class AdminAnalyticsContorller
@@ -17,28 +18,43 @@ export default class AdminAnalyticsContorller
   async getUserAnalytics(req: Request, res: Response): Promise<void> {
     try {
       const filter = req.params.filter;
-      console.log("Filter received:", filter);
       const response = await this._adminAnalyticsService.getUserAnalytics(
         filter
       );
-      console.log("response is ....", response);
       res.status(HttpStatusCode.OK).json(response);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error in getUserAnalytics controller:", error);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
+      let message = MESSAGES.analytics.databaseError;
+      let status = HttpStatusCode.INTERNAL_SERVER_ERROR;
+
+      switch (error.message){
+        case MESSAGES.analytics.missingFilter: {
+          message = MESSAGES.analytics.missingFilter
+          status = HttpStatusCode.BAD_REQUEST
+          break;
+        }
+        case MESSAGES.analytics.notFound : {
+          message = MESSAGES.analytics.notFound
+          break;
+
+        }
+
+        case MESSAGES.analytics.failedToFetch : {
+          message = MESSAGES.analytics.failedToFetch
+          break;
+        }
+      }
+      
+      res .status(status).json({ message:message});
     }
   }
 
   async getDoctorAnalytics(req: Request, res: Response): Promise<void> {
     try {
       const filter = req.params.filter;
-      console.log("Filter received:", filter);
       const response = await this._adminAnalyticsService.getDoctorAnalytics(
         filter
       );
-      console.log("response is ....", response);
       res.status(HttpStatusCode.OK).json(response);
     } catch (error) {
       console.error("Error in getUserAnalytics controller:", error);
@@ -53,7 +69,6 @@ export default class AdminAnalyticsContorller
       const response = await this._adminAnalyticsService.getTotalAnalytics();
       res.status(HttpStatusCode.OK).json(response);
     } catch (err) {
-      console.log("error in getTotalAnalytics", err);
       res
         .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: MESSAGES.server.serverError });

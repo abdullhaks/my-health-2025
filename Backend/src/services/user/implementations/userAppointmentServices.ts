@@ -58,7 +58,6 @@ export default class UserAppointmentService implements IUserAppointmentService {
       const doctorDto = await Promise.all(
           response.doctors.map(async(doc)=>await DoctorMapper.toSecureDoctorResponseDTO(doc))
         );
-      console.log("doctorDto from backend.......", doctorDto);
 
       const result = await Promise.all(
         doctorDto.map(async (doctor:SecureDoctorResponseDTO ) => {
@@ -72,7 +71,6 @@ export default class UserAppointmentService implements IUserAppointmentService {
         })
       );
 
-      console.log("doctors list from backend.......", result);
 
       doctors = result;
     }
@@ -94,7 +92,6 @@ export default class UserAppointmentService implements IUserAppointmentService {
     endDate?: string;
   }
 ): Promise<{ appointments: DetailAppointment[] | null; totalPages: number }> {
-  console.log("userid from service...", userId);
 
   const query: FilterQuery<IAppointment> = { userId };
   if (filters.appointmentStatus) {
@@ -176,7 +173,6 @@ export default class UserAppointmentService implements IUserAppointmentService {
     message: string;
     updatedUser: Partial<IUser>;
   }> {
-    console.log("appointment id is ", appointmentId);
     const response = await this._appointmentsRepository.update(appointmentId, {
       appointmentStatus: "cancelled",
       paymentStatus: "refunded",
@@ -230,9 +226,7 @@ export default class UserAppointmentService implements IUserAppointmentService {
   }
 
   async walletPayment(data: Partial<IAppointment>): Promise<IAppointmentDTO> {
-    console.log("data is ", data);
     const doctor = await this._doctorRepository.findOne({ _id: data.doctorId });
-    console.log("doctor is ....", doctor);
     if (!doctor) {
       throw new Error("Wallet payment failed");
     }
@@ -267,13 +261,11 @@ export default class UserAppointmentService implements IUserAppointmentService {
       transactionId,
     });
 
-    console.log("updated user is ......", userUpdate);
 
     data.doctorName = doctor?.fullName;
     data.doctorCategory = doctor?.category;
     data.transactionId = transactionId;
     const appointment = await this._appointmentsRepository.create(data);
-    console.log("Appointment created:", appointment);
 
     const appointmentDto = await AppointmentMapper.toResponseDTO(appointment)
 

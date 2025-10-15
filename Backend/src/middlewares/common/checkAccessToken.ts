@@ -17,7 +17,6 @@ export function verifyAccessTokenMidleware(
     if (role === "user") {
       const { accessToken } = req.cookies;
 
-      console.log("userAccessToken is..... ",accessToken);
 
       token = accessToken;
       if (!accessToken) {
@@ -31,8 +30,6 @@ export function verifyAccessTokenMidleware(
 
     if (role === "admin") {
       const { accessToken } = req.cookies;
-      console.log("admin token from cookie.......... ", accessToken);
-      // console.log("token is..... ",accessToken);
 
       token = accessToken;
       if (!accessToken) {
@@ -46,8 +43,6 @@ export function verifyAccessTokenMidleware(
     if (role === "doctor") {
       const { accessToken } = req.cookies;
 
-      console.log("token is.....from doctor midleware..... ",accessToken);
-
       token = accessToken;
       if (!accessToken) {
         res
@@ -59,8 +54,6 @@ export function verifyAccessTokenMidleware(
 
     try {
       const decoded = verifyAccessToken(token);
-
-      // console.log("decoded is..... ",decoded);
 
       if (!decoded) {
         res

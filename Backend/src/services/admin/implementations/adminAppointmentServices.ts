@@ -55,7 +55,6 @@ export default class AdminAppointmentService
         query
       );
 
-    console.log("appointments from service...", appointments);
 
     let appointmentDto:IAppointmentDTO[] | null;
 

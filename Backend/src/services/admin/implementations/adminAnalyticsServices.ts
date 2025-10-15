@@ -4,7 +4,6 @@ import IUserRepository from "../../../repositories/interfaces/IUserRepository";
 import IDoctorRepository from "../../../repositories/interfaces/IDoctorRepository";
 import IAnalyticsRepository from "../../../repositories/interfaces/IAnalyticsRepository";
 import { MESSAGES } from "../../../utils/messages";
-import { IAnalytics } from "../../../dto/analyticsDto";
 import IAppointmentsRepository from "../../../repositories/interfaces/IAppointmentsRepository";
 import IReportAnalysisRepository from "../../../repositories/interfaces/IReportAnalysisRepository";
 import { PipelineStage } from "mongoose";
@@ -130,7 +129,7 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         }
 
         default:
-          throw new Error("Invalid filter");
+          throw MESSAGES.analytics.missingFilter
       }
 
       const pipeline: PipelineStage[] = [
@@ -145,10 +144,14 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
         value: number;
       }>(pipeline);
 
+      if(!rawData.length){
+        throw new Error(MESSAGES.analytics.notFound)
+      }
+
       return rawData.map(({ name, value }) => ({ name: String(name), value }));
     } catch (error) {
       console.error("Error in getUserAnalytics:", error);
-      throw new Error(MESSAGES.analytics.failedTofetch);
+      throw new Error(MESSAGES.analytics.failedToFetch);
     }
   }
 
@@ -544,4 +547,4 @@ export default class AdminAnalyticsServices implements IAdminAnalyticsServices {
       throw new Error("Failed to fetch reports stats");
     }
   }
-}
+} 

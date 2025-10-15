@@ -27,7 +27,6 @@ export default class NotificationController implements INotificationCtrl {
       const response = await this._notificationService.readAllNotifications(
         id.toString()
       );
-      console.log("noti from ctrl....", response);
       res.status(HttpStatusCode.OK).json(response);
 
 
@@ -38,7 +37,6 @@ export default class NotificationController implements INotificationCtrl {
     try {
       const { id,newMsgs } = req.query;
 
-      console.log("noti id is....", id, newMsgs);
       if (!id || !newMsgs) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
@@ -50,7 +48,6 @@ export default class NotificationController implements INotificationCtrl {
         id.toString(),
         newMsgs === "true" 
       );
-      console.log("noti from ctrl....", response);
       res.status(HttpStatusCode.OK).json(response);
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -63,7 +60,6 @@ export default class NotificationController implements INotificationCtrl {
   async getAllNotifications(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.query;
-      console.log("noti id is....", id);
       if (!id) {
         res
           .status(HttpStatusCode.BAD_REQUEST)

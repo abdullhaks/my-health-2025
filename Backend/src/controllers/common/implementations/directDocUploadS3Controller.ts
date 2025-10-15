@@ -18,9 +18,7 @@ export default class DirectDocUploadS3Controller
     try {
       const file = req.file;
 
-      console.log("Request headers:", req.headers);
-      console.log("Request body:", req.body);
-      console.log("Request file:", req.file);
+     
 
       if (!file) {
         //  res.status(HttpStatusCode.BAD_REQUEST).json({ message: "No file uploaded" });

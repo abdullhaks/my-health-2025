@@ -47,7 +47,6 @@ export default class UserSessionService implements IUserSessionService {
     formattedDate: string
   ): Promise<IAppointmentDTO[]> {
     try {
-      console.log("doctorId and formatted date is :", doctorId, formattedDate);
 
       const response = await this._appointmentRepository.findAll({
         doctorId: doctorId,
@@ -58,7 +57,6 @@ export default class UserSessionService implements IUserSessionService {
       const appointmentDto = await Promise.all (
         response.map(async(item)=> await AppointmentMapper.toResponseDTO(item))
       );
-      console.log("booked appointmets are:", response);
       return appointmentDto;
     } catch (error) {
       console.error("Error in get sessions", error);
@@ -70,7 +68,6 @@ export default class UserSessionService implements IUserSessionService {
     doctorId: string
   ): Promise<{ day: String; sessionId: string }[]> {
     try {
-      console.log("doctorId and day from service....:", doctorId);
       let today = new Date();
       let yesteday = new Date(today.setDate(today.getDate() - 1));
       const dateObj = new Date(yesteday);
@@ -92,9 +89,7 @@ export default class UserSessionService implements IUserSessionService {
         return sess;
       });
 
-      sessions.forEach((element) => {
-        console.log(element);
-      });
+
 
       return sessions;
     } catch (error) {
@@ -105,13 +100,10 @@ export default class UserSessionService implements IUserSessionService {
 
   async getUnavailableDays(doctorId: string): Promise<String[]> {
     try {
-      console.log("doctorId from service....:", doctorId);
       let today = new Date();
       let yesterday = new Date(today.setDate(today.getDate() - 1));
-      console.log("yesterday  is....:", yesterday);
 
       let yesStr = yesterday.toISOString().split("T")[0];
-      console.log("yesStr  are....:", yesStr);
 
       const response = await this._unAvailableDayRepository.findAll({
         doctorId: doctorId,
@@ -119,7 +111,6 @@ export default class UserSessionService implements IUserSessionService {
       });
 
       let days = response.map((item) => item.day);
-      console.log("unavailable days are....:", days);
       return days;
     } catch (error) {
       console.error("Error in makeDayUnavailable", error);

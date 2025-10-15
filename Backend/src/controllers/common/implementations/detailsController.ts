@@ -14,7 +14,6 @@ export default class DetailsController implements IDetailsCtrl {
   async getDoctor(req: Request, res: Response): Promise<void> {
     try {
       const {doctorId} = req.query;
-      console.log("doctor id is ", doctorId);
       if (doctorId) {
         const response = await this._detailsService.getDoctor(
           doctorId.toString()
@@ -38,7 +37,6 @@ export default class DetailsController implements IDetailsCtrl {
   async getUser(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.query.userId;
-      console.log("user id is ", userId);
       if (userId) {
         const response = await this._detailsService.getUser(userId.toString());
         res.status(HttpStatusCode.OK).json(response);

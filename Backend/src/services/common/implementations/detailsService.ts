@@ -16,15 +16,12 @@ export default class DetailsService implements IDetailsService {
 
   async getDoctor(doctorId: string): Promise<IDoctor> {
     try {
-      console.log("doctor id from service... ", doctorId);
 
       const response = await this._doctorRepository.findOne({ _id: doctorId });
       if (!response) {
-        console.log("No doctor found for ID:", doctorId);
         throw new Error("failed to fetch doctor");
       }
 
-      console.log("response from service... ", response);
 
       const {
         password,
@@ -54,11 +51,9 @@ export default class DetailsService implements IDetailsService {
           rest.profile = "";
         }
       } else {
-        console.log("No profile image provided for doctor:", doctorId);
         rest.profile = "";
       }
 
-      console.log("rest is ......", rest);
       return rest;
     } catch (error) {
       console.error("Error in getDoctor:", error);
@@ -68,15 +63,12 @@ export default class DetailsService implements IDetailsService {
 
   async getUser(userId: string): Promise<IUser> {
     try {
-      console.log("user id from service... ", userId);
 
       const response = await this._userRepository.findOne({ _id: userId });
       if (!response) {
-        console.log("No user found for ID:", userId);
         throw new Error("failed to fetch user");
       }
 
-      console.log("response from service... ", response);
 
       const { password, isBlocked, isVerified, walletBalance, ...rest } =
         response.toObject();
@@ -93,11 +85,9 @@ export default class DetailsService implements IDetailsService {
           rest.profile = "";
         }
       } else {
-        console.log("No profile image provided for user:", userId);
         rest.profile = "";
       }
 
-      console.log("rest is ......", rest);
       return rest;
     } catch (error) {
       console.error("Error in getDoctor:", error);

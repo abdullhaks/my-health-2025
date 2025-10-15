@@ -12,7 +12,6 @@ export default class AdminProductController implements IAdminProductCtrl {
       const products = await stripe.products.list({
         expand: ["data.default_price"], // Expand the default_price field to include full price details
       });
-      console.log("products from stripe is ", products);
       res.status(HttpStatusCode.OK).json({ data: products.data });
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -32,7 +31,6 @@ export default class AdminProductController implements IAdminProductCtrl {
         description,
       });
 
-      console.log("product created is....... ", product);
 
       // Create price for the product
       const priceObj = await stripe.prices.create({
@@ -42,14 +40,12 @@ export default class AdminProductController implements IAdminProductCtrl {
         recurring: interval !== "one_time" ? { interval } : undefined,
       });
 
-      console.log("price created is.......... ", priceObj);
 
       // Set the default price for the product
       const addPrice = await stripe.products.update(product.id, {
         default_price: priceObj.id,
       });
 
-      console.log("add price is........",addPrice);
       
       // Fetch the updated product with expanded default_price
       const updatedProduct = await stripe.products.retrieve(product.id, {
@@ -106,7 +102,6 @@ export default class AdminProductController implements IAdminProductCtrl {
     try {
       const { id } = req.params;
 
-      console.log("id is .......:", id);
       await stripe.products.update(id, { active: false });
 
       res
@@ -124,7 +119,6 @@ export default class AdminProductController implements IAdminProductCtrl {
     try {
       const { id } = req.params;
 
-      console.log("id is .......:", id);
       await stripe.products.update(id, { active: true });
 
       res

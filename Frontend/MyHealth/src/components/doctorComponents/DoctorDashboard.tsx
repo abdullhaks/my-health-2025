@@ -197,7 +197,7 @@ const DoctorDashboard = () => {
         {/* Upcoming Appointments */}
         <div className="w-full lg:w-80 rounded-xl shadow-lg bg-white p-4 sm:p-5">
           <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
-            Upcoming Appointments
+            Upcoming Appointments in 4 days
           </h3>
           <div className="space-y-3 max-h-64 sm:max-h-80 overflow-y-auto">
             {dashboardData?.upcomingAppointmentsCount.map(

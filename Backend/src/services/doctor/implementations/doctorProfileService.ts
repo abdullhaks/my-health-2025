@@ -26,7 +26,6 @@ import {
 } from "../../../middlewares/common/uploadS3";
 import IPaymentRepository from "../../../repositories/interfaces/IPaymentRepository";
 
-console.log("User auth service is running....");
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -44,14 +43,12 @@ export default class DoctorProfileService implements IDoctorProfileService {
     sessionId: string,
     doctorId: string
   ): Promise<{ message: string; doctor: Partial<IDoctor> }> {
-    console.log("session id from verifySubscription", sessionId);
 
     const verification = await this._paymentRepository.findOne({
       sessionId: sessionId,
     });
     const doc = await this._doctorRepository.findOne({ _id: doctorId });
 
-    console.log("verifiacaton and doct is ....", verification, doc);
 
     if (!verification || !doc || doc?.premiumMembership === false) {
       throw new Error("subscription verification failed");

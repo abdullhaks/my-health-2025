@@ -54,7 +54,6 @@ export default class UserSessionController implements IUserSessionCtrl {
   async getUnavailableDays(req: Request, res: Response): Promise<void> {
     try {
       const { doctorId } = req.query;
-      console.log("doctorId is....:", doctorId);
 
       if (doctorId) {
         const response = await this._userSessionService.getUnavailableDays(
@@ -76,7 +75,6 @@ export default class UserSessionController implements IUserSessionCtrl {
   async getUnavailablSessions(req: Request, res: Response): Promise<void> {
     try {
       const { doctorId } = req.query;
-      console.log("doctorId is....:///////////", doctorId);
 
       if (doctorId) {
         const response = await this._userSessionService.getUnavailablSessions(

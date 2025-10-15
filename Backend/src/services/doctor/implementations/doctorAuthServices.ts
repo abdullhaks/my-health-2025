@@ -80,7 +80,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
     accessToken?: string;
     refreshToken?: string;
   }> {
-    console.log("doctor data from service....", doctorData);
 
     if (!doctorData.email || !doctorData.password) {
       throw new Error("Please provide all required fields");
@@ -89,7 +88,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
     const existingDoctor = await this._doctorRepository.findOne({
       email: doctorData.email,
     });
-    console.log("Existing doctor: ", existingDoctor);
 
     if (!existingDoctor) {
       throw new Error("Invalid credentials");
@@ -113,7 +111,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
     if (!existingDoctor.isVerified) {
       const otp = generateOtp();
       await this.sendMail(existingDoctor.email, otp);
-      console.log("OTP sent to email: ", existingDoctor.email);
 
 
       return {
@@ -166,7 +163,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
   }
 
   async sendMail(email: string, otp: string): Promise<void> {
-    console.log("sending otp......");
     const otpRecord = new OtpModel({
       email,
       otp,
@@ -185,13 +181,11 @@ export default class DoctorAuthService implements IDoctorAuthService {
     certificates: ICertificates,
     parsedSpecializations: IParsed[]
   ): Promise<{  message: string;doctor: IDoctor;}> {
-    console.log("user data from service....", doctor);
 
     const existingUser = await this._doctorRepository.findOne({
       email: doctor.email,
     });
 
-    console.log("Existing user: ", existingUser);
 
     if (existingUser) {
 
@@ -250,7 +244,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
 
     const response = await this._doctorRepository.create(newDoctor);
 
-    console.log("doctor response from service is ", response);
 
     const otp = generateOtp();
 
@@ -267,7 +260,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
 
   async verifyOtp(email: string, otp: string): Promise<{ message: string }> {
     const otpRecord = await this._otpRepository.findLatestOtpByEmail(email);
-    console.log("OTP record: ", otpRecord);
 
     if (!otpRecord) {
       throw new Error("Invalid OTP or email");
@@ -280,7 +272,6 @@ export default class DoctorAuthService implements IDoctorAuthService {
 
     const validateUser = await this._doctorRepository.verifyDoctor(email);
 
-    console.log("User verified: ", validateUser);
 
     return { message: "OTP verified successfully" };
   }
@@ -325,26 +316,22 @@ export default class DoctorAuthService implements IDoctorAuthService {
   }
 
   async refreshToken(refreshToken: string): Promise<IResponseDTO> {
-    // console.log("Refresh token from service: ", refreshToken);
     if (!refreshToken) {
       throw new Error("refresh token not found");
     }
 
     const verified = verifyRefreshToken(refreshToken);
 
-    // console.log("is verified from refresh token auth service...",verified);
 
     if (!verified) {
       throw new Error("Invalid refresh token");
     }
 
-    // console.log("verified is ", verified);
     const accessToken = generateAccessToken({
       id: verified.id,
       role: verified.role,
     });
 
-    // console.log("new access token is ...............",accessToken);
 
     return { accessToken };
   }

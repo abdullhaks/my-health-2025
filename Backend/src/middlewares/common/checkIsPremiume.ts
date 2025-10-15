@@ -20,13 +20,12 @@ export function verifyIsPremiume(): RequestHandler {
 
       const doctor = await doctorModel.findOne({ email: doctorEmail });
 
-      console.log("Doctor found for premium check:", doctorEmail, doctor);
       const isPremium = doctor?.premiumMembership || false;
 
       if (!isPremium) {
         // 🟢 Clear doctor cookies (logout effect)
-        res.clearCookie("doctorAccessToken");
-        res.clearCookie("doctorRefreshToken");
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
         res.clearCookie("doctorEmail");
 
         res

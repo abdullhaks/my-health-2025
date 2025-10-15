@@ -47,7 +47,6 @@ export default class DoctorAppointmentService
     appointments: IAppointmentWithPrescription[] | null;
     totalPages: number;
   }> {
-    console.log("Doctor ID from service...", doctorId);
 
     const query: FilterQuery<IAppointmentDocument> = { doctorId };
     if (filters.appointmentStatus) {
@@ -98,7 +97,6 @@ export default class DoctorAppointmentService
 
     let { appointments, totalPages } =
       await this._appointmentsRepository.getAllAppointments(page, limit, query);
-    console.log("Appointments from service...", appointments);
 
     if (appointments) {
 
@@ -172,7 +170,6 @@ export default class DoctorAppointmentService
     status: boolean;
     message: string;
   }> {
-    console.log("appointment id is ", appointmentId);
     const response = await this._appointmentsRepository.update(appointmentId, {
       appointmentStatus: "cancelled",
       paymentStatus: "refunded",

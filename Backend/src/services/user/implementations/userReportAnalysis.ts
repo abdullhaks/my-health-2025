@@ -70,14 +70,7 @@ export default class UserReportAnalysisService
         throw new Error("Invalid parameters for cancelling analysis report");
       }
 
-      console.log(
-        "Cancelling analysis report with ID:",
-        analysisId,
-        "for user ID:",
-        userId,
-        "with fee:",
-        fee
-      );
+   
       var walletUpdate = await this._UserRepository.update(userId, {
         $inc: { walletBalance: fee },
       });

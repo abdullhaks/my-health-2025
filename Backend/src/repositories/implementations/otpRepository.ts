@@ -23,7 +23,6 @@ export default class OtpRepository
       if (!otpRecord) {
         throw new Error("No OTP found for the given email");
       }
-      console.log("Latest OTP record: ", otpRecord);
       return otpRecord;
     } catch (error) {
       console.error("Error fetching latest OTP:", error);

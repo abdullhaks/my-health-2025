@@ -26,7 +26,6 @@ import { UserMapper } from "../../../mappers/user.mapper";
 import { AuthResponseDTO } from "../../../dto/userDTO";
 import { UserLoginRequestDTO } from "../../../dto/userDTO";
 
-console.log("User auth service is running....");
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -43,14 +42,12 @@ export default class UserAuthService implements IUserAuthService {
   ) {}
 
   async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
-    console.log("user data from service....", userData);
 
     if (!userData.email || !userData.password) {
       throw new Error("Please provide all required fields");
     }
 
     const existingUser = await this._userRepository.findByEmail(userData.email);
-    console.log("Existing user: ", existingUser);
 
     if (!existingUser) {
       throw new Error("Invalid credentials");
@@ -74,7 +71,6 @@ export default class UserAuthService implements IUserAuthService {
     if (!existingUser.isVerified) {
       const otp = generateOtp();
       await this.sendMail(existingUser.email, otp);
-      console.log("OTP sent to email: ", existingUser.email);
 
       return {
         user: { email: existingUser.email, isVerified: false },
@@ -97,7 +93,6 @@ export default class UserAuthService implements IUserAuthService {
 
     const userDTO = await UserMapper.toUserResponseDTO(existingUser);
 
-    console.log("userDTO........", userDTO);
     return {
       message: "Login successful",
       user: userDTO,
@@ -107,7 +102,6 @@ export default class UserAuthService implements IUserAuthService {
   }
 
   async signup(userData: IUser): Promise<Partial<IUserResponse>> {
-    console.log("user data from service....", userData);
 
     if (!userData.email || !userData.password || !userData.fullName) {
       throw new Error("Please provide all required fields");
@@ -120,7 +114,6 @@ export default class UserAuthService implements IUserAuthService {
 
     const existingUser = await this._userRepository.findByEmail(userData.email);
 
-    console.log("Existing user: ", existingUser);
     if (existingUser) {
       throw new Error("User already exists");
     }
@@ -128,10 +121,8 @@ export default class UserAuthService implements IUserAuthService {
     const response = await this._userRepository.create(userData);
 
     const otp = generateOtp();
-    console.log("Generated OTP: ", otp);
 
     await this.sendMail(userData.email, otp);
-    console.log("OTP sent to email: ", userData.email);
 
     return {
       message: "Signup successful. OTP sent to email.",
@@ -170,7 +161,6 @@ export default class UserAuthService implements IUserAuthService {
   async verifyOtp(email: string, otp: string): Promise<Partial<IUserResponse>> {
     const otpRecord = await this._otpRepository.findLatestOtpByEmail(email);
 
-    console.log("OTP record: ", otpRecord);
 
     if (!otpRecord) {
       throw new Error("Invalid OTP or email");
@@ -190,9 +180,7 @@ export default class UserAuthService implements IUserAuthService {
       { dataSet: "1" },
       { $inc: { totalUsers: 1 } }
     );
-    console.log("udpate result is ...", reslt);
 
-    console.log("User verified: ", validateUser);
 
     return { message: "OTP verified successfully" };
   }
@@ -248,7 +236,6 @@ export default class UserAuthService implements IUserAuthService {
     }
 
     const recoveryPassword = generateRandomPassword(10);
-    console.log("Generated recovery password:", recoveryPassword);
 
     const recoveryRecord = new RecoveryPasswordModel({
       email,
@@ -287,12 +274,10 @@ export default class UserAuthService implements IUserAuthService {
   }
 
   async resetPassword(email: string, newPassword: string): Promise<IUser> {
-    console.log("email is from rest passwered", email);
-    console.log("new pasword is from rest passwered", newPassword);
+
 
     const user = await this._userRepository.findByEmail(email);
 
-    console.log("user is from rest passwered", user);
     if (!user) {
       throw new Error("user not found..!");
     }
@@ -300,10 +285,7 @@ export default class UserAuthService implements IUserAuthService {
     const salt = await bcrypt.genSalt(10);
     newPassword = await bcrypt.hash(newPassword, salt);
 
-    console.log(
-      "after hashing newPassword is from rest passwered",
-      newPassword
-    );
+ 
 
     const updatedUser = await this._userRepository.update(user._id.toString(), {
       password: newPassword,
@@ -315,38 +297,32 @@ export default class UserAuthService implements IUserAuthService {
   }
 
   async refreshToken(refreshToken: string): Promise<IResponseDTO> {
-    // console.log("Refresh token from service: ", refreshToken);
     if (!refreshToken) {
       throw new Error("refresh token not found");
     }
 
     const verified = verifyRefreshToken(refreshToken);
 
-    // console.log("is verified from refresh token auth service...",verified);
 
     if (!verified) {
       throw new Error("Invalid refresh token");
     }
 
-    // console.log("verified is ", verified);
     const accessToken = generateAccessToken({
       id: verified.id,
       role: verified.role,
     });
 
-    // console.log("new access token is ...............",accessToken);
 
     return { accessToken };
   }
 
   async getMe(email: string): Promise<Partial<IUserResponse>> {
-    console.log("get me email....", email);
 
     if (!email) {
       throw new Error("Invalid credentials");
     }
     const existingUser = await this._userRepository.findByEmail(email);
-    console.log("Existing user: ", existingUser);
 
     if (!existingUser) {
       throw new Error("Invalid credentials");

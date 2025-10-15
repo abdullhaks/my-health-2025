@@ -39,7 +39,6 @@ export default class DoctorAdvertisementService
       pageNumber,
       limitNumber
     );
-    console.log("blog response....", adds,totalPages);
     const addsDto = await Promise.all(
       adds.map(async (item)=>await AdvertisementMapper.toResponseDTO(item))
     )

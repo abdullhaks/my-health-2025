@@ -68,7 +68,6 @@ export default class DoctorAppointmentController
         };
       }
 
-      console.log("Doctor ID is:", doctorId);
       const response =
         await this._doctorAppointmentService.getDoctorAppointments(
           String(doctorId),
@@ -88,7 +87,6 @@ export default class DoctorAppointmentController
 
   async cancelAppointment(req: Request, res: Response): Promise<void> {
     try {
-      console.log("appointment id is ctrl...", req.query.appointmentId);
 
       const appoinmentId = req.query.appointmentId;
 

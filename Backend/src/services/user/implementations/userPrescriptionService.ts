@@ -35,7 +35,6 @@ export default class UserPrescriptionService
   async getPrescription(
     appointmentId: string
   ): Promise<prescriptionReponseDto> {
-    console.log("appointmentId is.....", appointmentId);
 
     let prescription = await this._prescriptionRepository.findOne({
       appointmentId: appointmentId,
@@ -43,7 +42,6 @@ export default class UserPrescriptionService
 
     const prescriptionDTO = await PrescriptionMapper.toPrescriptionResponseDTO(prescription!);
 
-    console.log("prescription is ....", prescription);
     if (prescriptionDTO) {
       var user = await this._userRepository.findOne({
         _id: prescriptionDTO.userId,
@@ -52,8 +50,6 @@ export default class UserPrescriptionService
         _id: prescriptionDTO.doctorId,
       });
 
-      console.log("user is ....", user);
-      console.log("doctor is ....", doctor);
 
       return {
         prescription:prescriptionDTO,
@@ -71,7 +67,6 @@ export default class UserPrescriptionService
   }
 
   async getLatestPrescription(userId: string): Promise<prescriptionResponseDTO | null> {
-    console.log("userId is.....", userId);
 
     let prescription = await this._prescriptionRepository.findOne(
       { userId: userId },
@@ -85,7 +80,6 @@ export default class UserPrescriptionService
     }
 
 
-    console.log("prescription is ....", prescription);
     return prescriptionDTO || null;
   }
 
@@ -93,7 +87,6 @@ export default class UserPrescriptionService
     userId: string,
     doctorId: string
   ): Promise<prescriptionResponseDTO | null> {
-    console.log("userId is.....", userId);
 
     let prescription = await this._prescriptionRepository.findOne(
       { userId: userId, doctorId: doctorId },
@@ -107,7 +100,6 @@ export default class UserPrescriptionService
     }
 
 
-    console.log("prescription is ....", prescription);
     return prescriptionDTO || null;
   }
 }

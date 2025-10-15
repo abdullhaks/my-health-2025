@@ -17,11 +17,6 @@ export default class UserDashboardController implements IUserDashboardCtrl {
       const { days = "30", userId, latitude = 0, longitude = 0 } = req.query;
       const daysNumber = parseInt(days as string, 10);
 
-      console.log("query is.......", req.query);
-
-      if (latitude && longitude) {
-        console.log("latitude,longitude........", latitude, longitude);
-      }
 
       if (!userId) {
         throw new Error("credentials missed");

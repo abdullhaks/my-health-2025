@@ -22,8 +22,7 @@ export default class ReportAnalysisRepository
   async aggregate<T>(pipeline: PipelineStage[]): Promise<T[]> {
     try {
       const resp = await this._reportModel.aggregate(pipeline);
-      console.log("pipeline is .....", pipeline);
-      console.log("resp is .....", resp);
+     
       return resp;
     } catch (error) {
       console.error("Error in aggregate:", error);

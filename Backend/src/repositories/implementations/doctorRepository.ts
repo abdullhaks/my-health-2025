@@ -133,14 +133,12 @@ export default class DoctorRepository
 
   async verifyDoctorByAdmin(id: string): Promise<IDoctor | null> {
 
-    console.log("id in repo....", id);
     try {
       const resp = await this._doctorModel.findByIdAndUpdate(
         id,
         { adminVerified: 1 },
         { new: true }
       );
-      console.log("doctor verifying....", resp);
 
       return resp;
     } catch (error) {
@@ -156,7 +154,6 @@ export default class DoctorRepository
         { adminVerified: 3, rejectionReason: reason },
         { new: true }
       );
-      console.log("doctor declining....", resp);
 
       return resp;
     } catch (error) {
@@ -172,7 +169,6 @@ export default class DoctorRepository
         { isBlocked: true },
         { new: true }
       );
-      console.log("resp form repo....", resp);
       return resp;
     } catch (error) {
       console.log(error);
@@ -187,7 +183,6 @@ export default class DoctorRepository
         { isBlocked: false },
         { new: true }
       );
-      console.log("resp form repo....", resp);
       return resp;
     } catch (error) {
       console.log(error);
@@ -217,7 +212,6 @@ export default class DoctorRepository
         throw new Error("doctor not found for verification.");
       }
 
-      console.log("doctor verified successfully:", result);
       return result;
     } catch (error) {
       console.error("Error verifying doctor:", error);
@@ -230,8 +224,7 @@ export default class DoctorRepository
   ): Promise<T[]> {
     try {
       const resp = await this._doctorModel.aggregate(pipeline);
-      console.log("pipeline is .....", pipeline);
-      console.log("resp is .....", resp);
+ 
       return resp;
     } catch (error) {
       console.error("Error in aggregate:", error);

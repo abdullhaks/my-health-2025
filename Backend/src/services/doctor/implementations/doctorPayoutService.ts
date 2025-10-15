@@ -75,7 +75,6 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
     const query: FilterQuery<IPayoutDocument> = { doctorId: doctorId };
 
     if (filters.status) {
-      console.log("status....", filters.status);
       query.status = filters.status;
     }
 
@@ -91,7 +90,6 @@ export default class DoctorPayoutService implements IDoctorPayoutService {
       limitNumber,
       query
     );
-    console.log("transactions from service...", transactions);
 
     const payoutDto =await Promise.all(
       transactions.payouts.map(async(item:IPayoutDocument)=>{

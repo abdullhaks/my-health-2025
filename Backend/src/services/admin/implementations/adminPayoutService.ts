@@ -32,7 +32,6 @@ export default class AdminPayoutService implements IAdminPayoutService {
     const query: FilterQuery<IPayoutDocument> = {};
 
     if (filters.status) {
-      console.log("status....", filters.status);
       query.status = filters.status;
     }
 
@@ -48,7 +47,6 @@ export default class AdminPayoutService implements IAdminPayoutService {
       limitNumber,
       query
     );
-    console.log("transactions from service...", transactions);
 
    const payoutDto =await Promise.all(
     transactions.payouts.map(async(item:IPayouts)=>{
@@ -61,7 +59,6 @@ export default class AdminPayoutService implements IAdminPayoutService {
 
   async updatePayout(id: string, data: payoutUpdateData): Promise<payoutResponseDTO> {
     const resp = await this._payoutRepository.update(id, data);
-    console.log("payourt respo is ", resp);
 
     if (!resp?.doctorId) {
       throw new Error("doctorId is undefined");
@@ -70,7 +67,6 @@ export default class AdminPayoutService implements IAdminPayoutService {
       $inc: { walletBalance: resp?.totalAmount },
     });
 
-    console.log("wallet respo is ", updateWalet);
 
     const payoutdto = await PayoutMapper.toPayoutResponseDTO(resp);
 

@@ -41,10 +41,8 @@ export default class ConversationRepository
   }
 
   async getUserConversations(userId: string, from: string): Promise<ConversationResponseDTO[]> {
-        console.log("hereree 4")
 
     if (!userId) {
-        console.log("hereree 5")
 
       throw new Error("User ID is required");
     }
@@ -53,10 +51,8 @@ export default class ConversationRepository
       .sort({ updatedAt: -1 });
 
 
-      console.log("conversations......",conversations)
 
     const OtherModel = mongoose.model(from); // 'User' or 'Doctor'
-      console.log("OtherModel......",OtherModel)
 
 
     return await Promise.all(
@@ -64,7 +60,6 @@ export default class ConversationRepository
         const otherMemberId = conv.members.find((m: string) => m !== userId);
         const otherMember = await OtherModel.findById(otherMemberId, '_id fullName profile');
         
-        console.log("other memebr.....",otherMember);
 
         const memberDto = otherMember ? {
           _id: otherMember._id.toString(),
@@ -72,7 +67,6 @@ export default class ConversationRepository
           avatar: otherMember.profile?await getSignedImageURL(otherMember.profile):"",
         } : null;
 
-        console.log("memberDto .....",memberDto);
 
         return {
           _id: conv._id.toString(),

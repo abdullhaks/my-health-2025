@@ -59,7 +59,6 @@ export default class UserRepository
         { isBlocked: true },
         { new: true }
       );
-      console.log("resp form repo....", resp);
       return resp;
     } catch (error) {
       console.log(error);
@@ -74,7 +73,6 @@ export default class UserRepository
         { isBlocked: false },
         { new: true }
       );
-      console.log("resp form repo....", resp);
       return resp;
     } catch (error) {
       console.log(error);
@@ -105,7 +103,6 @@ export default class UserRepository
         throw new Error("User not found for verification.");
       }
 
-      console.log("User verified successfully:", result);
       return result;
     } catch (error) {
       console.error("Error verifying user:", error);
@@ -116,8 +113,7 @@ export default class UserRepository
   async aggregate<T = IUserDocument>(pipeline: PipelineStage[]): Promise<T[]> {
     try {
       const resp = await this._userModel.aggregate(pipeline);
-      console.log("pipe line is .....", pipeline);
-      console.log("resp is .....", resp);
+    
       return resp;
     } catch (error) {
       console.error("Error in aggregate:", error);

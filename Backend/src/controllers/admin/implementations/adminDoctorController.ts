@@ -15,7 +15,6 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
   async getDoctors(req: Request, res: Response): Promise<void> {
     try {
       const { page, search, limit, onlyPremium, toVerify } = req.query;
-      console.log("reqest.params from get users...", search, page, limit);
 
       const pageNumber = page ? parseInt(page as string, 10) : 1;
       const limitNumber = limit ? parseInt(limit as string, 10) : 10;
@@ -67,7 +66,6 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
     try {
       const { id } = req.params;
 
-      console.log("doctor id for verify...", id);
       const response = await this._adminDoctorService.verifyDoctor(id);
       if (!response) {
         res
@@ -89,7 +87,6 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
       const { id } = req.params;
       const { reason } = req.body;
 
-      console.log("reson is..........", reason);
       const response = await this._adminDoctorService.declineDoctor(id, reason);
       if (!response) {
         res
@@ -110,11 +107,9 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
     try {
       const { id } = req.params;
 
-      console.log("user id for block...", id);
 
       const result = this._adminDoctorService.block(id);
 
-      console.log("resposne form doctor blocking ctrl..", result);
 
       if (!result) {
         res
@@ -134,11 +129,9 @@ export default class AdminDoctorController implements IAdminDoctorCtrl {
     try {
       const { id } = req.params;
 
-      console.log("doctor id for block...", id);
 
       const result = this._adminDoctorService.unblock(id);
 
-      console.log("resposne form doctor blocking ctrl..", result);
 
       if (!result) {
         res

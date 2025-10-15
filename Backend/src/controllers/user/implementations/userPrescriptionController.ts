@@ -18,7 +18,6 @@ export default class UserPrescriptionController
     try {
       const { appointmentId } = req.query;
 
-      console.log("appointmentId is.....", appointmentId);
 
       if (appointmentId) {
         const response = await this._prescriptionService.getPrescription(

@@ -14,7 +14,6 @@ export default class AdminUserController implements IAdminUserCtrl {
   async getUsers(req: Request, res: Response): Promise<void> {
     try {
       const { page, search, limit } = req.query;
-      console.log("reqest.params from get users...", search, page, limit);
 
       const pageNumber = page ? parseInt(page as string, 10) : 1;
       const limitNumber = limit ? parseInt(limit as string, 10) : 10;
@@ -43,11 +42,9 @@ export default class AdminUserController implements IAdminUserCtrl {
     try {
       const { id } = req.params;
 
-      console.log("user id for block...", id);
 
       const result = this._adminUserService.block(id);
 
-      console.log("resposne form user blocking ctrl..", result);
 
       if (!result) {
         res
@@ -67,11 +64,9 @@ export default class AdminUserController implements IAdminUserCtrl {
     try {
       const { id } = req.params;
 
-      console.log("user id for block...", id);
 
       const result = this._adminUserService.unblock(id);
 
-      console.log("resposne form user blocking ctrl..", result);
 
       if (!result) {
         res

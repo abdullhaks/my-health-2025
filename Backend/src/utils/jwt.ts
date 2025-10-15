@@ -35,9 +35,7 @@ export const verifyRefreshToken = (token: string): JwtPayload | null => {
 
 export const verifyAccessToken = (token: string): JwtPayload | null => {
   try {
-    console.log("token is...sforfksdjflds", token);
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
-    console.log("decoded is...sforfksdjflds", decoded);
     return decoded;
   } catch {
     return null;

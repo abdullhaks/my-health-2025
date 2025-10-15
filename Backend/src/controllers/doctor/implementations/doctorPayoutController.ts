@@ -15,15 +15,13 @@ export default class DoctorPayoutController implements IDoctorPayoutCtrl {
   async requestPayout(req: Request, res: Response): Promise<void> {
     try {
       const { doctorId, payoutDetails } = req.body;
-      console.log("doctor id is ", doctorId);
-      console.log("payoutDetails id is ", payoutDetails);
+     
 
       const response = await this._doctorPayoutService.requestPayout(
         payoutDetails,
         doctorId
       );
 
-      console.log("payout request is .....", response);
 
       if (!response) {
         res

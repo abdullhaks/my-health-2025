@@ -13,17 +13,10 @@ export default class MessageController implements IMessageCtrl {
 
   async sendMessage(req: Request, res: Response): Promise<void> {
     try {
-      console.log("Request body:", req.body);
-      // console.log("Authenticated userId:", req.userId);
 
       const { conversationId, senderId, content, type } = req.body;
 
-      console.log(
-        "conversationId, senderId, content:",
-        conversationId,
-        senderId,
-        content
-      );
+      
 
       if (!conversationId || !senderId || !content) {
         res

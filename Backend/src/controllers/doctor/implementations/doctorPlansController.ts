@@ -12,7 +12,6 @@ export default class DoctorPlansController implements IDoctorPlanCtrl {
       const products = await stripe.products.list({
         expand: ["data.default_price"], // Expand the default_price field to include full price details
       });
-      console.log("products from stripe is ", products);
       res.status(HttpStatusCode.OK).json({ data: products.data });
     } catch (error) {
       console.error("Error fetching products:", error);

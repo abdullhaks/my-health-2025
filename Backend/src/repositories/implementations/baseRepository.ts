@@ -66,13 +66,10 @@ export default class BaseRepository<T extends Document>
   }
 
   async create(data: Partial<T>): Promise<T> {
-    console.log("data sis ==>", data);
 
     try {
-      console.log("model is ==>", this._model);
 
       const createdDocument = new this._model(data);
-      console.log("careate document", createdDocument);
 
       return await createdDocument.save();
     } catch (error) {
@@ -99,7 +96,6 @@ export default class BaseRepository<T extends Document>
     try {
       return await this._model.updateMany(filter, data).exec();
     } catch (error) {
-      console.log("Error updating documents:", error);
       return {
         acknowledged: false,
         modifiedCount: 0,

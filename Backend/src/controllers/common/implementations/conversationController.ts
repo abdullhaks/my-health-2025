@@ -16,7 +16,6 @@ export default class ConversationController implements IConversationCtrl {
     try {
       const { userIds } = req.body;
 
-      console.log("usearids from contorller ....", userIds);
 
       if (!Array.isArray(userIds) || userIds.length !== 2) {
         res
@@ -45,12 +44,9 @@ export default class ConversationController implements IConversationCtrl {
     try {
       const doctorId = req.params.doctorId;
       let from = req.query.from as string | undefined;
-      console.log("from doc... is ...", from);
-      console.log("doctorId... is ...", doctorId);
 
       if (!doctorId || !from) {
 
-        console.log("hereree 1")
         res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ message: "Doctor ID is required and doc location" });

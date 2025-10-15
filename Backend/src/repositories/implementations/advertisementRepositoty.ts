@@ -51,7 +51,6 @@ implements IAdvertisementRepository{
     longitude: number
   ): Promise<IAdvertisementDocument[]> {
     try {
-      console.log("tags from get adds by tags ....", tags);
 
       let advertisements:advertisementDocument[] = [];
 
@@ -61,7 +60,6 @@ implements IAdvertisementRepository{
         20
       );
 
-      console.log("locaitoin based adds are....", locationBased);
 
       if (locationBased) {
         advertisements = locationBased;
@@ -82,7 +80,6 @@ implements IAdvertisementRepository{
           .lean();
 
         advertisements = [...advertisements, ...tagAdds];
-        console.log("adds wiht tags......", advertisements);
 
 
       } 

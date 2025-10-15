@@ -21,8 +21,6 @@ export default class UserProfileService implements IUserProfileService {
     userId: string,
     userData: Partial<IUser>
   ): Promise<Partial<IUserResponse>> {
-    console.log("user data is ", userData);
-    console.log("user id from service ", userId);
 
     try {
       const findedUser = await this._userRepository.findOne({ _id: userId });
@@ -46,7 +44,6 @@ export default class UserProfileService implements IUserProfileService {
         ];
       }
       const updatedUser = await this._userRepository.update(userId, userData);
-      console.log("Updated user: ", updatedUser);
 
       if (updatedUser) {
         const { password, ...userWithoutPassword } = updatedUser.toObject();
@@ -108,14 +105,11 @@ export default class UserProfileService implements IUserProfileService {
   ): Promise<IUser> {
     try {
       const existingUser = await this._userRepository.findOne({ _id: id });
-      console.log("Existing user: ", existingUser);
 
       if (!existingUser) {
         throw new Error("Invalid credentials");
       }
 
-      console.log(data.currentPassword === "ABDULLHa#786");
-      console.log("current password is", data.currentPassword);
 
       // Corrected the argument order for bcrypt.compare
       const isPasswordValid = await bcrypt.compare(
@@ -123,7 +117,6 @@ export default class UserProfileService implements IUserProfileService {
         existingUser.password
       );
 
-      console.log("bcrypt comparison is ", isPasswordValid);
 
       if (!isPasswordValid) {
         throw new Error("Invalid credentials");
@@ -138,7 +131,6 @@ export default class UserProfileService implements IUserProfileService {
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(data.newPassword, salt);
 
-      console.log("after hashing newPassword is", hashedNewPassword);
 
       const updatedUser = await this._userRepository.update(
         existingUser._id.toString(),
