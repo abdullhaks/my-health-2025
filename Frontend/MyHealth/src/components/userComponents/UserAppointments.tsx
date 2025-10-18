@@ -389,7 +389,7 @@ const UserAppointments = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
                     <div>
                       <span className="font-medium text-gray-700">
                         Date & Time:{" "}
@@ -403,10 +403,7 @@ const UserAppointments = () => {
                       </span>
                       {appt.duration} minutes
                     </div>
-                    <div>
-                      <span className="font-medium text-gray-700">Fee: </span>₹
-                      {appt.fee}
-                    </div>
+                   
                     <div>
                       <span className="font-medium text-gray-700">
                         Status:{" "}

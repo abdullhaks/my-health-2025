@@ -105,6 +105,8 @@ const DoctorAppointments = () => {
   const doctor = useSelector((state: IDoctorData) => state.doctor.doctor);
   const navigate = useNavigate();
   const socketRef = useRef<Socket | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
 
   // const apiUrl = import.meta.env.VITE_API_URL as string;
 
@@ -320,6 +322,11 @@ const DoctorAppointments = () => {
     return now >= startTime - buffer && now <= endTime + buffer;
   };
 
+   const handleViewDetails = (appointment: IAppointment) => {
+    setSelectedAppointment(appointment);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto">
@@ -413,13 +420,11 @@ const DoctorAppointments = () => {
                       >
                         {appt.userName}
                       </p>
-                      <p className="text-xs sm:text-sm text-gray-600">
-                        ({appt.doctorCategory})
-                      </p>
+                    
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-xs sm:text-sm">
                     <div>
                       <span className="font-medium text-gray-700">
                         Date & Time:{" "}
@@ -433,10 +438,7 @@ const DoctorAppointments = () => {
                       </span>
                       {appt.duration} minutes
                     </div>
-                    <div>
-                      <span className="font-medium text-gray-700">Fee: </span>₹
-                      {appt.fee}
-                    </div>
+                
                     <div>
                       <span className="font-medium text-gray-700">
                         Status:{" "}
@@ -444,15 +446,7 @@ const DoctorAppointments = () => {
                       {appt.appointmentStatus.charAt(0).toUpperCase() +
                         appt.appointmentStatus.slice(1)}
                     </div>
-                    <div>
-                      <span className="font-medium text-gray-700">Email: </span>
-                      <span
-                        className="truncate max-w-[150px] sm:max-w-[200px]"
-                        title={appt.userEmail}
-                      >
-                        {appt.userEmail}
-                      </span>
-                    </div>
+                 
                   </div>
 
                   <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -501,6 +495,16 @@ const DoctorAppointments = () => {
                           View Prescription
                         </button>
                       )}
+
+
+
+
+                    <button
+                      onClick={() => handleViewDetails(appt)}
+                      className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg text-blue-600 font-medium border border-blue-600 hover:bg-blue-50 transition-colors duration-200 shadow-sm active:scale-95"
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               </div>
@@ -558,9 +562,7 @@ const DoctorAppointments = () => {
                   <h4 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900">
                     {selectedAppointment.userName}
                   </h4>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    {selectedAppointment.doctorCategory}
-                  </p>
+                 
                 </div>
               </div>
               <div className="space-y-3 sm:space-y-4">
@@ -720,6 +722,85 @@ const DoctorAppointments = () => {
             </div>
           )}
         </Modal>
+
+
+
+          <Modal
+                title={
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+                    Appointment Details
+                  </h3>
+                }
+                open={isModalOpen}
+                onCancel={() => setIsModalOpen(false)}
+                footer={null}
+                className="rounded-2xl"
+                bodyStyle={{ padding: "16px 24px" }}
+                width="100%"
+                style={{ maxWidth: "640px" }}
+              >
+                {selectedAppointment && (
+                  <div className="space-y-4 sm:space-y-6">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+                      <img
+                        src={
+                          selectedAppointment.profile ||
+                          "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                        }
+                        alt="Doctor"
+                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-md"
+                      />
+                      <div className="text-center sm:text-left">
+                        <h4 className="text-base sm:text-lg font-semibold text-gray-900">
+                          {selectedAppointment.userName}
+                        </h4>
+                       
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
+                      <div>
+                        <p className="font-medium text-gray-700">Date & Time:</p>
+                        <p className="text-gray-900">
+                          {moment(selectedAppointment.start).format(
+                            "DD-MM-YYYY hh:mm A"
+                          )}{" "}
+                          - {moment(selectedAppointment.end).format("hh:mm A")}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">Duration:</p>
+                        <p className="text-gray-900">
+                          {selectedAppointment.duration} minutes
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">Fee:</p>
+                        <p className="text-gray-900">₹{selectedAppointment.fee}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">Status:</p>
+                        <p className="text-gray-900 capitalize">
+                          {selectedAppointment.appointmentStatus}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">Payment Status:</p>
+                        <p className="text-gray-900 capitalize">
+                          {selectedAppointment.paymentStatus}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-700">Created At:</p>
+                        <p className="text-gray-900">
+                          {moment(selectedAppointment.createdAt).format(
+                            "DD-MM-YYYY hh:mm A"
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Modal>
       </div>
     </div>
   );
