@@ -227,7 +227,7 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
         <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-sm shadow-lg sm:h-20">
           <div className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-8">
             {/* Profile Section (Left Corner for All Screens) */}
-            <div className="flex items-center space-x-2 md:space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4 ml-auto">
               {/* Mobile Menu Button */}
               <button
                 className="sm:hidden p-3 rounded-lg text-green-600 hover:bg-green-50 hover:text-green-700 transition-colors"
@@ -251,7 +251,7 @@ const AdminLayout: React.FC<NavbarProps> = ({ children }) => {
                   </div>
                 </button>
                 {showProfileDropdown && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-100">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-100">
                     <Link
                       to="/admin/settings"
                       className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"

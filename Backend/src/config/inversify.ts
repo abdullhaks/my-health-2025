@@ -1,4 +1,5 @@
 import { Container } from "inversify";
+
 import userModel from "../models/user";
 import OtpModel from "../models/otp";
 import adminModel from "../models/admin";
