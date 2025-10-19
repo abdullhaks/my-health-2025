@@ -79,6 +79,7 @@ const UserAppointments = () => {
   });
   const [selectedAppointment, setSelectedAppointment] =
     useState<IAppointment | null>(null);
+    
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL as string;
