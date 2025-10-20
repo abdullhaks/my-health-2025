@@ -15,6 +15,23 @@ export default class AdminAnalyticsContorller
     private _adminAnalyticsService: IAdminAnalyticsServices
   ) {}
 
+  /**
+   * Handles fetching user analytics data based on a given filter.
+   * @async
+   * @function getUserAnalytics
+   * @param {import('express').Request} req - Express request object containing `params.filter`.
+   * @param {import('express').Response} res - Express response object used to send results.
+   * @returns {Promise<void>} Sends a JSON response with analytics data or an error message.
+   * @description
+   * This controller:
+   *  - Extracts the `filter` parameter from the request.
+   *  - Calls the analytics service to retrieve user analytics.
+   *  - Handles different error types (missing filter, not found, database errors, etc.).
+   * @example
+   * // GET /api/admin/analytics/users/:filter
+   * // Example: /api/admin/analytics/users/month
+   * router.get('/analytics/users/:filter', adminController.getUserAnalytics);
+   */
   async getUserAnalytics(req: Request, res: Response): Promise<void> {
     try {
       const filter = req.params.filter;
@@ -22,30 +39,29 @@ export default class AdminAnalyticsContorller
         filter
       );
       res.status(HttpStatusCode.OK).json(response);
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error in getUserAnalytics controller:", error);
       let message = MESSAGES.analytics.databaseError;
       let status = HttpStatusCode.INTERNAL_SERVER_ERROR;
 
-      switch (error.message){
+      switch (error.message) {
         case MESSAGES.analytics.missingFilter: {
-          message = MESSAGES.analytics.missingFilter
-          status = HttpStatusCode.BAD_REQUEST
+          message = MESSAGES.analytics.missingFilter;
+          status = HttpStatusCode.BAD_REQUEST;
           break;
         }
-        case MESSAGES.analytics.notFound : {
-          message = MESSAGES.analytics.notFound
+        case MESSAGES.analytics.notFound: {
+          message = MESSAGES.analytics.notFound;
           break;
-
         }
 
-        case MESSAGES.analytics.failedToFetch : {
-          message = MESSAGES.analytics.failedToFetch
+        case MESSAGES.analytics.failedToFetch: {
+          message = MESSAGES.analytics.failedToFetch;
           break;
         }
       }
-      
-      res .status(status).json({ message:message});
+
+      res.status(status).json({ message: message });
     }
   }
 

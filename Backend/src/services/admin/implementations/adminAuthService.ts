@@ -13,7 +13,6 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../../../utils/jwt";
-import { Request, Response, NextFunction } from "express";
 import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPassword";
 import { IResponseDTO } from "../../../dto/commonResponseDto"; 
 import { adminResponseDTO } from "../../../dto/adminDTO";
@@ -67,19 +66,7 @@ export default class AdminAuthService implements IAdminAuthService {
       role: "admin",
     });
 
-    // res.cookie("adminRefreshToken", refreshToken, {
-    //   httpOnly: true,
-    //   sameSite: "strict",
-    //   secure: false,
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
 
-    // res.cookie("adminAccessToken", accessToken, {
-    //   httpOnly: true,
-    //   sameSite: "strict",
-    //   secure: false,
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
 
     const adminDto = await AdminMapper.toResponseDTO(admin)
 
