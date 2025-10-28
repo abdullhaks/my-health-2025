@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IAuthCtrl from "../interfaces/IAdminAuthCtrl";
+import IAdminAuthController from "../interfaces/IAdminAuthController";
 import { inject, injectable } from "inversify";
 import IAdminAuthService from "../../../services/admin/interfaces/IAdminAuthService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class AdminAuthController implements IAuthCtrl {
+export default class AdminAuthController implements IAdminAuthController {
   constructor(
     @inject("IAdminAuthService") private _adminAuthService: IAdminAuthService
   ) {}

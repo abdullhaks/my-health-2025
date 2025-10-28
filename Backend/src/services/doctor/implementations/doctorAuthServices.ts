@@ -25,6 +25,8 @@ import {
   uploadFileToS3,
 } from "../../../middlewares/common/uploadS3";
 import { IDoctor } from "../../../dto/doctorDTO";
+import { HttpException } from "../../../utils/http.exception";
+import { HttpStatusCode } from "../../../utils/enum";
 
 dotenv.config();
 
@@ -82,7 +84,8 @@ export default class DoctorAuthService implements IDoctorAuthService {
   }> {
 
     if (!doctorData.email || !doctorData.password) {
-      throw new Error("Please provide all required fields");
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Please provide all required fields');
+      
     }
 
     const existingDoctor = await this._doctorRepository.findOne({
@@ -90,7 +93,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
     });
 
     if (!existingDoctor) {
-      throw new Error("Invalid credentials");
+          throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -98,7 +101,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
       existingDoctor.password
     );
     if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
+     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
     }
 
     if (existingDoctor.isBlocked) {

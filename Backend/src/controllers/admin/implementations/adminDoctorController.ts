@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import IAdminDoctorCtrl from "../interfaces/IAdminDoctorCtrl";
+import IAdminDoctorCtrl from "../interfaces/IAdminDoctorController";
 import { inject, injectable } from "inversify";
 import IAdminDoctorService from "../../../services/admin/interfaces/IAdminDoctorService";
 import { HttpStatusCode } from "../../../utils/enum";

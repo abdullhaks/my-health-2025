@@ -43,13 +43,13 @@ import IUserTransactionController from "../controllers/user/interfaces/IUserTran
 
 
 import AdminAuthController from "../controllers/admin/implementations/adminAuthController";
-import IAdminAuthCtrl from "../controllers/admin/interfaces/IAdminAuthCtrl";
+import IAdminAuthController from "../controllers/admin/interfaces/IAdminAuthController";
 import AdminUserController from "../controllers/admin/implementations/adminUserController";
-import IAdminUserCtrl from "../controllers/admin/interfaces/IAdminUserCtrl";
+import IAdminUserCtrl from "../controllers/admin/interfaces/IAdminUserController";
 import AdminDoctorController from "../controllers/admin/implementations/adminDoctorController";
-import IAdminDoctorCtrl from "../controllers/admin/interfaces/IAdminDoctorCtrl";
+import IAdminDoctorCtrl from "../controllers/admin/interfaces/IAdminDoctorController";
 import AdminProductController from "../controllers/admin/implementations/adminProductController";
-import IAdminProductCtrl from "../controllers/admin/interfaces/IAdminProductCtrl";
+import IAdminProductCtrl from "../controllers/admin/interfaces/IAdminProductController";
 import AdminAppointmentController from "../controllers/admin/implementations/adminAppointmentController";
 import IAdminAppointmentController from "../controllers/admin/interfaces/IAdminAppointmentController";
 import AdminAnalyticsContorller from "../controllers/admin/implementations/adminAnalyticsContorller";
@@ -290,7 +290,7 @@ container.bind<IUserPrescriptionCtrl>("IUserPrescriptionCtrl").to(UserPrescripti
 container.bind<IUserTransactionController>("IUserTransactionController").to(UserTransactionController);
 
 
-container.bind<IAdminAuthCtrl>("IAdminAuthCtrl").to(AdminAuthController);
+container.bind<IAdminAuthController>("IAdminAuthCtrl").to(AdminAuthController);
 container.bind<IAdminUserCtrl>("IAdminUserCtrl").to(AdminUserController);
 container.bind<IAdminDoctorCtrl>("IAdminDoctorCtrl").to(AdminDoctorController);
 container.bind<IAdminProductCtrl>("IAdminProductCtrl").to(AdminProductController);

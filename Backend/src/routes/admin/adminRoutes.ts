@@ -1,9 +1,9 @@
 import { Router } from "express";
 import container from "../../config/inversify";
-import IAdminAuthCtrl from "../../controllers/admin/interfaces/IAdminAuthCtrl";
-import IAdminUserCtrl from "../../controllers/admin/interfaces/IAdminUserCtrl";
-import IAdminDoctorCtrl from "../../controllers/admin/interfaces/IAdminDoctorCtrl";
-import IAdminProductCtrl from "../../controllers/admin/interfaces/IAdminProductCtrl";
+import IAdminAuthController from "../../controllers/admin/interfaces/IAdminAuthController";
+import IAdminUserCtrl from "../../controllers/admin/interfaces/IAdminUserController";
+import IAdminDoctorCtrl from "../../controllers/admin/interfaces/IAdminDoctorController";
+import IAdminProductCtrl from "../../controllers/admin/interfaces/IAdminProductController";
 import IAdminAppointmentController from "../../controllers/admin/interfaces/IAdminAppointmentController";
 import IAdminAnalyticsController from "../../controllers/admin/interfaces/IAdminAnalyticsController";
 import IAdminTransactionController from "../../controllers/admin/interfaces/IAdminTransactionController";
@@ -13,7 +13,7 @@ import { verifyAccessTokenMidleware } from "../../middlewares/common/checkAccess
 
 const adminRoutes = Router();
 
-const authCtrl = container.get<IAdminAuthCtrl>("IAdminAuthCtrl");
+const authCtrl = container.get<IAdminAuthController>("IAdminAuthCtrl");
 const userCtrl = container.get<IAdminUserCtrl>("IAdminUserCtrl");
 const doctorCtrl = container.get<IAdminDoctorCtrl>("IAdminDoctorCtrl");
 const productCtrl = container.get<IAdminProductCtrl>("IAdminProductCtrl");

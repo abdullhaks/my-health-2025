@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export default interface IAdminAuthCtrl {
+export default interface IAdminAuthController {
   adminLogin(req: Request, res: Response): Promise<void>;
 
   adminLogout(req: Request, res: Response): Promise<void>;

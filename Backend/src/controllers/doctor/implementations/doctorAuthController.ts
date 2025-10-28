@@ -4,6 +4,7 @@ import { inject, injectable } from "inversify";
 import IDoctorAuthService from "../../../services/doctor/interfaces/IDoctorAuthServices";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
+import { HttpException } from "../../../utils/http.exception";
 
 interface MulterFile {
   fieldname: string;
@@ -67,12 +68,16 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
       res
         .status(HttpStatusCode.OK)
         .json({ message: result.message, doctor: result.doctor });
-    } catch (error) {
-      console.log(error);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
-    }
+    } catch (error: any) {
+        if (error instanceof HttpException) {
+          res.status(error.status).json({ message: error.message, code: error.code });
+          return;
+        }
+    
+        console.error("...................................",error);
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+           .json({ message: MESSAGES.server.serverError });
+      }
   };
 
    async doctorLogout(req: Request, res: Response): Promise<void> {

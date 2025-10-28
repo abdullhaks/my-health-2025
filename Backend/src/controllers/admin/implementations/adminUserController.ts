@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import IAdminUserCtrl from "../interfaces/IAdminUserCtrl";
+import IAdminUserCtrl from "../interfaces/IAdminUserController";
 import { inject, injectable } from "inversify";
 import IAdminUserService from "../../../services/admin/interfaces/IAdminUserService";
 import { HttpStatusCode } from "../../../utils/enum";

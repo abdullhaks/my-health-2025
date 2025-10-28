@@ -25,6 +25,8 @@ import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import { UserMapper } from "../../../mappers/user.mapper";
 import { AuthResponseDTO } from "../../../dto/userDTO";
 import { UserLoginRequestDTO } from "../../../dto/userDTO";
+import { HttpStatusCode } from "../../../utils/enum";
+import { HttpException } from "../../../utils/http.exception";
 
 
 const transporter = nodemailer.createTransport({
@@ -41,65 +43,63 @@ export default class UserAuthService implements IUserAuthService {
     @inject("IOtpRepository") private _otpRepository: IOtpRepository
   ) {}
 
-  async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
+async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
+  if (!userData.email || !userData.password) {
+    throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Please provide all required fields');
+  }
 
-    if (!userData.email || !userData.password) {
-      throw new Error("Please provide all required fields");
-    }
+  const existingUser = await this._userRepository.findByEmail(userData.email);
+  if (!existingUser) {
+    throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
+  }
 
-    const existingUser = await this._userRepository.findByEmail(userData.email);
+  const isPasswordValid = await bcrypt.compare(userData.password, existingUser.password);
+  if (!isPasswordValid) {
+    throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
+  }
 
-    if (!existingUser) {
-      throw new Error("Invalid credentials");
-    }
-
-    const isPasswordValid = await bcrypt.compare(
-      userData.password,
-      existingUser.password
-    );
-    if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
-    }
-
-    if (existingUser.isBlocked) {
-      return {
-        user: { email: existingUser.email, isBlocked: true },
-        message: "User is blocked",
-      };
-    }
-
-    if (!existingUser.isVerified) {
-      const otp = generateOtp();
-      await this.sendMail(existingUser.email, otp);
-
-      return {
-        user: { email: existingUser.email, isVerified: false },
-        message: "User not verified, OTP sent",
-      };
-    }
-
-    const accessToken = generateAccessToken({
-      id: existingUser._id.toString(),
-      role: "user",
-    });
-    const refreshToken = generateRefreshToken({
-      id: existingUser._id.toString(),
-      role: "user",
-    });
-
-    if (existingUser.profile) {
-      existingUser.profile = await getSignedImageURL(existingUser.profile);
-    }
-
-    const userDTO = await UserMapper.toUserResponseDTO(existingUser);
-
+  // ---- BLOCKED ----
+  if (existingUser.isBlocked) {
     return {
-      message: "Login successful",
-      user: userDTO,
-      accessToken,
-      refreshToken,
+      message: 'User is blocked',
+      user: { email: existingUser.email, isBlocked: true },
     };
   }
+
+  // ---- NOT VERIFIED ----
+  if (!existingUser.isVerified) {
+    const otp = generateOtp();
+    await this.sendMail(existingUser.email, otp);   // <-- await!
+    return {
+      message: 'User not verified, OTP sent',
+      user: { email: existingUser.email, isVerified: false },
+    };
+  }
+
+ 
+  const accessToken  = generateAccessToken({
+      id: existingUser._id.toString(),
+      role: "user",
+    });
+  const refreshToken = generateRefreshToken({
+      id: existingUser._id.toString(),
+      role: "user",
+    });
+
+  if (existingUser.profile) {
+    existingUser.profile = await getSignedImageURL(existingUser.profile);
+  }
+
+  const userDTO = await UserMapper.toUserResponseDTO(existingUser);
+
+  return {
+    message: 'Login successful',
+    user: userDTO,
+    accessToken,
+    refreshToken,
+  };
+};
+
 
   async signup(userData: IUser): Promise<Partial<IUserResponse>> {
 

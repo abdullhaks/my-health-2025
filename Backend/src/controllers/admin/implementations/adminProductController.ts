@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
-import IAdminProductCtrl from "../interfaces/IAdminProductCtrl";
+import IAdminProductCtrl from "../interfaces/IAdminProductController";
 import stripe from "../../../middlewares/common/stripe";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
