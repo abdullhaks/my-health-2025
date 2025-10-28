@@ -204,12 +204,18 @@ export default class DoctorAuthController implements IDoctorAuthCtrl {
 
       const otpRecord = await this._doctorAuthService.verifyOtp(email, otp);
       res.status(HttpStatusCode.OK).json({ otp, email });
-    } catch (error) {
-      console.log(error);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
-    }
+    } catch (error: any) {
+    
+    
+        if (error instanceof HttpException) {
+    
+          res.status(error.status).json({ message: error.message, code: error.code });
+          return;
+        }
+    
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+           .json({ message: MESSAGES.server.serverError });
+      }
   }
 
   async resentOtp(req: Request, res: Response): Promise<void> {

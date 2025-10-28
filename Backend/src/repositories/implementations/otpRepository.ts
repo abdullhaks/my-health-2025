@@ -4,6 +4,8 @@ import BaseRepository from "./baseRepository";
 import IOtpRepository from "../interfaces/IOtpRepository";
 import {Model} from "mongoose";
 import { otpDocument } from "../../entities/otpEntities";
+import { HttpException } from "../../utils/http.exception";
+import { HttpStatusCode } from "../../utils/enum";
 
 @injectable()
 export default class OtpRepository
@@ -15,18 +17,15 @@ export default class OtpRepository
   }
 
   async findLatestOtpByEmail(email: string): Promise<IOtpDocument> {
-    try {
+ 
       const otpRecord = await this._otpModel
         .findOne({ email })
         .sort({ createdAt: -1 });
 
       if (!otpRecord) {
-        throw new Error("No OTP found for the given email");
+        throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid otp', 'INVALID_CREDENTIALS');
       }
       return otpRecord;
-    } catch (error) {
-      console.error("Error fetching latest OTP:", error);
-      throw new Error("Failed to fetch latest OTP for the given email");
-    }
+   
   }
 }

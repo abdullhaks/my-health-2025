@@ -105,28 +105,37 @@ export default class DoctorAuthService implements IDoctorAuthService {
     }
 
     if (existingDoctor.isBlocked) {
-      return {
-        doctor: existingDoctor,
-        message: "doctor is blocked",
-      };
+
+     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'blocked', 'BLOCKED_CREDENTIALS');
+
+      // return {
+      //   doctor: existingDoctor,
+      //   message: "doctor is blocked",
+      // };
+
     }
 
     if (!existingDoctor.isVerified) {
       const otp = generateOtp();
       await this.sendMail(existingDoctor.email, otp);
 
+     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'unauthorized', 'UNAUTHORIZED_CREDENTIALS');
 
-      return {
-        doctor: existingDoctor,
-        message: "doctor not verified, OTP sent",
-      };
+      // return {
+      //   doctor: existingDoctor,
+      //   message: "doctor not verified, OTP sent",
+      // };
+
     }
 
     if (existingDoctor.adminVerified == 0) {
-      return {
-        doctor: existingDoctor,
-        message: `doctor credential not verified.`,
-      };
+
+     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'not verified', 'NONVERIFIED_CREDENTIALS');
+
+      // return {
+      //   doctor: existingDoctor,
+      //   message: `doctor credential not verified.`,
+      // };
     }
 
     if (existingDoctor.adminVerified == 3) {
@@ -265,12 +274,12 @@ export default class DoctorAuthService implements IDoctorAuthService {
     const otpRecord = await this._otpRepository.findLatestOtpByEmail(email);
 
     if (!otpRecord) {
-      throw new Error("Invalid OTP or email");
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid otp', 'INVALID_CREDENTIALS');
     }
 
     const isOtpValid = otpRecord.otp === otp;
     if (!isOtpValid) {
-      throw new Error("Invalid OTP");
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid otp', 'INVALID_CREDENTIALS');
     }
 
     const validateUser = await this._doctorRepository.verifyDoctor(email);
