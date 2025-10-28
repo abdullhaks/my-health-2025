@@ -17,6 +17,8 @@ import { generateRecoveryPasswordMail } from "../../../utils/generateRecoveyPass
 import { IResponseDTO } from "../../../dto/commonResponseDto"; 
 import { adminResponseDTO } from "../../../dto/adminDTO";
 import { AdminMapper } from "../../../mappers/admin.mapper";
+import { HttpException } from "../../../utils/http.exception";
+import { HttpStatusCode } from "../../../utils/enum";
 
 
 const transporter = nodemailer.createTransport({
@@ -40,13 +42,13 @@ export default class AdminAuthService implements IAdminAuthService {
   }> {
 
     if (!adminData.email || !adminData.password) {
-      throw new Error("Please provide all required fields");
+          throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Please provide all required fields');
     }
 
     const admin = await this._adminRepository.findByEmail(adminData.email);
 
     if (!admin) {
-      throw new Error("Invalid credentials");
+          throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -54,7 +56,7 @@ export default class AdminAuthService implements IAdminAuthService {
       admin.password
     );
     if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
+         throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
     }
 
     const accessToken = generateAccessToken({

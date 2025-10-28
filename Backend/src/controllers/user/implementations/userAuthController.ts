@@ -61,7 +61,6 @@ export default class UserAuthController implements IUserAuthCtrl {
       return;
     }
 
-    console.error("...................................",error);
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
        .json({ message: MESSAGES.server.serverError });
   }

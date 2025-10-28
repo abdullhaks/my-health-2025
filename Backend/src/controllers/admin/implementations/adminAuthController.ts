@@ -4,6 +4,7 @@ import { inject, injectable } from "inversify";
 import IAdminAuthService from "../../../services/admin/interfaces/IAdminAuthService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
+import { HttpException } from "../../../utils/http.exception";
 
 @injectable()
 export default class AdminAuthController implements IAdminAuthController {
@@ -44,12 +45,18 @@ export default class AdminAuthController implements IAdminAuthController {
       res
         .status(HttpStatusCode.OK)
         .json({ message: result.message, admin: result.admin });
-    } catch (error) {
-      console.log(error);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
-    }
+    } catch (error: any) {
+    
+    
+        if (error instanceof HttpException) {
+    
+          res.status(error.status).json({ message: error.message, code: error.code });
+          return;
+        }
+    
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+           .json({ message: MESSAGES.server.serverError });
+      }
   }
 
   async forgotPassword(req: Request, res: Response): Promise<void> {
