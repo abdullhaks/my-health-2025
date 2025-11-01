@@ -3,4 +3,13 @@ export class HttpException extends Error {
     super(message);
     this.name = 'HttpException';
   }
+};
+
+
+
+export class ValidationException extends HttpException {
+  constructor(public errors: Record<string, string>) {
+    super(400, "Validation failed");
+    this.name = "ValidationException";
+  }
 }

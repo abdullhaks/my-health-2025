@@ -11,7 +11,7 @@ import { generateAccessToken, generateRefreshToken } from "../../../utils/jwt";
 import { UserLoginRequestDTO } from "../../../dto/userDTO";
 import { MESSAGES } from "../../../utils/messages";
 import { generateRandomPassword } from "../../../utils/helpers";
-import { HttpException } from "../../../utils/http.exception";
+import { HttpException, ValidationException } from "../../../utils/http.exception";
 
 @injectable()
 export default class UserAuthController implements IUserAuthCtrl {
@@ -24,34 +24,27 @@ export default class UserAuthController implements IUserAuthCtrl {
     const loginDTO: UserLoginRequestDTO = req.body;
     const result = await this._userService.login(loginDTO);
 
-    // ---------- PARTIAL RESPONSES (blocked / OTP) ----------
-    if (!('accessToken' in result)) {
-      res.status(HttpStatusCode.OK).json(result);
-      return;
-    }
+    console.log("Login result:", result);
 
-    // ---------- SUCCESS ----------
-    const accessMaxAge  = parseInt(process.env.ACCESS_TOKEN_MAX_AGE  ?? '900000');   // 15 min
-    const refreshMaxAge = parseInt(process.env.REFRESH_TOKEN_MAX_AGE ?? '604800000'); // 7 days
 
-    res.cookie('refreshToken', result.refreshToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure:   process.env.NODE_ENV === 'production',
-      maxAge:   refreshMaxAge,
-    });
+     res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        sameSite: "none", // allow cross-site
+        secure: true, // only over HTTPS
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
+      });
 
-    res.cookie('accessToken', result.accessToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure:   process.env.NODE_ENV === 'production',
-      maxAge:   accessMaxAge,
-    });
+      res.cookie("accessToken", result.accessToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
+      });
 
-    res.status(HttpStatusCode.OK).json({
-      message: result.message,
-      user:    result.user,
-    });
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: result.message, user: result.user });
+        
   } catch (error: any) {
 
 
@@ -117,27 +110,41 @@ export default class UserAuthController implements IUserAuthCtrl {
     }
   }
 
-  async userSignup(
-    req: Request,
-    res: Response,
-  ): Promise<void> {
-    try {
-      const { fullName, email, password, confirmPassword } = req.body;
+  async userSignup(req: Request, res: Response): Promise<void> {
+  try {
+    const { fullName, email, password, confirmPassword } = req.body;
 
-      const userDetails = { fullName, email, password, confirmPassword };
+    const userDetails = { fullName, email, password, confirmPassword };
 
+    const user = await this._userService.signup(userDetails);
 
-      const user = await this._userService.signup(userDetails);
+    res.status(HttpStatusCode.CREATED).json(user);
+  } catch (error: any) {
 
-
-      res.status(HttpStatusCode.CREATED).json(user);
-    } catch (error) {
-      console.log(error);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
+    if (error instanceof ValidationException) {
+      res.status(HttpStatusCode.BAD_REQUEST).json({
+        message: "Validation failed",
+        errors: error.errors,
+      });
+      return;
     }
+
+    if (error instanceof HttpException) {
+      res.status(error.status).json({
+        message: error.message,
+        code: error.code,
+      });
+      return;
+    }
+
+
+    console.error("Signup error:", error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      message: MESSAGES.server.serverError,
+    });
   }
+}
+
 
   async verifyOtp(req: Request, res: Response): Promise<void> {
     try {

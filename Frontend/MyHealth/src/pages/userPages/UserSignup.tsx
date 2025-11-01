@@ -84,41 +84,55 @@ function UserSignup() {
     }
   }, [formData]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = signupSchema.safeParse(formData);
-    if (!result.success) {
-      const fieldErrors: Partial<Record<keyof SignupData, string>> = {};
-      result.error.errors.forEach((err) => {
-        const field = err.path[0] as keyof SignupData;
-        fieldErrors[field] = err.message;
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const result = signupSchema.safeParse(formData);
+  if (!result.success) {
+    const fieldErrors: Partial<Record<keyof SignupData, string>> = {};
+    result.error.errors.forEach((err) => {
+      const field = err.path[0] as keyof SignupData;
+      fieldErrors[field] = err.message;
+    });
+    setErrors(fieldErrors);
+    setTouched({
+      email: true,
+      fullName: true,
+      password: true,
+      confirmPassword: true,
+    });
+    return;
+  }
+
+  try {
+    const response = await signupUser(formData);
+
+    console.log("Signup successful", response);
+    localStorage.setItem("userEmail", response.email);
+    navigate("/user/otp");
+  } catch (error: any) {
+    console.error("Signup error", error);
+
+    // ---- Handle backend validation errors ----
+    if (error?.response?.data?.errors) {
+      const backendErrors = error.response.data.errors;
+      setErrors({
+        email: backendErrors.email || "",
+        fullName: backendErrors.fullName || "",
+        password: backendErrors.password || "",
+        confirmPassword: backendErrors.confirmPassword || "",
       });
-      setErrors(fieldErrors);
       setTouched({
         email: true,
         fullName: true,
         password: true,
         confirmPassword: true,
       });
-      return;
+    } else {
+      setErrors({ email: "Something went wrong. Please try again." });
     }
-
-    try {
-      await signupUser(formData)
-        .then((response) => {
-          console.log("Signup successful", response);
-          localStorage.setItem("userEmail", response.email);
-          navigate("/user/otp");
-        })
-        .catch((error) => {
-          console.error("Signup error", error);
-          setErrors({ email: "Email already exists" });
-        });
-    } catch (error) {
-      console.error("Error signing up", error);
-      setErrors({ email: "Email already exists" });
-    }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-blue-200 relative overflow-hidden">

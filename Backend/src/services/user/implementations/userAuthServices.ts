@@ -26,8 +26,8 @@ import { UserMapper } from "../../../mappers/user.mapper";
 import { AuthResponseDTO } from "../../../dto/userDTO";
 import { UserLoginRequestDTO } from "../../../dto/userDTO";
 import { HttpStatusCode } from "../../../utils/enum";
-import { HttpException } from "../../../utils/http.exception";
-
+import { HttpException, ValidationException } from "../../../utils/http.exception";
+import { z } from "zod";
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -101,36 +101,71 @@ async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
 };
 
 
-  async signup(userData: IUser): Promise<Partial<IUserResponse>> {
+async signup(userData: IUser): Promise<Partial<IUserResponse>> {
 
-    if (!userData.email || !userData.password || !userData.fullName) {
-      throw new Error("Please provide all required fields");
-    }
+  const signupSchema = z
+  .object({
+    email: z.string().email("Invalid email address"),
+    fullName: z
+      .string()
+      .min(3, "Full name must be at least 3 characters")
+      .max(30, "Full name must be at most 30 characters")
+      .refine((val) => val.trim() === val, {
+        message: "No leading or trailing spaces allowed",
+      }),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/\d/, "Password must contain at least one digit")
+      .regex(/[@$!%*?&#]/, "Include at least one special character"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
-    if (userData.password) {
-      const salt = await bcrypt.genSalt(10);
-      userData.password = await bcrypt.hash(userData.password, salt);
-    }
 
-    const existingUser = await this._userRepository.findByEmail(userData.email);
-
-    if (existingUser) {
-      throw new Error("User already exists");
-    }
-
-    const response = await this._userRepository.create(userData);
-
-    const otp = generateOtp();
-
-    await this.sendMail(userData.email, otp);
-
-    return {
-      message: "Signup successful. OTP sent to email.",
-      email: userData.email, // send this to frontend
-    };
+const parseResult = signupSchema.safeParse(userData);
+  if (!parseResult.success) {
+    const fieldErrors: Record<string, string> = {};
+    parseResult.error.issues.forEach((err) => {
+      const firstPath = err.path[0];
+      const field =
+        typeof firstPath === "string" || typeof firstPath === "number"
+          ? String(firstPath)
+          : undefined;
+      if (field) fieldErrors[field] = err.message;
+    });
+    throw new ValidationException(fieldErrors);
   }
 
-  async sendMail(email: string, otp: string): Promise<void> {
+  const { email, fullName, password } = parseResult.data;
+
+  const existingUser = await this._userRepository.findByEmail(email);
+  if (existingUser) {
+    throw new ValidationException({ email: "Email already exists" });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+ const response = await this._userRepository.create(userData);
+
+  const otp = generateOtp();
+  await this.sendMail(email, otp);
+
+  return {
+    message: "Signup successful. OTP sent to email.",
+    email: response.email,
+  };
+};
+
+
+
+async sendMail(email: string, otp: string): Promise<void> {
     const otpRecord = new OtpModel({
       email: email,
       otp: otp,

@@ -14,6 +14,9 @@ export default class UserDashboardController implements IUserDashboardCtrl {
 
   async getDashboardContent(req: Request, res: Response): Promise<void> {
     try {
+
+    console.log("Received request for dashboard content with query:", req.query);
+    
       const { days = "30", userId, latitude = 0, longitude = 0 } = req.query;
       const daysNumber = parseInt(days as string, 10);
 
@@ -21,8 +24,6 @@ export default class UserDashboardController implements IUserDashboardCtrl {
       if (!userId) {
         throw new Error("credentials missed");
       }
-
-      // const response1 = await this._dashboardService.getDashboardContent(daysNumber, userId.toString(),parseFloat(latitude as string),parseFloat(longitude as string));
 
       if (isNaN(daysNumber) || daysNumber < 1 || !userId) {
         res
