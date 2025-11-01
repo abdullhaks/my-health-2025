@@ -13,6 +13,8 @@ import appointmentModel from "../../../models/appointment";
 import { FilterQuery } from "mongoose";
 import { AppointmentMapper } from "../../../mappers/appointment.mapper";
 import { DoctorMapper } from "../../../mappers/doctor.mapper";
+import { HttpException } from "../../../utils/http.exception";
+import { HttpStatusCode } from "../../../utils/enum";
 
 interface DetailAppointment extends IAppointmentDTO {
   profile?: string;
@@ -173,6 +175,27 @@ export default class UserAppointmentService implements IUserAppointmentService {
     message: string;
     updatedUser: Partial<IUser>;
   }> {
+
+    const appointment = await this._appointmentsRepository.findOne({ _id: appointmentId });
+    if (!appointment) {
+
+      throw new Error("Appointment not found");
+      // return {  
+      //   status: false,
+      //   message: "Appointment not found.",
+      //   updatedUser: {},
+      // };
+    }
+
+    if(appointment.appointmentStatus === "cancelled" || appointment.paymentStatus === "refunded"){
+      throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Appointment is already cancelled and refunded.');
+      // return {
+      //   status: false,
+      //   message: "Appointment is already cancelled and refunded.",
+      //   updatedUser: {},
+      // };
+    };
+
     const response = await this._appointmentsRepository.update(appointmentId, {
       appointmentStatus: "cancelled",
       paymentStatus: "refunded",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiEdit, FiCopy, FiCamera } from "react-icons/fi";
 import EditProfileModal from "./EditProfile";
 import ChangePasswordModal from "./ChangePassword";
@@ -8,10 +8,12 @@ import {
   updateProfile,
   updateProfileImage,
   changePassword,
+  getMe
 } from "../../api/user/userApi";
 import { updateUser } from "../../redux/slices/userSlices";
 import { IUserData, PasswordData } from "../../interfaces/user";
 import { userProfileData } from "../../interfaces/user";
+
 
 const UserProfile = () => {
   const user = useSelector((state: IUserData) => state.user.user);
@@ -24,6 +26,25 @@ const UserProfile = () => {
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useState(false);
+
+
+
+    useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+          const response = await getMe();
+          const fetchedUser = response.user;
+          if (fetchedUser) {
+            setProfileData(fetchedUser);
+            dispatch(updateUser(fetchedUser));
+          }
+        } catch (error) {
+          toast.error("Failed to fetch user data.");
+        }
+      };
+      fetchUserData();
+    }, []);
+
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

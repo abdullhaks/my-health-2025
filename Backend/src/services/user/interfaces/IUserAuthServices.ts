@@ -14,5 +14,5 @@ export default interface IUserAuthService {
   verifyRecoveryPassword(email: string, recoveryCode: string): Promise<boolean>;
   resetPassword(email: string, newPassword: string): Promise<IUser>;
   refreshToken(refreshToken: string): Promise<IResponseDTO>;
-  getMe(email: String): Promise<Partial<IUserResponse>>;
+  getMe(refreshToken: string): Promise<Partial<IUserResponse>>;
 }

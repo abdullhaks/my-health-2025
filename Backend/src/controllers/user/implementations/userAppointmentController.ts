@@ -4,6 +4,7 @@ import { inject, injectable } from "inversify";
 import IUserAppointmentService from "../../../services/user/interfaces/IUserAppointmentServices";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
+import { HttpException } from "../../../utils/http.exception";
 
 interface AppointmentFilter {
   appointmentStatus?: string;
@@ -122,12 +123,18 @@ export default class UserAppointmentController implements IUserAppointmentCtrl {
       );
 
       res.status(HttpStatusCode.OK).json(response);
-    } catch (err) {
-      console.error("Error in cancel appointments:", err);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
-    }
+    } catch (error: any) {
+    
+    
+        if (error instanceof HttpException) {
+    
+          res.status(error.status).json({ message: error.message, code: error.code });
+          return;
+        }
+    
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+           .json({ message: MESSAGES.server.serverError });
+      }
   }
 
   async walletPayment(req: Request, res: Response): Promise<void> {

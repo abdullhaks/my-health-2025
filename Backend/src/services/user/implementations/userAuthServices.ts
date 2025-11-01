@@ -352,12 +352,22 @@ async sendMail(email: string, otp: string): Promise<void> {
     return { accessToken };
   }
 
-  async getMe(email: string): Promise<Partial<IUserResponse>> {
+  async getMe(refreshToken: string): Promise<Partial<IUserResponse>> {
 
-    if (!email) {
+    if (!refreshToken) {
+      throw new Error("Invalid credentials");
+    };
+
+
+    const decoded = verifyRefreshToken(refreshToken);
+    if (!decoded) {
       throw new Error("Invalid credentials");
     }
-    const existingUser = await this._userRepository.findByEmail(email);
+
+    let id = decoded.id;
+
+
+    const existingUser = await this._userRepository.findOne({_id:id});
 
     if (!existingUser) {
       throw new Error("Invalid credentials");

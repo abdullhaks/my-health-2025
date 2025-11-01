@@ -63,14 +63,14 @@ export default class UserAuthController implements IUserAuthCtrl {
 
   async getMe(req: Request, res: Response): Promise<void> {
     try {
-      const { userEmail } = req.cookies;
+      const { refreshToken } = req.cookies;
 
-      if (!userEmail) {
+      if (!refreshToken) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "Unauthorized" });
         return;
       }
 
-      const result = await this._userService.getMe(userEmail);
+      const result = await this._userService.getMe(refreshToken);
       res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       console.log(error);
