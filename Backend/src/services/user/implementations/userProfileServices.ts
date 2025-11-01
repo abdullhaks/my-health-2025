@@ -10,6 +10,7 @@ import { getSignedImageURL } from "../../../middlewares/common/uploadS3";
 import bcrypt from "bcryptjs";
 import UserRepository from "../../../repositories/implementations/userRepository";
 import { IUserResponse } from "../../../dto/userDTO";
+import { verifyRefreshToken } from "../../../utils/jwt";
 
 @injectable()
 export default class UserProfileService implements IUserProfileService {
@@ -18,12 +19,23 @@ export default class UserProfileService implements IUserProfileService {
   ) {}
 
   async updateProfile(
-    userId: string,
+    refreshToken: string,
     userData: Partial<IUser>
   ): Promise<Partial<IUserResponse>> {
 
     try {
-      const findedUser = await this._userRepository.findOne({ _id: userId });
+      if (!refreshToken) {
+            throw new Error("Invalid credentials");
+          };
+      
+      
+          const decoded = verifyRefreshToken(refreshToken);
+          if (!decoded) {
+            throw new Error("Invalid credentials");
+          }
+      
+          let id = decoded.id;
+      const findedUser = await this._userRepository.findOne({ _id: id });
 
       if (!findedUser) {
         throw new Error("Profile updation faild");
@@ -43,7 +55,7 @@ export default class UserProfileService implements IUserProfileService {
           ...locTags,
         ];
       }
-      const updatedUser = await this._userRepository.update(userId, userData);
+      const updatedUser = await this._userRepository.update(id, userData);
 
       if (updatedUser) {
         const { password, ...userWithoutPassword } = updatedUser.toObject();
@@ -67,18 +79,31 @@ export default class UserProfileService implements IUserProfileService {
   }
 
   async updateUserDp(
-    userId: string,
+    refreshToken: string,
     updatedFields: Partial<IUser>,
     fileKey: string | undefined
   ): Promise<IUser> {
     try {
+
+       if (!refreshToken) {
+            throw new Error("Invalid credentials");
+          };
+      
+      
+          const decoded = verifyRefreshToken(refreshToken);
+          if (!decoded) {
+            throw new Error("Invalid credentials");
+          }
+      
+          let id = decoded.id;
+
       const updatePayload = {
         ...updatedFields,
         ...(fileKey && { profile: fileKey }),
       };
 
       const updatedUser = await this._userRepository.update(
-        userId,
+        id,
         updatePayload
       );
 
@@ -96,7 +121,7 @@ export default class UserProfileService implements IUserProfileService {
   }
 
   async changePassword(
-    id: string,
+    refreshToken: string,
     data: {
       currentPassword: string;
       newPassword: string;
@@ -104,6 +129,18 @@ export default class UserProfileService implements IUserProfileService {
     }
   ): Promise<IUser> {
     try {
+
+       if (!refreshToken) {
+            throw new Error("Invalid credentials");
+          };
+      
+      
+          const decoded = verifyRefreshToken(refreshToken);
+          if (!decoded) {
+            throw new Error("Invalid credentials");
+          }
+      
+          let id = decoded.id;
       const existingUser = await this._userRepository.findOne({ _id: id });
 
       if (!existingUser) {

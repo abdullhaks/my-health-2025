@@ -148,12 +148,12 @@ export const resetPassword = async (
   }
 };
 
-export const changePassword = async (data: PasswordData, userId: string) => {
-  console.log("new password....", data, userId);
+export const changePassword = async (data: PasswordData) => {
+  console.log("new password....", data);
 
   try {
     const response = await userInstance.patch(
-      ROUTES.user.changePassword(userId),
+      ROUTES.user.changePassword,
       {
         data,
       }
@@ -181,14 +181,13 @@ export const refreshToken = async () => {
 };
 
 export const updateProfile = async (
-  userData: userProfileData,
-  userId: string
+  userData: userProfileData
 ) => {
   try {
     console.log("User data for update:", userData);
 
     const response = await userInstance.patch(
-      ROUTES.user.updateProfile(userId),
+      ROUTES.user.updateProfile,
       userData,
       {}
     );
@@ -201,14 +200,13 @@ export const updateProfile = async (
 
 export const updateProfileImage = async (
   formData: FormData,
-  userId: string
 ) => {
   // for (const [key, value] of formData.entries()) {
   //   console.log(`api side...${key}:`, value,userId);
   // }
 
   const response = await userInstance.patch(
-    ROUTES.user.updateDp(userId),
+    ROUTES.user.updateDp,
     formData,
     {
       headers: {

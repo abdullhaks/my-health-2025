@@ -67,7 +67,7 @@ const UserProfile = () => {
       const formData = new FormData();
       formData.append("profile", selectedImage);
 
-      const response = await updateProfileImage(formData, user._id);
+      const response = await updateProfileImage(formData);
       const updatedUser = response.updatedUser;
 
       dispatch(updateUser(updatedUser));
@@ -88,7 +88,7 @@ const UserProfile = () => {
   };
 
   const handleProfileUpdate = async (updatedData: userProfileData) => {
-    const response = await updateProfile(updatedData, user._id);
+    const response = await updateProfile(updatedData);
     const { updatedUser } = response;
 
     dispatch(updateUser(updatedUser));
@@ -99,7 +99,7 @@ const UserProfile = () => {
 
   const handlePasswordChange = async (passwordData: PasswordData) => {
     try {
-      const response = await changePassword(passwordData, user._id);
+      const response = await changePassword(passwordData);
       if (!response) {
         toast.error("Changing password has been failed");
         return;

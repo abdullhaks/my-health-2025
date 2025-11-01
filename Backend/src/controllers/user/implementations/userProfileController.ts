@@ -30,8 +30,13 @@ export default class UserProfileController implements IUserProfileCtrl {
       }
       
 
-      const userId = req.params.id;
-      const result = await this._profileService.updateProfile(userId, userData);
+      const { refreshToken } = req.cookies;
+      
+            if (!refreshToken) {
+              res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "Unauthorized" });
+              return;
+            }
+      const result = await this._profileService.updateProfile(refreshToken, userData);
 
       res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
@@ -44,13 +49,18 @@ export default class UserProfileController implements IUserProfileCtrl {
 
   async updateDp(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const { refreshToken } = req.cookies;
+      
+            if (!refreshToken) {
+              res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "Unauthorized" });
+              return;
+            }
       const updatedFields = req.body;
       const uploadedImageKey = req.body.uploadedImageKey;
 
 
       const updatedUser = await this._profileService.updateUserDp(
-        id,
+        refreshToken,
         updatedFields,
         uploadedImageKey
       );
@@ -66,10 +76,15 @@ export default class UserProfileController implements IUserProfileCtrl {
 
   async changePassword(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const { refreshToken } = req.cookies;
+      
+            if (!refreshToken) {
+              res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "Unauthorized" });
+              return;
+            }
       const data = req.body.data;
 
-      const response = await this._profileService.changePassword(id, data);
+      const response = await this._profileService.changePassword(refreshToken, data);
 
       if (!response) {
         res

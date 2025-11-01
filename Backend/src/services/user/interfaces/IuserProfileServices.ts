@@ -3,16 +3,16 @@ import { IUserResponse } from "../../../dto/userDTO";
 
 export default interface IUserProfileService {
   updateProfile(
-    userId: string,
+    refreshToken: string,
     userData: Partial<IUser>
   ): Promise<Partial<IUserResponse>>;
   updateUserDp(
-    userId: string,
+    refreshToken: string,
     updatedFields: Partial<IUser>,
     fileKey: string | undefined
   ): Promise<IUser>;
   changePassword(
-    id: string,
+    refreshToken: string,
     data: {
       currentPassword: string;
       newPassword: string;
