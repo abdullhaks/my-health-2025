@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export default interface IDoctorSessionCtrl {
+export default interface IDoctorSessionController {
   addSession(req: Request, res: Response): Promise<void>;
   getSessions(req: Request, res: Response): Promise<void>;
   getBookedSlots(req: Request, res: Response): Promise<void>;

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IMessageCtrl from "../interfaces/IMessageCtrl";
+import IMessageController from "../interfaces/IMessageController";
 import { inject, injectable } from "inversify";
 import IMessageService from "../../../services/common/interfaces/IMessageService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class MessageController implements IMessageCtrl {
+export default class MessageController implements IMessageController {
   constructor(
     @inject("IMessageService") private _messageService: IMessageService
   ) {}

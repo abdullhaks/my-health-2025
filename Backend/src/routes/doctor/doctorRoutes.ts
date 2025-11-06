@@ -1,46 +1,46 @@
 import { Router } from "express";
 import container from "../../config/inversify";
-import IDoctorAuthCtrl from "../../controllers/doctor/interfaces/IDoctorAuthCtrl";
-import IDoctorProfileCtrl from "../../controllers/doctor/interfaces/IDoctorProfileCtrl";
-import IDoctorAppointmentCtrl from "../../controllers/doctor/interfaces/IDoctorAppointmentCtrl";
-import IDoctorPlanCtrl from "../../controllers/doctor/interfaces/IDoctorPlanCtrl";
+import IDoctorAuthController from "../../controllers/doctor/interfaces/IDoctorAuthController";
+import IDoctorProfileController from "../../controllers/doctor/interfaces/IDoctorProfileController";
+import IDoctorAppointmentController from "../../controllers/doctor/interfaces/IDoctorAppointmentController";
+import IDoctorPlanController from "../../controllers/doctor/interfaces/IDoctorPlanController";
 import { upload, uploadToS3 } from "../../middlewares/common/uploadS3";
 import { verifyAccessTokenMidleware } from "../../middlewares/common/checkAccessToken";
 import { verifyIsPremiume } from "../../middlewares/common/checkIsPremiume";
-import IConversationCtrl from "../../controllers/common/interfaces/IConversationCtrl";
-import IMessageCtrl from "../../controllers/common/interfaces/IMessageCtrl";
-import ISessionCtrl from "../../controllers/doctor/interfaces/IDoctorSessionCtrl";
-import IDoctorReportAnalysisCtrl from "../../controllers/doctor/interfaces/IDoctorReportAnalysisCtrl";
-import IDirectDocUploadS3Ctrl from "../../controllers/common/interfaces/IDirectDocUploadS3";
-import IDoctorBlogCtrl from "../../controllers/doctor/interfaces/IDoctorBlogCtrl";
-import IDoctorAdvertisementCtrl from "../../controllers/doctor/interfaces/IDoctorAdvertisementCtrl";
-import IDoctorPrescriptionCtrl from "../../controllers/doctor/interfaces/IDoctorPrescriptionCtrl";
-import IDetailsCtrl from "../../controllers/common/interfaces/IDetailsCtrl";
-import IDoctorDashboardCtrl from "../../controllers/doctor/interfaces/IDoctorDashboardCtrl";
-import IDoctorPayoutCtrl from "../../controllers/doctor/interfaces/IDoctorPayoutCtrl";
-import INotificationCtrl from "../../controllers/common/interfaces/INotificationCtrl";
+import IConversationController from "../../controllers/common/interfaces/IConversationController";
+import IMessageController from "../../controllers/common/interfaces/IMessageController";
+import ISessionCtrl from "../../controllers/doctor/interfaces/IDoctorSessionController";
+import IDoctorReportAnalysisController from "../../controllers/doctor/interfaces/IDoctorReportAnalysisController";
+import IDirectDocUploadS3Controller from "../../controllers/common/interfaces/IDirectDocUploadS3Controller";
+import IDoctorBlogController from "../../controllers/doctor/interfaces/IDoctorBlogController";
+import IDoctorAdvertisementController from "../../controllers/doctor/interfaces/IDoctorAdvertisementController";
+import IDoctorPrescriptionController from "../../controllers/doctor/interfaces/IDoctorPrescriptionController";
+import IDetailsController from "../../controllers/common/interfaces/IDetailsController";
+import IDoctorDashboardController from "../../controllers/doctor/interfaces/IDoctorDashboardController";
+import IDoctorPayoutController from "../../controllers/doctor/interfaces/IDoctorPayoutController";
+import INotificationController from "../../controllers/common/interfaces/INotificationController";
 import IDoctorTransactionController from "../../controllers/doctor/interfaces/IDoctorTransactionController";
 
 
 
 const doctorRoutes = Router();
 
-const authCtrl = container.get<IDoctorAuthCtrl>("IDoctorAuthCtrl");
-const profileCtrl = container.get<IDoctorProfileCtrl>("IDoctorProfileCtrl");
-const conversationCtrl = container.get<IConversationCtrl>("IConversationCtrl");
-const messageCtrl = container.get<IMessageCtrl>("IMessageCtrl")
-const sessionCtrl = container.get<ISessionCtrl>("IDoctorSessionCtrl");
-const appointmentCtrl = container.get<IDoctorAppointmentCtrl>("IDoctorAppointmentCtrl");
-const ReportAnalysisCtrl = container.get<IDoctorReportAnalysisCtrl>("IDoctorReportAnalysisCtrl");
-const directUploadCtrl = container.get<IDirectDocUploadS3Ctrl>("IDirectDocUploadS3Ctrl");
-const planCtrl = container.get<IDoctorPlanCtrl>("IDoctorPlanCtrl");
-const blogCtrl = container.get<IDoctorBlogCtrl>("IDoctorBlogCtrl");
-const addCtrl = container.get<IDoctorAdvertisementCtrl>("IDoctorAdvertisementCtrl")
-const notificationCtrl = container.get<INotificationCtrl>("INotificationCtrl")
-const prescriptionsCtrl = container.get<IDoctorPrescriptionCtrl>("IDoctorPrescriptionCtrl")
-const detailsCtrl = container.get<IDetailsCtrl>("IDetailsCtrl");
-const dashboardCtrl = container.get<IDoctorDashboardCtrl>("IDoctorDashboardCtrl");
-const payoutCtrl = container.get<IDoctorPayoutCtrl>("IDoctorPayoutCtrl");
+const authCtrl = container.get<IDoctorAuthController>("IDoctorAuthController");
+const profileCtrl = container.get<IDoctorProfileController>("IDoctorProfileController");
+const conversationCtrl = container.get<IConversationController>("IConversationController");
+const messageCtrl = container.get<IMessageController>("IMessageController")
+const sessionCtrl = container.get<ISessionCtrl>("IDoctorSessionController");
+const appointmentCtrl = container.get<IDoctorAppointmentController>("IDoctorAppointmentController");
+const ReportAnalysisCtrl = container.get<IDoctorReportAnalysisController>("IDoctorReportAnalysisController");
+const directUploadCtrl = container.get<IDirectDocUploadS3Controller>("IDirectDocUploadS3Controller");
+const planCtrl = container.get<IDoctorPlanController>("IDoctorPlanController");
+const blogCtrl = container.get<IDoctorBlogController>("IDoctorBlogController");
+const addCtrl = container.get<IDoctorAdvertisementController>("IDoctorAdvertisementController")
+const notificationCtrl = container.get<INotificationController>("INotificationController")
+const prescriptionsCtrl = container.get<IDoctorPrescriptionController>("IDoctorPrescriptionController")
+const detailsCtrl = container.get<IDetailsController>("IDetailsController");
+const dashboardCtrl = container.get<IDoctorDashboardController>("IDoctorDashboardController");
+const payoutCtrl = container.get<IDoctorPayoutController>("IDoctorPayoutController");
 const transactionCtrl = container.get<IDoctorTransactionController>("IDoctorTransactionController");
 
 

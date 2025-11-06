@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IDoctorChatCtrl from "../interfaces/IDoctorChatCtrl";
+import IDoctorChatController from "../interfaces/IDoctorChatController";
 import { inject, injectable } from "inversify";
 import IDoctorChatService from "../../../services/doctor/interfaces/IDoctorChatService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DoctorChatController implements IDoctorChatCtrl {
+export default class DoctorChatController implements IDoctorChatController {
   constructor(
     @inject("IDoctorChatService") private _doctorChatService: IDoctorChatService
   ) {}

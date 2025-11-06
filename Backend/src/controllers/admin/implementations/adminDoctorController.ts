@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import IAdminDoctorCtrl from "../interfaces/IAdminDoctorController";
+import IAdminDoctorController from "../interfaces/IAdminDoctorController";
 import { inject, injectable } from "inversify";
 import IAdminDoctorService from "../../../services/admin/interfaces/IAdminDoctorService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class AdminDoctorController implements IAdminDoctorCtrl {
+export default class AdminDoctorController implements IAdminDoctorController {
   constructor(
     @inject("IAdminDoctorService")
     private _adminDoctorService: IAdminDoctorService

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import IUserSessionCtrl from "../interfaces/IUserSessionCtrl";
+import IUserSessionCtrl from "../interfaces/IUserSessionController";
 import { inject, injectable } from "inversify";
 import IUserSessionService from "../../../services/user/interfaces/IUserSessionService";
 import { HttpStatusCode } from "../../../utils/enum";

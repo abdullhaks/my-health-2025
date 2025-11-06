@@ -1,9 +1,9 @@
 import { Router } from "express";
 import container from "../../config/inversify";
 import IAdminAuthController from "../../controllers/admin/interfaces/IAdminAuthController";
-import IAdminUserCtrl from "../../controllers/admin/interfaces/IAdminUserController";
-import IAdminDoctorCtrl from "../../controllers/admin/interfaces/IAdminDoctorController";
-import IAdminProductCtrl from "../../controllers/admin/interfaces/IAdminProductController";
+import IAdminUserController from "../../controllers/admin/interfaces/IAdminUserController";
+import IAdminDoctorController from "../../controllers/admin/interfaces/IAdminDoctorController";
+import IAdminProductController from "../../controllers/admin/interfaces/IAdminProductController";
 import IAdminAppointmentController from "../../controllers/admin/interfaces/IAdminAppointmentController";
 import IAdminAnalyticsController from "../../controllers/admin/interfaces/IAdminAnalyticsController";
 import IAdminTransactionController from "../../controllers/admin/interfaces/IAdminTransactionController";
@@ -13,10 +13,10 @@ import { verifyAccessTokenMidleware } from "../../middlewares/common/checkAccess
 
 const adminRoutes = Router();
 
-const authCtrl = container.get<IAdminAuthController>("IAdminAuthCtrl");
-const userCtrl = container.get<IAdminUserCtrl>("IAdminUserCtrl");
-const doctorCtrl = container.get<IAdminDoctorCtrl>("IAdminDoctorCtrl");
-const productCtrl = container.get<IAdminProductCtrl>("IAdminProductCtrl");
+const authCtrl = container.get<IAdminAuthController>("IAdminAuthController");
+const userCtrl = container.get<IAdminUserController>("IAdminUserController");
+const doctorCtrl = container.get<IAdminDoctorController>("IAdminDoctorController");
+const productCtrl = container.get<IAdminProductController>("IAdminProductController");
 const appointmentCtrl = container.get<IAdminAppointmentController>("IAdminAppointmentController");
 const analyticsCtrl = container.get<IAdminAnalyticsController>("IAdminAnalyticsController");
 const transactionCtrl = container.get<IAdminTransactionController>("IAdminTransactionController");

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import IDoctorProfileCtrl from "../interfaces/IDoctorProfileCtrl";
+import IDoctorProfileController from "../interfaces/IDoctorProfileController";
 import { inject, injectable } from "inversify";
 import IDoctorProfileService from "../../../services/doctor/interfaces/IDoctorProfileSevices";
 import stripe, { makePayment } from "../../../middlewares/common/stripe";
@@ -8,7 +8,7 @@ import { doctorProfileUpdate } from "../../../dto/doctorDTO";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DoctorProfileController implements IDoctorProfileCtrl {
+export default class DoctorProfileController implements IDoctorProfileController {
   constructor(
     @inject("IDoctorProfileService")
     private _doctorProfileService: IDoctorProfileService

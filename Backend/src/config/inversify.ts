@@ -23,21 +23,21 @@ import progressPaymentModel from "../models/progressingPayment";
 
 //controllers..................................................................
 import UserAuthController from "../controllers/user/implementations/userAuthController";
-import IUserAuthCtrl from "../controllers/user/interfaces/IUserAuthCtrl";
+import IUserAuthController from "../controllers/user/interfaces/IUserAuthController";
 import UserProfileController from "../controllers/user/implementations/userProfileController";
-import IUserProfileCtrl from "../controllers/user/interfaces/IUserProfileCtrl";
+import IUserProfileController from "../controllers/user/interfaces/IUserProfileController";
 import UserAppointmentController from "../controllers/user/implementations/userAppointmentController";
-import IUserAppointmentCtrl from "../controllers/user/interfaces/IUserAppointmentCtrl";
+import IUserAppointmentController from "../controllers/user/interfaces/IUserAppointmentController";
 import UserSessionController from "../controllers/user/implementations/userSessionController";
-import IUserSessionCtrl from "../controllers/user/interfaces/IUserSessionCtrl";
+import IUserSessionController from "../controllers/user/interfaces/IUserSessionController";
 import UserReportAnalyisController from "../controllers/user/implementations/userReportAnalyisController";
-import IUserReportAnalysisCtrl from "../controllers/user/interfaces/IUserReportAnalysisCtrl";
+import IUserReportAnalysisController from "../controllers/user/interfaces/IUserReportAnalysisController";
 import UserBlogController from "../controllers/user/implementations/userBlogController";
-import IUserBlogCtrl from "../controllers/user/interfaces/IUserBlogCtrl";
+import IUserBlogController from "../controllers/user/interfaces/IUserBlogController";
 import UserDashboardController from "../controllers/user/implementations/userDashboardController";
-import IUserDashboardCtrl from "../controllers/user/interfaces/IUserDashboardCtrl";
+import IUserDashboardController from "../controllers/user/interfaces/IUserDashboardController";
 import UserPrescriptionController from "../controllers/user/implementations/userPrescriptionController";
-import IUserPrescriptionCtrl from "../controllers/user/interfaces/IUserPrescriptionCtrl";
+import IUserPrescriptionController from "../controllers/user/interfaces/IUserPrescriptionController";
 import UserTransactionController from "../controllers/user/implementations/userTransactionController";
 import IUserTransactionController from "../controllers/user/interfaces/IUserTransactionController";
 
@@ -45,11 +45,11 @@ import IUserTransactionController from "../controllers/user/interfaces/IUserTran
 import AdminAuthController from "../controllers/admin/implementations/adminAuthController";
 import IAdminAuthController from "../controllers/admin/interfaces/IAdminAuthController";
 import AdminUserController from "../controllers/admin/implementations/adminUserController";
-import IAdminUserCtrl from "../controllers/admin/interfaces/IAdminUserController";
+import IAdminUserController from "../controllers/admin/interfaces/IAdminUserController";
 import AdminDoctorController from "../controllers/admin/implementations/adminDoctorController";
-import IAdminDoctorCtrl from "../controllers/admin/interfaces/IAdminDoctorController";
+import IAdminDoctorController from "../controllers/admin/interfaces/IAdminDoctorController";
 import AdminProductController from "../controllers/admin/implementations/adminProductController";
-import IAdminProductCtrl from "../controllers/admin/interfaces/IAdminProductController";
+import IAdminProductController from "../controllers/admin/interfaces/IAdminProductController";
 import AdminAppointmentController from "../controllers/admin/implementations/adminAppointmentController";
 import IAdminAppointmentController from "../controllers/admin/interfaces/IAdminAppointmentController";
 import AdminAnalyticsContorller from "../controllers/admin/implementations/adminAnalyticsContorller";
@@ -61,43 +61,43 @@ import AdminPayoutController from "../controllers/admin/implementations/adminPay
 
 
 import DoctorAuthController from "../controllers/doctor/implementations/doctorAuthController";
-import IDoctorAuthCtrl from "../controllers/doctor/interfaces/IDoctorAuthCtrl";
+import IDoctorAuthController from "../controllers/doctor/interfaces/IDoctorAuthController";
 import DoctorProfileController from "../controllers/doctor/implementations/doctorProfileController";
-import IDoctorProfileCtrl from "../controllers/doctor/interfaces/IDoctorProfileCtrl";
+import IDoctorProfileController from "../controllers/doctor/interfaces/IDoctorProfileController";
 import DoctorSessionController from "../controllers/doctor/implementations/doctorSessionController";
-import IDoctorSessionCtrl from "../controllers/doctor/interfaces/IDoctorSessionCtrl";
+import IDoctorSessionController from "../controllers/doctor/interfaces/IDoctorSessionController";
 import DoctorAppointmentController from "../controllers/doctor/implementations/doctorAppointmentController";
-import IDoctorAppointmentCtrl from "../controllers/doctor/interfaces/IDoctorAppointmentCtrl";
+import IDoctorAppointmentController from "../controllers/doctor/interfaces/IDoctorAppointmentController";
 import DoctorReportAnalysisController from "../controllers/doctor/implementations/doctorReportAnalyisController";
-import IDoctorReportAnalysisCtrl from "../controllers/doctor/interfaces/IDoctorReportAnalysisCtrl";
+import IDoctorReportAnalysisController from "../controllers/doctor/interfaces/IDoctorReportAnalysisController";
 import DoctorPlansController from "../controllers/doctor/implementations/doctorPlansController";
-import IDoctorPlanCtrl from "../controllers/doctor/interfaces/IDoctorPlanCtrl";
+import IDoctorPlanController from "../controllers/doctor/interfaces/IDoctorPlanController";
 import DoctorBlogController from "../controllers/doctor/implementations/doctorBlogController";
-import IDoctorBlogCtrl from "../controllers/doctor/interfaces/IDoctorBlogCtrl";
-import IDoctorAdvertisementCtrl from "../controllers/doctor/interfaces/IDoctorAdvertisementCtrl";
+import IDoctorBlogController from "../controllers/doctor/interfaces/IDoctorBlogController";
+import IDoctorAdvertisementController from "../controllers/doctor/interfaces/IDoctorAdvertisementController";
 import DoctorAdvertisementController from "../controllers/doctor/implementations/doctorAdvertisementController";
-import IDoctorPrescriptionCtrl from "../controllers/doctor/interfaces/IDoctorPrescriptionCtrl";
+import IDoctorPrescriptionController from "../controllers/doctor/interfaces/IDoctorPrescriptionController";
 import DoctorPrescriptionController from "../controllers/doctor/implementations/doctorPrescriptionController";
-import IDoctorDashboardCtrl from "../controllers/doctor/interfaces/IDoctorDashboardCtrl";
+import IDoctorDashboardController from "../controllers/doctor/interfaces/IDoctorDashboardController";
 import DoctorDashboardController from "../controllers/doctor/implementations/doctorDashboardController";
-import IDoctorPayoutCtrl from "../controllers/doctor/interfaces/IDoctorPayoutCtrl";
+import IDoctorPayoutController from "../controllers/doctor/interfaces/IDoctorPayoutController";
 import DoctorPayoutController from "../controllers/doctor/implementations/doctorPayoutController";
 import IDoctorTransactionController from "../controllers/doctor/interfaces/IDoctorTransactionController";
 import DoctorTransactionController from "../controllers/doctor/implementations/doctorTransactionController";
 
 
 import PaymentController from "../controllers/common/implementations/paymentController"
-import IPaymentCtrl from "../controllers/common/interfaces/IPaymentCtrl";
+import IPaymentController from "../controllers/common/interfaces/IPaymentController";
 import ConversationController from "../controllers/common/implementations/conversationController";
-import IConversationCtrl from "../controllers/common/interfaces/IConversationCtrl";
+import IConversationController from "../controllers/common/interfaces/IConversationController";
 import MessageController from "../controllers/common/implementations/messageController";
-import IMessageCtrl from "../controllers/common/interfaces/IMessageCtrl";
+import IMessageController from "../controllers/common/interfaces/IMessageController";
 import DetailsController from "../controllers/common/implementations/detailsController";
-import IDetailsCtrl from "../controllers/common/interfaces/IDetailsCtrl";
+import IDetailsController from "../controllers/common/interfaces/IDetailsController";
 import DirectDocUploadS3Controller from "../controllers/common/implementations/directDocUploadS3Controller";
-import IDirectDocUploadS3Ctrl from "../controllers/common/interfaces/IDirectDocUploadS3";
+import IDirectDocUploadS3Controller from "../controllers/common/interfaces/IDirectDocUploadS3Controller";
 import NotificationController from "../controllers/common/implementations/notificationController";
-import INotificationCtrl from "../controllers/common/interfaces/INotificationCtrl";
+import INotificationController from "../controllers/common/interfaces/INotificationController";
 
 
 //.................................................................................
@@ -279,46 +279,46 @@ container.bind("progressPaymentModel").toConstantValue(progressPaymentModel)
 //...................................................................
 
 
-container.bind<IUserAuthCtrl>("IUserAuthCtrl").to(UserAuthController);
-container.bind<IUserProfileCtrl>("IUserProfileCtrl").to(UserProfileController);
-container.bind<IUserAppointmentCtrl>("IUserAppointmentCtrl").to(UserAppointmentController);
-container.bind<IUserSessionCtrl>("IUserSessionCtrl").to(UserSessionController);
-container.bind<IUserReportAnalysisCtrl>("IUserReportAnalysisCtrl").to(UserReportAnalyisController);
-container.bind<IUserBlogCtrl>("IUserBlogCtrl").to(UserBlogController);
-container.bind<IUserDashboardCtrl>("IUserDashboardCtrl").to(UserDashboardController);
-container.bind<IUserPrescriptionCtrl>("IUserPrescriptionCtrl").to(UserPrescriptionController);
+container.bind<IUserAuthController>("IUserAuthController").to(UserAuthController);
+container.bind<IUserProfileController>("IUserProfileController").to(UserProfileController);
+container.bind<IUserAppointmentController>("IUserAppointmentController").to(UserAppointmentController);
+container.bind<IUserSessionController>("IUserSessionController").to(UserSessionController);
+container.bind<IUserReportAnalysisController>("IUserReportAnalysisController").to(UserReportAnalyisController);
+container.bind<IUserBlogController>("IUserBlogController").to(UserBlogController);
+container.bind<IUserDashboardController>("IUserDashboardController").to(UserDashboardController);
+container.bind<IUserPrescriptionController>("IUserPrescriptionController").to(UserPrescriptionController);
 container.bind<IUserTransactionController>("IUserTransactionController").to(UserTransactionController);
 
 
-container.bind<IAdminAuthController>("IAdminAuthCtrl").to(AdminAuthController);
-container.bind<IAdminUserCtrl>("IAdminUserCtrl").to(AdminUserController);
-container.bind<IAdminDoctorCtrl>("IAdminDoctorCtrl").to(AdminDoctorController);
-container.bind<IAdminProductCtrl>("IAdminProductCtrl").to(AdminProductController);
+container.bind<IAdminAuthController>("IAdminAuthController").to(AdminAuthController);
+container.bind<IAdminUserController>("IAdminUserController").to(AdminUserController);
+container.bind<IAdminDoctorController>("IAdminDoctorController").to(AdminDoctorController);
+container.bind<IAdminProductController>("IAdminProductController").to(AdminProductController);
 container.bind<IAdminAppointmentController>("IAdminAppointmentController").to(AdminAppointmentController);
 container.bind<IAdminAnalyticsController>("IAdminAnalyticsController").to(AdminAnalyticsContorller);
 container.bind<IAdminTransactionController>("IAdminTransactionController").to(AdminTransactionController);
 container.bind<IAdminPayoutController>("IAdminPayoutController").to(AdminPayoutController)
 
-container.bind<IDoctorAuthCtrl>("IDoctorAuthCtrl").to(DoctorAuthController)
-container.bind<IDoctorProfileCtrl>("IDoctorProfileCtrl").to(DoctorProfileController);
-container.bind<IDoctorSessionCtrl>("IDoctorSessionCtrl").to(DoctorSessionController);
-container.bind<IDoctorAppointmentCtrl>("IDoctorAppointmentCtrl").to(DoctorAppointmentController);
-container.bind<IDoctorReportAnalysisCtrl>("IDoctorReportAnalysisCtrl").to(DoctorReportAnalysisController);
-container.bind<IDoctorPlanCtrl>("IDoctorPlanCtrl").to(DoctorPlansController);
-container.bind<IDoctorBlogCtrl>("IDoctorBlogCtrl").to(DoctorBlogController);
-container.bind<IDoctorAdvertisementCtrl>("IDoctorAdvertisementCtrl").to(DoctorAdvertisementController);
-container.bind<IDoctorPrescriptionCtrl>("IDoctorPrescriptionCtrl").to(DoctorPrescriptionController);
-container.bind<IDoctorDashboardCtrl>("IDoctorDashboardCtrl").to(DoctorDashboardController);
-container.bind<IDoctorPayoutCtrl>("IDoctorPayoutCtrl").to(DoctorPayoutController);
+container.bind<IDoctorAuthController>("IDoctorAuthController").to(DoctorAuthController)
+container.bind<IDoctorProfileController>("IDoctorProfileController").to(DoctorProfileController);
+container.bind<IDoctorSessionController>("IDoctorSessionController").to(DoctorSessionController);
+container.bind<IDoctorAppointmentController>("IDoctorAppointmentController").to(DoctorAppointmentController);
+container.bind<IDoctorReportAnalysisController>("IDoctorReportAnalysisController").to(DoctorReportAnalysisController);
+container.bind<IDoctorPlanController>("IDoctorPlanController").to(DoctorPlansController);
+container.bind<IDoctorBlogController>("IDoctorBlogController").to(DoctorBlogController);
+container.bind<IDoctorAdvertisementController>("IDoctorAdvertisementController").to(DoctorAdvertisementController);
+container.bind<IDoctorPrescriptionController>("IDoctorPrescriptionController").to(DoctorPrescriptionController);
+container.bind<IDoctorDashboardController>("IDoctorDashboardController").to(DoctorDashboardController);
+container.bind<IDoctorPayoutController>("IDoctorPayoutController").to(DoctorPayoutController);
 container.bind<IDoctorTransactionController>("IDoctorTransactionController").to(DoctorTransactionController);
 
 
-container.bind<IPaymentCtrl>("IPaymentCtrl").to(PaymentController);
-container.bind<IConversationCtrl>("IConversationCtrl").to(ConversationController)
-container.bind<IMessageCtrl>("IMessageCtrl").to(MessageController)
-container.bind<IDetailsCtrl>("IDetailsCtrl").to(DetailsController);
-container.bind<IDirectDocUploadS3Ctrl>("IDirectDocUploadS3Ctrl").to(DirectDocUploadS3Controller);
-container.bind<INotificationCtrl>("INotificationCtrl").to(NotificationController);
+container.bind<IPaymentController>("IPaymentController").to(PaymentController);
+container.bind<IConversationController>("IConversationController").to(ConversationController)
+container.bind<IMessageController>("IMessageController").to(MessageController)
+container.bind<IDetailsController>("IDetailsController").to(DetailsController);
+container.bind<IDirectDocUploadS3Controller>("IDirectDocUploadS3Controller").to(DirectDocUploadS3Controller);
+container.bind<INotificationController>("INotificationController").to(NotificationController);
 
 
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Stripe from "stripe";
 import stripe from "../../../middlewares/common/stripe";
-import IPaymentCtrl from "../interfaces/IPaymentCtrl";
+import IPaymentController from "../interfaces/IPaymentController";
 import { inject, injectable } from "inversify";
 import IPaymentService from "../../../services/common/interfaces/IPaymentService";
 import { makeOneTimePayment } from "../../../middlewares/common/stripe";
@@ -9,7 +9,7 @@ import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class PaymentController implements IPaymentCtrl {
+export default class PaymentController implements IPaymentController {
   constructor(
     @inject("IPaymentService") private _paymentService: IPaymentService
   ) {}

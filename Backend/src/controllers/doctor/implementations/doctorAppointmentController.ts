@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { inject, injectable } from "inversify";
-import IDoctorAppointmentCtrl from "../interfaces/IDoctorAppointmentCtrl";
+import IDoctorAppointmentController from "../interfaces/IDoctorAppointmentController";
 import IDoctorAppointmentService from "../../../services/doctor/interfaces/IDoctorAppointmentService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
@@ -13,7 +13,7 @@ interface AppointmentFilter {
 
 @injectable()
 export default class DoctorAppointmentController
-  implements IDoctorAppointmentCtrl
+  implements IDoctorAppointmentController
 {
   constructor(
     @inject("IDoctorAppointmentService")

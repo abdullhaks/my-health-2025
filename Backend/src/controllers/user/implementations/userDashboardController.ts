@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IUserDashboardCtrl from "../interfaces/IUserDashboardCtrl";
+import IUserDashboardController from "../interfaces/IUserDashboardController";
 import { inject, injectable } from "inversify";
 import IUserDashboardService from "../../../services/user/interfaces/IUserDashboardService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class UserDashboardController implements IUserDashboardCtrl {
+export default class UserDashboardController implements IUserDashboardController {
   constructor(
     @inject("IUserDashboardService")
     private _dashboardService: IUserDashboardService

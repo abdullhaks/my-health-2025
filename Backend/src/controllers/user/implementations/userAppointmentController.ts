@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import IUserAppointmentCtrl from "../interfaces/IUserAppointmentCtrl";
+import IUserAppointmentController from "../interfaces/IUserAppointmentController";
 import { inject, injectable } from "inversify";
 import IUserAppointmentService from "../../../services/user/interfaces/IUserAppointmentServices";
 import { HttpStatusCode } from "../../../utils/enum";
@@ -14,7 +14,7 @@ interface AppointmentFilter {
 
 injectable();
 
-export default class UserAppointmentController implements IUserAppointmentCtrl {
+export default class UserAppointmentController implements IUserAppointmentController {
   constructor(
     @inject("IUserAppointmentService")
     private _appointmentService: IUserAppointmentService

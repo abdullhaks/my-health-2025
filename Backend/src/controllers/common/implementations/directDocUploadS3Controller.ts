@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import IDirectDocUploadS3Ctrl from "../interfaces/IDirectDocUploadS3";
+import IDirectDocUploadS3Controller from "../interfaces/IDirectDocUploadS3Controller";
 import { inject, injectable } from "inversify";
 import IDirectDocUploadS3Service from "../../../services/common/interfaces/IDirectDocUploadS3Service";
 import { HttpStatusCode } from "../../../utils/enum";
@@ -7,7 +7,7 @@ import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
 export default class DirectDocUploadS3Controller
-  implements IDirectDocUploadS3Ctrl
+  implements IDirectDocUploadS3Controller
 {
   constructor(
     @inject("IDirectDocUploadS3Service")

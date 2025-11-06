@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IDoctorDashboardCtrl from "../interfaces/IDoctorDashboardCtrl";
+import IDoctorDashboardController from "../interfaces/IDoctorDashboardController";
 import IDoctorDashboardService from "../../../services/doctor/interfaces/IDoctorDashboardService";
 import { inject, injectable } from "inversify";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DoctorDashboardController implements IDoctorDashboardCtrl {
+export default class DoctorDashboardController implements IDoctorDashboardController {
   constructor(
     @inject("IDoctorDashboardService")
     private _doctorDashboardService: IDoctorDashboardService

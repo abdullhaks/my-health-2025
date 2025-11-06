@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export default interface IDoctorBlogCtrl {
+export default interface IDoctorBlogController {
   createBlog(req: Request, res: Response): Promise<void>;
   getBlogs(req: Request, res: Response): Promise<void>;
   updateBlog(req: Request, res: Response): Promise<void>;

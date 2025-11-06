@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import IUserPrescriptionService from "../../../services/user/interfaces/IUserPrescriptionService";
-import IUserPrescriptionCtrl from "../interfaces/IUserPrescriptionCtrl";
+import IUserPrescriptionController from "../interfaces/IUserPrescriptionController";
 import { Request, Response } from "express";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
 export default class UserPrescriptionController
-  implements IUserPrescriptionCtrl
+  implements IUserPrescriptionController
 {
   constructor(
     @inject("IUserPrescriptionService")

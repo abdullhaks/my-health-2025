@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { inject, injectable } from "inversify";
-import IDoctorPlanCtrl from "../interfaces/IDoctorPlanCtrl";
+import IDoctorPlanController from "../interfaces/IDoctorPlanController";
 import stripe from "../../../middlewares/common/stripe";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DoctorPlansController implements IDoctorPlanCtrl {
+export default class DoctorPlansController implements IDoctorPlanController {
   async getProducts(req: Request, res: Response): Promise<void> {
     try {
       const products = await stripe.products.list({

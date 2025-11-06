@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import INotificationCtrl from "../interfaces/INotificationCtrl";
+import INotificationCtrl from "../interfaces/INotificationController";
 import { Request, Response } from "express";
 import { HttpStatusCode } from "../../../utils/enum";
 import INotificationServices from "../../../services/common/interfaces/INotificationService";

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IDetailsCtrl from "../interfaces/IDetailsCtrl";
+import IDetailsController from "../interfaces/IDetailsController";
 import { inject, injectable } from "inversify";
 import IDetailsService from "../../../services/common/interfaces/IDetailsService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DetailsController implements IDetailsCtrl {
+export default class DetailsController implements IDetailsController {
   constructor(
     @inject("IDetailsService") private _detailsService: IDetailsService
   ) {}

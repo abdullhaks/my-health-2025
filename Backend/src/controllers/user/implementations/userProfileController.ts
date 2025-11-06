@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import IUserProfileCtrl from "../interfaces/IUserProfileCtrl";
+import IUserProfileController from "../interfaces/IUserProfileController";
 import { inject, injectable } from "inversify";
 import IUserProfileService from "../../../services/user/interfaces/IuserProfileServices";
 import { HttpStatusCode } from "../../../utils/enum";
@@ -7,7 +7,7 @@ import { MESSAGES } from "../../../utils/messages";
 
 injectable();
 
-export default class UserProfileController implements IUserProfileCtrl {
+export default class UserProfileController implements IUserProfileController {
   constructor(
     @inject("IUserProfileService") private _profileService: IUserProfileService
   ) {}

@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import IDoctorAdvertisementCtrl from "../interfaces/IDoctorAdvertisementCtrl";
+import IDoctorAdvertisementController from "../interfaces/IDoctorAdvertisementController";
 import { Request, Response } from "express";
 import IDoctorAdvertisementService from "../../../services/doctor/interfaces/IDoctorAdvertisementServices";
 import { HttpStatusCode } from "../../../utils/enum";
@@ -7,7 +7,7 @@ import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
 export default class DoctorAdvertisementController
-  implements IDoctorAdvertisementCtrl
+  implements IDoctorAdvertisementController
 {
   constructor(
     @inject("IDoctorAdvertisementService")

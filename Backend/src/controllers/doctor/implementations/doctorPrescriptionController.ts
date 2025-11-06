@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import IDoctorPrescriptionService from "../../../services/doctor/interfaces/IDoctorPrescriptionService";
-import IDoctorPrescriptionCtrl from "../interfaces/IDoctorPrescriptionCtrl";
+import IDoctorPrescriptionCtrl from "../interfaces/IDoctorPrescriptionController";
 import { Request, Response } from "express";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";

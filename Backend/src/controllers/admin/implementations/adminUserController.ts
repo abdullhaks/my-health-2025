@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import IAdminUserCtrl from "../interfaces/IAdminUserController";
+import IAdminUserController from "../interfaces/IAdminUserController";
 import { inject, injectable } from "inversify";
 import IAdminUserService from "../../../services/admin/interfaces/IAdminUserService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class AdminUserController implements IAdminUserCtrl {
+export default class AdminUserController implements IAdminUserController {
   constructor(
     @inject("IAdminUserService") private _adminUserService: IAdminUserService
   ) {}

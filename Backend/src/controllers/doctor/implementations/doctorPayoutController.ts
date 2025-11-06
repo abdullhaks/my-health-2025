@@ -1,12 +1,12 @@
 import { inject, injectable } from "inversify";
 import { Request, Response } from "express";
 import { HttpStatusCode } from "../../../utils/enum";
-import IDoctorPayoutCtrl from "../interfaces/IDoctorPayoutCtrl";
+import IDoctorPayoutController from "../interfaces/IDoctorPayoutController";
 import IDoctorPayoutService from "../../../services/doctor/interfaces/IDoctorPayoutService";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DoctorPayoutController implements IDoctorPayoutCtrl {
+export default class DoctorPayoutController implements IDoctorPayoutController {
   constructor(
     @inject("IDoctorPayoutService")
     private _doctorPayoutService: IDoctorPayoutService

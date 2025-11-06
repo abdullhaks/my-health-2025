@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import IDoctorAuthCtrl from "../interfaces/IDoctorAuthCtrl";
+import IDoctorAuthController from "../interfaces/IDoctorAuthController";
 import { inject, injectable } from "inversify";
 import IDoctorAuthService from "../../../services/doctor/interfaces/IDoctorAuthServices";
 import { HttpStatusCode } from "../../../utils/enum";
@@ -20,7 +20,7 @@ type MulterFiles = {
 };
 
 @injectable()
-export default class DoctorAuthController implements IDoctorAuthCtrl {
+export default class DoctorAuthController implements IDoctorAuthController {
   constructor(
     @inject("IDoctorAuthService") private _doctorAuthService: IDoctorAuthService
   ) {}

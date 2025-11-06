@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IDoctorSessionCtrl from "../interfaces/IDoctorSessionCtrl";
+import IDoctorSessionController from "../interfaces/IDoctorSessionController";
 import { inject, injectable } from "inversify";
 import IDoctorSessionService from "../../../services/doctor/interfaces/IDoctorSessionService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class DoctorSessionController implements IDoctorSessionCtrl {
+export default class DoctorSessionController implements IDoctorSessionController {
   constructor(
     @inject("IDoctorSessionService")
     private _doctorSessionService: IDoctorSessionService

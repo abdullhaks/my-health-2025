@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import IConversationCtrl from "../interfaces/IConversationCtrl";
+import IConversationController from "../interfaces/IConversationController";
 import { inject, injectable } from "inversify";
 import IConversationService from "../../../services/common/interfaces/IConversationService";
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
-export default class ConversationController implements IConversationCtrl {
+export default class ConversationController implements IConversationController {
   constructor(
     @inject("IConversationService")
     private _conversationService: IConversationService

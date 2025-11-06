@@ -17,7 +17,7 @@ const adminRoutes_1 = __importDefault(require("./src/routes/admin/adminRoutes"))
 const doctorRoutes_1 = __importDefault(require("./src/routes/doctor/doctorRoutes"));
 const inversify_1 = __importDefault(require("./src/config/inversify"));
 const errorMiddleware_1 = require("./src/middlewares/common/errorMiddleware");
-const paymentCtrl = inversify_1.default.get("IPaymentCtrl");
+const paymentCtrl = inversify_1.default.get("IPaymentController");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;

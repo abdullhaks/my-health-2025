@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import IUserAuthCtrl from "../interfaces/IUserAuthCtrl";
+import IUserAuthController from "../interfaces/IUserAuthController";
 import { inject, injectable } from "inversify";
 import IUserAuthService from "../../../services/user/interfaces/IUserAuthServices";
 import { HttpStatusCode } from "../../../utils/enum";
@@ -14,7 +14,7 @@ import { generateRandomPassword } from "../../../utils/helpers";
 import { HttpException, ValidationException } from "../../../utils/http.exception";
 
 @injectable()
-export default class UserAuthController implements IUserAuthCtrl {
+export default class UserAuthController implements IUserAuthController {
   constructor(
     @inject("IUserAuthService") private _userService: IUserAuthService
   ) {}

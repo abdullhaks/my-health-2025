@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export default interface IAdminDoctorCtrl {
+export default interface IAdminDoctorController {
   getDoctors(req: Request, res: Response): Promise<void>;
   getDoctor(req: Request, res: Response): Promise<void>;
   verifyDoctor(req: Request, res: Response): Promise<void>;

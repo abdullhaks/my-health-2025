@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import IUserReportAnalysisCtrl from "../interfaces/IUserReportAnalysisCtrl";
+import IUserReportAnalysisController from "../interfaces/IUserReportAnalysisController";
 import { inject, injectable } from "inversify";
 import IUserReportAnalysisService from "../../../services/user/interfaces/IUserReportAnalysis";
 import { HttpStatusCode } from "../../../utils/enum";
@@ -7,7 +7,7 @@ import { MESSAGES } from "../../../utils/messages";
 
 @injectable()
 export default class UserReportAnalyisController
-  implements IUserReportAnalysisCtrl
+  implements IUserReportAnalysisController
 {
   constructor(
     @inject("IUserReportAnalysisService")

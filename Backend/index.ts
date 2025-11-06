@@ -11,7 +11,7 @@ import cors from "cors";
 import adminRoutes from "./src/routes/admin/adminRoutes";
 import doctorRoutes from "./src/routes/doctor/doctorRoutes";
 // import { stripeWebhookController } from './src/controllers/common/implementations/paymentCtrl';
-import IPaymentCtrl from "./src/controllers/common/interfaces/IPaymentCtrl";
+import IPaymentController from "./src/controllers/common/interfaces/IPaymentController";
 import container from "./src/config/inversify";
 import { errorHandler } from "./src/middlewares/common/errorMiddleware";
 
@@ -21,7 +21,7 @@ interface CustomError extends Error {
   details?: string;
 }
 
-const paymentCtrl = container.get<IPaymentCtrl>("IPaymentCtrl");
+const paymentCtrl = container.get<IPaymentController>("IPaymentController");
 
 dotenv.config();
 

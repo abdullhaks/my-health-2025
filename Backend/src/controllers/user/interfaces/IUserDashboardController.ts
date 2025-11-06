@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
 
-export default interface IUserDashboardCtrl {
+export default interface IUserDashboardController {
   getDashboardContent(req: Request, res: Response): Promise<void>;
 }

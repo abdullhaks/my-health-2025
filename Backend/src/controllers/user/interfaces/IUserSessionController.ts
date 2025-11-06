@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export default interface IUserSessionCtrl {
+export default interface IUserSessionController {
   getSessions(req: Request, res: Response): Promise<void>;
   getBookedSlots(req: Request, res: Response): Promise<void>;
   getUnavailableDays(req: Request, res: Response): Promise<void>;
