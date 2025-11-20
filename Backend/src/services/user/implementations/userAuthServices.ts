@@ -44,22 +44,30 @@ export default class UserAuthService implements IUserAuthService {
   ) {}
 
 async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
+
+    console.log("login data:", userData);
+
   if (!userData.email || !userData.password) {
+    console.log("Missing email or password in login data:", userData);
     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Please provide all required fields');
   }
 
   const existingUser = await this._userRepository.findByEmail(userData.email);
   if (!existingUser) {
+    console.log("No user found with email:", userData.email);
+
     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
   }
 
   const isPasswordValid = await bcrypt.compare(userData.password, existingUser.password);
   if (!isPasswordValid) {
+    console.log("Invalid password for user:", userData.email);
     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
   }
 
   // ---- BLOCKED ----
   if (existingUser.isBlocked) {
+    console.log("User is blocked:", userData.email);
     return {
       message: 'User is blocked',
       user: { email: existingUser.email, isBlocked: true },
@@ -68,6 +76,7 @@ async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
 
   // ---- NOT VERIFIED ----
   if (!existingUser.isVerified) {
+    console.log("User not verified:", userData.email);
     const otp = generateOtp();
     await this.sendMail(existingUser.email, otp);   // <-- await!
     return {
@@ -151,7 +160,7 @@ const parseResult = signupSchema.safeParse(userData);
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-
+  userData.password = hashedPassword;
  const response = await this._userRepository.create(userData);
 
   const otp = generateOtp();
@@ -301,6 +310,8 @@ async sendMail(email: string, otp: string): Promise<void> {
     const record = await RecoveryPasswordModel.findOne({ email }).sort({
       createdAt: -1,
     });
+
+    console.log("Recovery record found:", record);
 
     if (!record) return false;
 

@@ -22,6 +22,9 @@ export default class UserAuthController implements IUserAuthController {
   async userLogin(req: Request, res: Response): Promise<void> {
   try {
     const loginDTO: UserLoginRequestDTO = req.body;
+
+    console.log("Login DTO received in controller:", loginDTO);
+
     const result = await this._userService.login(loginDTO);
 
     console.log("Login result:", result);
@@ -219,6 +222,7 @@ export default class UserAuthController implements IUserAuthController {
     try {
       const { email, recoveryCode } = req.body;
 
+      console.log("Verifying recovery code for:", email);
       if (!email || !recoveryCode) {
         res
           .status(HttpStatusCode.BAD_REQUEST)

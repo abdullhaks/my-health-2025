@@ -89,6 +89,9 @@ function UserLogin() {
     }
 
     try {
+
+      console.log("formdata is ",formData);
+      
       const response: LoginResponse = await loginUser(formData);
       console.log("Login successful:", response);
 
@@ -111,24 +114,35 @@ function UserLogin() {
 
       toast.success("Logged in successfully");
       navigate("/user/dashboard");
-    } catch (error: unknown) {
-      console.error("Login failed:", error);
+    } catch (error: any) {
+        console.error("Login failed:", error);
 
-      // Handle specific error cases
-      let errorMessage = "Something went wrong. Please try again later.";
-      if (error instanceof Error && "response" in error) {
-        const axiosError = error as { response?: { status: number } };
-        if (axiosError.response?.status === 401) {
-          errorMessage = "Invalid email or password";
-          setErrors({ ...errors, password: errorMessage });
+        let errorMessage = "Something went wrong. Please try again later.";
+
+        if (error?.response) {
+          const status = error.response.status;
+          const serverMessage = error.response.data?.message;
+
+          if (status === 400) {
+            // Backend sent: { message: "Invalid credentials" }
+            errorMessage = serverMessage || "Invalid credentials";
+            setErrors({ ...errors, password: errorMessage });
+
+          } else if (status === 401) {
+            errorMessage = serverMessage || "Unauthorized request";
+            setErrors({ ...errors, password: errorMessage });
+
+          } else {
+            errorMessage = serverMessage || errorMessage;
+            setErrors({ ...errors, email: "Something went wrong" });
+          }
+
         } else {
-          setErrors({ ...errors, email: " " });
+          setErrors({ ...errors, email: "Network error" });
         }
-      } else {
-        setErrors({ ...errors, email: " " });
+
+        toast.error(errorMessage);
       }
-      toast.error(errorMessage);
-    }
   };
 
   return (

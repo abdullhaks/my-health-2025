@@ -54,6 +54,8 @@ export const getDoctor = async (doctorId: string) => {
 
 export const loginUser = async (userData: userLoginData) => {
   try {
+
+    console.log("User data for login:", userData);
     const response = await userInstance.post(ROUTES.user.login, userData);
     console.log("Login response:", response.data);
     return response.data;
