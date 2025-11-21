@@ -20,7 +20,7 @@ const recoveryPasswordSchema: Schema<IRecoveryPasswordDocument> = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      expires: 86400, // 24 hours in seconds
+      expires: 3600, // 24 hours in seconds
     },
   },
   {

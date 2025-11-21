@@ -316,6 +316,8 @@ async sendMail(email: string, otp: string): Promise<void> {
     if (!record) return false;
 
     const isMatch = record.recoveryPassword === recoveryCode;
+
+    console.log("Recovery code match:", isMatch);
     return isMatch;
   }
 

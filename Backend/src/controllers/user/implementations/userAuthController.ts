@@ -238,13 +238,13 @@ export default class UserAuthController implements IUserAuthController {
       if (!isValid) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
-          .json({ msg: "Invalid recovery code" });
+          .json({success:false, msg: "Invalid recovery code" });
         return;
       }
 
       res
         .status(HttpStatusCode.OK)
-        .json({ msg: "Recovery code verified successfully" });
+        .json({success:true, msg: "Recovery code verified successfully" });
     } catch (error) {
       console.log(error);
       res
@@ -266,11 +266,11 @@ export default class UserAuthController implements IUserAuthController {
       const response = this._userService.resetPassword(email, newPassword);
 
       if (!response) {
-        res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "user not found" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({success:false, msg: "user not found" });
         return;
       }
 
-      res.status(HttpStatusCode.OK).json({ msg: "password updated" });
+      res.status(HttpStatusCode.OK).json({success:true, msg: "password updated" });
     } catch (error) {
       console.log(error);
       res
