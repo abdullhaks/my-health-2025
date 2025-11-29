@@ -41,6 +41,14 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # CLEAN UP DISK SPACE
+            echo "Cleaning unused Docker data..."
+            sudo docker stop myhealth-backend || true
+            sudo docker container prune -f
+            sudo docker image prune -af
+            sudo docker volume prune -f
+            sudo docker system prune -f --volumes
+
             # pull latest image
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/myhealth-backend:latest
 
