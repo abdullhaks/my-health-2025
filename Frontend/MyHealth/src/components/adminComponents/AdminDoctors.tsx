@@ -140,7 +140,7 @@ const AdminDoctors = () => {
     {
       title: "Action",
       key: "action",
-      render: (_: any, record: Doctor) => (
+      render: (record: Doctor) => (
         <Popconfirm
           title="Manage doctor"
           description={`Are you sure to ${record.isBlocked ? "unblock" : "block"} this doctor?`}

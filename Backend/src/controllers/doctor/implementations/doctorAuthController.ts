@@ -68,7 +68,7 @@ export default class DoctorAuthController implements IDoctorAuthController {
       res
         .status(HttpStatusCode.OK)
         .json({ message: result.message, doctor: result.doctor });
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (error instanceof HttpException) {
           res.status(error.status).json({ message: error.message, code: error.code });
           return;
@@ -204,7 +204,7 @@ export default class DoctorAuthController implements IDoctorAuthController {
 
       const otpRecord = await this._doctorAuthService.verifyOtp(email, otp);
       res.status(HttpStatusCode.OK).json({ otp, email });
-    } catch (error: any) {
+    } catch (error: unknown) {
     
     
         if (error instanceof HttpException) {

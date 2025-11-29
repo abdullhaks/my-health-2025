@@ -39,25 +39,43 @@ export default class AdminAnalyticsContorller
         filter
       );
       res.status(HttpStatusCode.OK).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error in getUserAnalytics controller:", error);
       let message = MESSAGES.analytics.databaseError;
       let status = HttpStatusCode.INTERNAL_SERVER_ERROR;
 
-      switch (error.message) {
-        case MESSAGES.analytics.missingFilter: {
-          message = MESSAGES.analytics.missingFilter;
-          status = HttpStatusCode.BAD_REQUEST;
-          break;
+      if (error instanceof Error) {
+        switch (error.message) {
+          case MESSAGES.analytics.missingFilter: {
+            message = MESSAGES.analytics.missingFilter;
+            status = HttpStatusCode.BAD_REQUEST;
+            break;
+          }
+          case MESSAGES.analytics.notFound: {
+            message = MESSAGES.analytics.notFound;
+            break;
+          }
+          case MESSAGES.analytics.failedToFetch: {
+            message = MESSAGES.analytics.failedToFetch;
+            break;
+          }
         }
-        case MESSAGES.analytics.notFound: {
-          message = MESSAGES.analytics.notFound;
-          break;
-        }
-
-        case MESSAGES.analytics.failedToFetch: {
-          message = MESSAGES.analytics.failedToFetch;
-          break;
+      } else if (typeof error === "string") {
+        // If a string was thrown
+        switch (error) {
+          case MESSAGES.analytics.missingFilter: {
+            message = MESSAGES.analytics.missingFilter;
+            status = HttpStatusCode.BAD_REQUEST;
+            break;
+          }
+          case MESSAGES.analytics.notFound: {
+            message = MESSAGES.analytics.notFound;
+            break;
+          }
+          case MESSAGES.analytics.failedToFetch: {
+            message = MESSAGES.analytics.failedToFetch;
+            break;
+          }
         }
       }
 

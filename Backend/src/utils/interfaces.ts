@@ -3,3 +3,8 @@ export interface CustomError extends Error {
   code?: string;
   details?: string;
 }
+
+export interface CommonError{
+  message: string;
+  code?: string;
+} 

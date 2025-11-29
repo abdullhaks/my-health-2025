@@ -123,7 +123,7 @@ export default class UserAppointmentController implements IUserAppointmentContro
       );
 
       res.status(HttpStatusCode.OK).json(response);
-    } catch (error: any) {
+    } catch (error: unknown) {
     
     
         if (error instanceof HttpException) {

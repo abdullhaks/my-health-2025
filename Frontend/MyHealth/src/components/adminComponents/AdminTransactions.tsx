@@ -101,7 +101,13 @@ const AdminTransactions = () => {
     },
   ];
 
-  const fetchData = async (page: number, limit: number, filters: Record<string, any>) => {
+  interface TransactionFilters {
+    method?: string;
+    paymentFor?: string;
+    dateRange?: [Date, Date] | undefined | null;
+  }
+
+  const fetchData = async (page: number, limit: number, filters: TransactionFilters = {}) => {
     const response = await getTransactions(page, limit, {
       method: filters.method || "",
       paymentFor: filters.paymentFor || "",

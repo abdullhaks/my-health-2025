@@ -48,7 +48,7 @@ export default class UserAuthController implements IUserAuthController {
         .status(HttpStatusCode.OK)
         .json({ message: result.message, user: result.user });
         
-  } catch (error: any) {
+  } catch (error: unknown) {
 
 
     if (error instanceof HttpException) {
@@ -122,7 +122,7 @@ export default class UserAuthController implements IUserAuthController {
     const user = await this._userService.signup(userDetails);
 
     res.status(HttpStatusCode.CREATED).json(user);
-  } catch (error: any) {
+  } catch (error: unknown) {
 
     if (error instanceof ValidationException) {
       res.status(HttpStatusCode.BAD_REQUEST).json({

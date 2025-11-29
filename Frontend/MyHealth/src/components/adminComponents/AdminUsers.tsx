@@ -104,7 +104,7 @@ const AdminUsers = () => {
     {
       title: "Action",
       key: "action",
-      render: (_: any, record: User) => (
+      render: (record: User) => (
         <Popconfirm
           title="Manage user"
           description={`Are you sure to ${record.isBlocked ? "unblock" : "block"} this user?`}

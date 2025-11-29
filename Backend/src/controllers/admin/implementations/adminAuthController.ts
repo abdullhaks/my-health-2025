@@ -45,7 +45,7 @@ export default class AdminAuthController implements IAdminAuthController {
       res
         .status(HttpStatusCode.OK)
         .json({ message: result.message, admin: result.admin });
-    } catch (error: any) {
+    } catch (error: unknown) {
     
     
         if (error instanceof HttpException) {
