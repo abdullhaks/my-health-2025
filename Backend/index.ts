@@ -31,9 +31,11 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin:
-      (process.env.CLIENT_URL as string) ||
+    origin: [
+      process.env.CLIENT_URL as string,
       "https://www.myhealth.abdullhakalamban.online",
+      "https://my-health-2025.vercel.app"
+    ],
     credentials: true,
   },
 });
