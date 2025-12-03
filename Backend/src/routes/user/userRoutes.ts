@@ -18,6 +18,7 @@ import IUserDashboardController from "../../controllers/user/interfaces/IUserDas
 import IUserPrescriptionController from "../../controllers/user/interfaces/IUserPrescriptionController";
 import IUserTransactionController from "../../controllers/user/interfaces/IUserTransactionController";
 import { resolve } from "path";
+import IUserHealthStatusController from "../../controllers/user/interfaces/IUserHealthStatusController";
 
 const userRoutes = Router();
 
@@ -36,6 +37,7 @@ const blogCtrl = container.get<IUserBlogController>("IUserBlogController");
 const dashboardCtrl = container.get<IUserDashboardController>("IUserDashboardController");
 const prescriptionCtrl = container.get<IUserPrescriptionController>("IUserPrescriptionController");
 const transactionCtrl = container.get<IUserTransactionController>("IUserTransactionController");
+const healthStatusCtrl = container.get<IUserHealthStatusController>("IUserHealthStatusController");
 
 
 
@@ -154,6 +156,9 @@ userRoutes.get("/unAvailableSessions",verifyAccessTokenMidleware("user"),(req,re
 userRoutes.get("/activeBooking",verifyAccessTokenMidleware("user"),(req,res)=>appointmentCtrl.activeBooking(req,res));
 
 userRoutes.get("/getTransactions",verifyAccessTokenMidleware("user"),(req,res)=>transactionCtrl.getTransactions(req,res));
+
+userRoutes.post("/healthStatus",verifyAccessTokenMidleware("user"),(req,res)=>healthStatusCtrl.checkHealthStatus(req,res));
+
 
 
 export default userRoutes; 

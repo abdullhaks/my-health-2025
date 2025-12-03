@@ -12,7 +12,6 @@
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@geoapify/geocoder-autocomplete": "^2.1.0",
-    "@google/generative-ai": "^0.24.1",
     "@reduxjs/toolkit": "^2.6.1",
     "@stripe/react-stripe-js": "^3.7.0",
     "@tailwindcss/vite": "^4.1.1",

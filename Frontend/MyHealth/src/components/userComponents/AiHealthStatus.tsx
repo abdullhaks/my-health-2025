@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState} from "react";
 import {
   FaHeartbeat,
   FaInfoCircle,
@@ -11,7 +11,9 @@ import {
   FaExclamationTriangle,
   FaVenusMars,
 } from "react-icons/fa";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
+
+import { checkHealthStatus } from "../../api/user/userApi";
 
 const AiHealthStatusGenerator = () => {
   const [height, setHeight] = useState<string>("");
@@ -23,38 +25,6 @@ const AiHealthStatusGenerator = () => {
   const [healthStatus, setHealthStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  const genAI = useMemo(() => new GoogleGenerativeAI(apiKey), [apiKey]);
-  const model = useMemo(
-    () =>
-      genAI.getGenerativeModel({
-        model: "gemini-2.0-flash-exp",
-      }),
-    [genAI]
-  );
-  const generationConfig = useMemo(
-    () => ({
-      temperature: 1,
-      topP: 0.95,
-      topK: 40,
-      maxOutputTokens: 8192,
-      responseMimeType: "text/plain",
-    }),
-    []
-  );
-  const run = useMemo(
-    () => async (prompt: string) => {
-      const chatSession = model.startChat({
-        generationConfig,
-        history: [],
-      });
-      const result = await chatSession.sendMessage(prompt);
-      console.log(result.response.text());
-      return result.response.text();
-    },
-    [model, generationConfig]
-  );
 
   const generateHealthStatus = async () => {
     setError(null);
@@ -84,8 +54,8 @@ const AiHealthStatusGenerator = () => {
     Crucial Disclaimer: This information is for general knowledge and informational purposes only, and does not constitute medical advice. It is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read here.`;
 
     try {
-      const generatedText = await run(prompt);
-      setHealthStatus(generatedText);
+      const generatedText = await checkHealthStatus(prompt);
+      setHealthStatus(generatedText.data);
     } catch (err) {
       console.error("Error generating health status:", err);
       setError(

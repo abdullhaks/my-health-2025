@@ -40,6 +40,8 @@ import UserPrescriptionController from "../controllers/user/implementations/user
 import IUserPrescriptionController from "../controllers/user/interfaces/IUserPrescriptionController";
 import UserTransactionController from "../controllers/user/implementations/userTransactionController";
 import IUserTransactionController from "../controllers/user/interfaces/IUserTransactionController";
+import UserHealthStatusController from "../controllers/user/implementations/userHealthStatusController";
+import IUserHealthStatusController from "../controllers/user/interfaces/IUserHealthStatusController";
 
 
 import AdminAuthController from "../controllers/admin/implementations/adminAuthController";
@@ -288,6 +290,7 @@ container.bind<IUserBlogController>("IUserBlogController").to(UserBlogController
 container.bind<IUserDashboardController>("IUserDashboardController").to(UserDashboardController);
 container.bind<IUserPrescriptionController>("IUserPrescriptionController").to(UserPrescriptionController);
 container.bind<IUserTransactionController>("IUserTransactionController").to(UserTransactionController);
+container.bind<IUserHealthStatusController>("IUserHealthStatusController").to(UserHealthStatusController);
 
 
 container.bind<IAdminAuthController>("IAdminAuthController").to(AdminAuthController);

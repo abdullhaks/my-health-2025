@@ -447,7 +447,7 @@ export const walletPayment = async (data: walletPaymentData) => {
   try {
     console.log("data is,................", data);
 
-    const response = await userInstance.post(ROUTES.user.walletPayment, data);
+    const response = await userInstance.post(ROUTES.user.walletPayment, {promtData:data});
     return response.data;
   } catch (error) {
     console.log("Error in get sessions", error);
@@ -643,5 +643,19 @@ export const getTransactions = async (
   } catch (err) {
     console.log("error in get total analytics");
     throw err;
+  }
+};
+
+
+export const checkHealthStatus = async (promptData:string) => {
+
+  console.log("prompt data in api is ", promptData);
+
+  try {
+    const response = await userInstance.post(ROUTES.user.healthStatus, {promtData:promptData});
+    return response.data;
+  } catch (error) {
+    console.log("Error in get health status", error);
+    throw error;
   }
 };
