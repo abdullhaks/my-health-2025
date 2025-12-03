@@ -34,6 +34,7 @@ const io = new Server(server, {
     origin: [
       process.env.CLIENT_URL as string,
       "https://myhealth.abdullhakalamban.online",
+      'https://www.myhealth.abdullhakalamban.online',
       "https://my-health-2025.vercel.app"
     ],
     credentials: true,
@@ -43,7 +44,12 @@ setupSocket(io, container);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL as string,
+     origin: [
+      process.env.CLIENT_URL as string,
+      "https://myhealth.abdullhakalamban.online",
+      "https://www.myhealth.abdullhakalamban.online",
+      "https://my-health-2025.vercel.app"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
   })
