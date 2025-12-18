@@ -24,7 +24,7 @@ export default class UserHealthStatusController implements IUserHealthStatusCont
         console.log("Gemini API Key:", geminikey);
 
     const genAI = new GoogleGenerativeAI(geminikey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const result = await model.generateContent(promtData);
 
