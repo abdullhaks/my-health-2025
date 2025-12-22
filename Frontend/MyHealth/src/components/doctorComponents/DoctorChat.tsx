@@ -35,6 +35,7 @@ interface Conversation {
   _id: string;
   members: { _id: string; name: string; avatar: string }[]; // Standardized: _id is the participant ID
   lastMessage?: string;
+  updatedAt:string;
 }
 
 
@@ -529,7 +530,27 @@ const DoctorChat = () => {
           ) : (
             <ul className="divide-y divide-gray-200">
               {conversations.map((c) => {
-                const m = c.members[0]; // Assume first member is the other participant
+                const m = c.members[0]; // The other participant
+                const dateData = c.updatedAt;
+
+                // WhatsApp-style time: e.g., 2:45 PM or 14:45 (depending on locale)
+                const time = new Date(dateData).toLocaleTimeString([], {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true, // Change to false if you prefer 24-hour format
+                });
+
+                let dateString = new Date(dateData).toDateString();
+                let today = new Date().toDateString();
+                let yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                let yesterdayString = yesterday.toDateString();
+                if (dateString === today) {
+                  dateString = "Today";
+                } else if (dateString === yesterdayString) {
+                  dateString = "Yesterday";
+                }
+
                 return (
                   <li
                     key={c._id}
@@ -541,14 +562,31 @@ const DoctorChat = () => {
                       setIsConversationListVisible(false);
                     }}
                   >
+                    {/* Avatar */}
                     <img
-                      src={m.avatar||`https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png`}
+                      src={
+                        m.avatar ||
+                        "https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/users/profile-images/avatar.png"
+                      }
                       alt={m.name}
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200"
+                      className="w-12 h-12 rounded-full object-cover border border-gray-200 flex-shrink-0"
                     />
+
+                    {/* Content: Name, Time, Last Message */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
-                        {m.name}
+                      {/* Top row: Name + Time */}
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-base font-medium text-gray-900 truncate pr-2">
+                          {m.name}
+                        </p>
+                        <span className="text-xs text-gray-500 flex-shrink-0">
+                          {`${dateString} ${time}`}
+                        </span>
+                      </div>
+
+                      {/* Bottom row: Last message preview */}
+                      <p className="text-sm text-gray-600 line-clamp-1">
+                        {c.lastMessage || "No messages yet"}
                       </p>
                     </div>
                   </li>

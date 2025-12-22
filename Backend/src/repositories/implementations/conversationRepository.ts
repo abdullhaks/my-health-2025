@@ -72,6 +72,7 @@ export default class ConversationRepository
           _id: conv._id.toString(),
           members: memberDto ? [memberDto] : [],
           lastMessage: conv.lastMessage,
+          updatedAt: conv.updatedAt
         };
       })
     );

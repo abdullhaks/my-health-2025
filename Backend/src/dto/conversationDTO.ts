@@ -3,7 +3,7 @@ import { Document, Types } from "mongoose";
 export interface IConversationDocument extends Document {
   _id: Types.ObjectId;
   members: string[];
-  updatedAt: Date;
+  updatedAt: Date | string;
   lastMessage?: string;
 }
 
@@ -20,11 +20,13 @@ export interface ConversationResponseDTO {
   _id: string;
   members: ConversationMemberDTO[];
   lastMessage?: string;
+  updatedAt?: Date | string,
+
 }
 
 export interface conversationResponseDTO_Temp {
   _id: string;
   members: string[];
-  updatedAt: Date;
+  updatedAt: Date | string;
   lastMessage?: string;
 }

@@ -6,8 +6,8 @@ export class ConversationMapper {
     return {
       _id: conversation._id.toString(),
       members: conversation.members,
-      updatedAt: conversation.updatedAt,
       lastMessage: conversation.lastMessage,
+      updatedAt: conversation.updatedAt,
     };
   }
 };
@@ -19,6 +19,7 @@ export class Conversations_Mapper {
       _id: conversation._id.toString(),
       members: conversation.members,
       lastMessage: conversation.lastMessage,
+      updatedAt: conversation.updatedAt,
     };
   }
 }

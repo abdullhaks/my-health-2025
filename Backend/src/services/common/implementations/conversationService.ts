@@ -40,6 +40,8 @@ export default class ConversationService implements IConversationService {
       from
     );
 
+    console.log("conversaions are",convs);
+
     return await Promise.all(
       convs.map((item) => Conversations_Mapper.toResponseDTO(item))
     );

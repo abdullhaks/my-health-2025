@@ -38,6 +38,9 @@ interface Message {
 interface Conversation {
   _id: string;
   members: { _id: string; name: string; avatar: string }[]; // Standardized
+  lastMessage?: string;
+  updatedAt:string;
+
 }
 
 interface ImageViewerState {
@@ -527,7 +530,7 @@ const UserChat = () => {
             Conversations
           </h2>
         </div>
-        <div className="flex-1 overflow-y-auto">
+       <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="p-4 sm:p-5 text-gray-500 text-sm sm:text-base">
               Loading conversations...
@@ -536,6 +539,26 @@ const UserChat = () => {
             <ul className="divide-y divide-gray-200">
               {conversations.map((c) => {
                 const m = c.members[0];
+                const dateData = c.updatedAt;
+
+                // Format time like WhatsApp (e.g., 2:45 PM)
+                const time = new Date(dateData).toLocaleTimeString([], {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                });
+
+                let dateString = new Date(dateData).toDateString();
+                let today = new Date().toDateString();
+                let yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                let yesterdayString = yesterday.toDateString();
+                if (dateString === today) {
+                  dateString = "Today";
+                } else if (dateString === yesterdayString) {
+                  dateString = "Yesterday";
+                }
+
                 return (
                   <li
                     key={c._id}
@@ -547,11 +570,19 @@ const UserChat = () => {
                     <img
                       src={m.avatar}
                       alt={m.name}
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border border-gray-200 flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
-                        {m.name}
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                          {m.name}
+                        </p>
+                        <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
+                          {`${dateString} ${time}`}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 line-clamp-1 leading-relaxed">
+                        {c.lastMessage || "No messages yet"}
                       </p>
                     </div>
                   </li>
