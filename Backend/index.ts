@@ -64,7 +64,11 @@ connectDB();
 app.post(
   "/api/webhook",
   express.raw({ type: "application/json" }),
-  (req, res) => paymentCtrl.stripeWebhookController(req, res)
+  (req, res) => {
+    // DEBUG — KEEP TEMPORARILY
+    console.log("Webhook body is Buffer:", Buffer.isBuffer(req.body));
+    paymentCtrl.stripeWebhookController(req as any, res);
+  }
 );
 
 app.use(express.json());

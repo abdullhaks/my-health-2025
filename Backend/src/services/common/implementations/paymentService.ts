@@ -35,10 +35,15 @@ export default class PaymentService implements IPaymentService {
   ) {}
 
   async handleWebhookEvent(event: any): Promise<{ received: boolean }> {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
 
-      const metadata = session.metadata;
+     switch (event.type) { 
+
+
+       case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      
+      
+         const metadata = session.metadata;
       var invoiceUrl: string | null | undefined;
 
       const invoice = await stripe.invoices.retrieve(session.invoice as string);
@@ -258,11 +263,30 @@ export default class PaymentService implements IPaymentService {
         case "admin":
           break;
       }
+
+
+
+      break;
     }
 
+
+
+     case "invoice_payment.paid": {
+      const invoicePayment = event.data.object as any;
+      console.log("✅ Invoice payment paid:", invoicePayment.invoice);
+      // optional: analytics, logs, confirmations
+      break;
+    }
+
+    default:
+      console.log("Unhandled Stripe event:", event.type);
+
+     }
+    
     return { received: true };
   };
 
+  
 
 async progressingPayment(doctorId:string,userId:string,slotId:string):Promise<{paymenStatus:string}>{
 
