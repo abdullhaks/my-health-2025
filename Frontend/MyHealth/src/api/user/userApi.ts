@@ -447,7 +447,7 @@ export const walletPayment = async (data: walletPaymentData) => {
   try {
     console.log("data is,................", data);
 
-    const response = await userInstance.post(ROUTES.user.walletPayment, {promtData:data});
+    const response = await userInstance.post(ROUTES.user.walletPayment, data);
     return response.data;
   } catch (error) {
     console.log("Error in get sessions", error);

@@ -249,8 +249,11 @@ export default class UserAppointmentService implements IUserAppointmentService {
   }
 
   async walletPayment(data: Partial<IAppointment>): Promise<IAppointmentDTO> {
+
+    console.log("Wallet payment data:", data);
     const doctor = await this._doctorRepository.findOne({ _id: data.doctorId });
     if (!doctor) {
+      console.error("Doctor not found for ID:", data.doctorId);
       throw new Error("Wallet payment failed");
     }
 
