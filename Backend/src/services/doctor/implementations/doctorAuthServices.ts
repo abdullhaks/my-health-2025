@@ -301,6 +301,8 @@ async signup(
   }
   await this.sendMail(doctor.email, otp);
 
+
+  console.log("step 1")
   return {
     message: "Signup successful. OTP sent to email.",
     doctor: response,

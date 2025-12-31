@@ -20,6 +20,9 @@ export const signupDoctor = async (doctorData: FormData) => {
       ROUTES.doctor.signup,
       doctorData
     );
+
+    console.log("Signup response in api:", response.data);
+    
     return response.data;
   } catch (error) {
     console.error("Error signing up doctor:", error);

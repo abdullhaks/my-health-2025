@@ -163,7 +163,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         console.log("Signup successful", response);
         message.success({ content: "Please verify your email.", key: 'signup' });
         localStorage.setItem("doctorEmail", response.doctor.email);
-        setTimeout(() => navigate("/doctor/otp"), 1000); // Delay for message visibility
+         navigate("/doctor/otp");
       })
       .catch((error) => {
         console.error("Signup error", error);
