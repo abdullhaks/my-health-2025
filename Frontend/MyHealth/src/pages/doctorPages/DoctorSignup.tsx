@@ -7,18 +7,16 @@ import { z } from "zod";
 import applogoWhite from "../../assets/applogoWhite.png";
 import doctorLogin from "../../assets/doctorLogin.png";
 import { signupDoctor } from "../../api/doctor/doctorApi";
-import toast from "react-hot-toast";
 import { message } from "antd";
 
 // Validation schema
 const doctorSignupSchema = z
   .object({
     fullName: z.string().min(3, "Full name must be at least 3 characters")
-    .max(30," Full name must be at most 30 characters")
-    .refine((val) => val.trim() === val, {
+      .max(30, "Full name must be at most 30 characters")
+      .refine((val) => val.trim() === val, {
         message: "No leading or trailing spaces allowed",
       }),
-
     email: z.string().email("Invalid email address"),
     password: z
       .string()
@@ -29,21 +27,31 @@ const doctorSignupSchema = z
       .regex(/[@$!%*?&#]/, "Include at least one special character"),
     confirmPassword: z.string(),
     graduation: z.string().min(3, "Graduation must be at least 3 characters")
-    .max(30,"Graduation must be at most 30 characters")
-    .refine((val) => val.trim() === val, {
+      .max(30, "Graduation must be at most 30 characters")
+      .refine((val) => val.trim() === val, {
         message: "No leading or trailing spaces allowed",
       }),
-    graduationCertificate: z.instanceof(File).nullable(),
-    category: z.string(),
-    registerNo: z.string().min(6, "Not valid").max(35,"Not valid"),
-    registrationCertificate: z.instanceof(File).nullable(),
-    verificationId: z.instanceof(File).nullable(),
-    profile: z.instanceof(File).nullable(),
+    graduationCertificate: z.any().refine((val) => val instanceof File && val.size > 0 && val.size <= 5 * 1024 * 1024 && ['application/pdf', 'image/jpeg', 'image/png'].includes(val.type), {
+      message: "Graduation certificate is required (PDF/JPG/PNG, max 5MB)",
+    }),
+    category: z.string().min(1, "Category is required"),
+    registerNo: z.string().min(6, "Register number must be at least 6 characters").max(35, "Register number must be at most 35 characters"),
+    registrationCertificate: z.any().refine((val) => val instanceof File && val.size > 0 && val.size <= 5 * 1024 * 1024 && ['application/pdf', 'image/jpeg', 'image/png'].includes(val.type), {
+      message: "Registration certificate is required (PDF/JPG/PNG, max 5MB)",
+    }),
+    verificationId: z.any().refine((val) => val instanceof File && val.size > 0 && val.size <= 5 * 1024 * 1024 && ['application/pdf', 'image/jpeg', 'image/png'].includes(val.type), {
+      message: "Verification ID is required (PDF/JPG/PNG, max 5MB)",
+    }),
+    profile: z.any().refine((val) => val instanceof File && val.size > 0 && val.size <= 5 * 1024 * 1024 && ['image/jpeg', 'image/png'].includes(val.type), {
+      message: "Profile picture is required (JPG/PNG, max 5MB)",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
     message: "Passwords do not match",
   });
+
+
 
 type DoctorSignupData = z.infer<typeof doctorSignupSchema>;
 
@@ -122,80 +130,86 @@ function DoctorSignup() {
     setStep((prev) => prev - 1);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = doctorSignupSchema.safeParse(formData);
-    if (!result.success) {
-      const fieldErrors: Partial<Record<keyof DoctorSignupData, string>> = {};
-      result.error.errors.forEach((err) => {
-        const field = err.path[0] as keyof DoctorSignupData;
-        fieldErrors[field] = err.message;
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  const result = doctorSignupSchema.safeParse(formData);
+  if (!result.success) {
+    const fieldErrors: Partial<Record<keyof DoctorSignupData, string>> = {};
+    result.error.errors.forEach((err) => {
+      const field = err.path[0] as keyof DoctorSignupData;
+      fieldErrors[field] = err.message;
+    });
+    setErrors(fieldErrors);
+    message.error({ content: "Please fix the errors in the form", key: 'signup' });
+    return;
+  }
+
+  setLoading(true);
+  message.loading({ content: "Signing you up...", key: 'signup', duration: 0 });
+
+  try {
+    const formDataToSend = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null && key !== 'confirmPassword') { // Skip confirmPassword
+        formDataToSend.append(key, value);
+      }
+    });
+
+    message.loading({ content: "Uploading files...", key: 'signup', duration: 0 });
+
+    await signupDoctor(formDataToSend)
+      .then((response) => {
+        console.log("Signup successful", response);
+        message.success({ content: "Please verify your email.", key: 'signup' });
+        localStorage.setItem("doctorEmail", response.doctor.email);
+        setTimeout(() => navigate("/doctor/otp"), 1000); // Delay for message visibility
+      })
+      .catch((error) => {
+        console.error("Signup error", error);
+        setErrors({ email: "Email already exists" });
+        message.error({ content: "Email already exists or invalid inputs. Try again.", key: 'signup' });
       });
-      setErrors(fieldErrors);
-      return;
-    }
+  } catch (error) {
+    console.error("Doctor signup error:", error);
+    message.error({ content: "Signup failed. Try again.", key: 'signup' });
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-    message.loading("Signing you up...",);
-    try {
-      const formDataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null) {
-          formDataToSend.append(key, value);
-        }
-      });
-    message.loading("Signing you up...uploading files", 2);
 
-      await signupDoctor(formDataToSend)
-        .then((response) => {
-          console.log("Signup successful", response);
-          message.success("Please verify your email.");
-          localStorage.setItem("doctorEmail", response.doctor.email);
-
-          navigate("/doctor/otp");
-        })
-        .catch((error) => {
-          console.error("Signup error", error);
-          setErrors({ email: "Email already exists" });
-          toast.error("Email already exists");
-        });
-    } catch (error) {
-      console.error("Doctor signup error:", error);
-      toast.error("Invalid inputs. Try again.");
-      setErrors({ email: "Signup failed. Try again." });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Function to check if the current step is valid
-  const isStepValid = (step: number) => {
-    if (step === 1) {
-      return (
-        formData.fullName.length >= 3 &&
-        formData.email.length > 0 &&
-        formData.password.length >= 8 &&
-        formData.confirmPassword.length >= 8 &&
-        formData.password === formData.confirmPassword
-      );
-    }
-    if (step === 2) {
-      return (
-        formData.graduation.length > 0 &&
-        formData.category.length > 0 &&
-        formData.graduationCertificate !== null&&
-        formData.profile !== null
-      );
-    }
-    if (step === 3) {
-      return (
-        formData.verificationId !== null &&
-        formData.registerNo.length > 5 &&
-        formData.registrationCertificate !== null
-      );
-    }
-    return false;
-  };
+const isStepValid = (step: number) => {
+  if (step === 1) {
+    return (
+      formData.fullName.length >= 3 &&
+      formData.email.length > 0 &&
+      formData.password.length >= 8 &&
+      formData.confirmPassword.length >= 8 &&
+      formData.password === formData.confirmPassword
+    );
+  }
+  if (step === 2) {
+    return (
+      formData.graduation.length > 0 &&
+      formData.category.length > 0 &&
+      formData.graduationCertificate !== null &&
+      formData.profile !== null
+    );
+  }
+  if (step === 3) {
+    return (
+      formData.verificationId !== null &&
+      formData.registerNo.length > 5 &&
+      formData.registrationCertificate !== null
+    );
+  }
+  return false;
+};
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-blue-200 relative overflow-hidden">

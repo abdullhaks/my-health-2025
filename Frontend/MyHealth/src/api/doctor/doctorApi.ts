@@ -1,4 +1,4 @@
-import { message } from "antd";
+
 import { ROUTES } from "../../constants/routes";
 import { doctorInstance } from "../../services/axiosFactory";
 import { metadataDto } from "../../interfaces/subscription";
@@ -16,19 +16,14 @@ import { payoutFilter } from "../../interfaces/payout";
 
 export const signupDoctor = async (doctorData: FormData) => {
   try {
-    for (const [key, value] of doctorData.entries()) {
-      console.log(`api side...${key}:`, value);
-    }
-
     const response = await doctorInstance.post(
       ROUTES.doctor.signup,
       doctorData
     );
-    message.success("Signup successful!");
     return response.data;
   } catch (error) {
     console.error("Error signing up doctor:", error);
-    throw error;
+    throw error; 
   }
 };
 

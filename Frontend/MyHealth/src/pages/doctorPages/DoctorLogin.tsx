@@ -14,7 +14,7 @@ import {
 } from "../../redux/slices/doctorSlices";
 import toast from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
-import { ApiError } from "../../interfaces/error";
+// import { ApiError } from "../../interfaces/error";
 
 // Define the validation schema
 const doctorLoginSchema = z.object({
@@ -44,6 +44,8 @@ function DoctorLogin() {
 
   const [reason, setReason] = useState("");
 
+  console.log(reason);
+  
   const [errors, setErrors] = useState<FormErrors>({
     email: "",
     password: "",
@@ -133,23 +135,63 @@ function DoctorLogin() {
 
       toast.success("Logged in successfully");
       navigate("/doctor/dashboard");
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch (error:any) {
 
-      if (
-        (error as ApiError).response &&
-        (error as ApiError).response?.data?.status === 401
-      ) {
-        toast.error("Invalid email or password");
-        setErrors({ ...errors, password: "Invalid email or password" });
-      } else {
-        toast.error(
-          (error as ApiError).response?.data?.msg ||
-            "Something went wrong. Please try again later."
-        );
-        setErrors({ ...errors, email: " " });
-      }
+    console.error("Login failed:", error);
+
+  const errResponse = error.response?.data;
+
+  if (errResponse) {
+    // ─────────────────────────────────────────────────────────────
+    // Handle specific backend error messages & codes
+    // ─────────────────────────────────────────────────────────────
+    const message = errResponse.message || "Something went wrong";
+    const code = errResponse.code;
+
+    // Show main error toast
+    toast.error(message);
+
+    // Optional: set field-specific errors if needed
+    if (code === "INVALID_CREDENTIALS") {
+      setErrors({
+        email: " ",
+        password: "Invalid email or password",
+      });
+    } else if (code === "BLOCKED_CREDENTIALS") {
+      // Already shown in toast
+    } else if (code === "NONVERIFIED_CREDENTIALS") {
+      // Already shown in toast + redirect logic below
+    } else if (code === "UNAUTHORIZED_CREDENTIALS") {
+      // OTP verification needed
+      localStorage.setItem("doctorEmail", formData.email);
+      navigate("/doctor/otp");
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // Keep your existing special cases (they still work)
+    // ─────────────────────────────────────────────────────────────
+    if (!errResponse.code && error.response?.status === 401) {
+      toast.error("Invalid email or password");
+      setErrors({ ...errors, password: "Invalid email or password" });
+    }
+
+    // Special cases you already have (move them here if needed)
+    if (message.includes("not otp verified") || message.includes("OTP")) {
+      localStorage.setItem("doctorEmail", formData.email);
+      navigate("/doctor/otp");
+    } else if (message.includes("blocked")) {
+      // Already shown
+    } else if (message.includes("rejected") || message.includes("Verification failed")) {
+      setReason(message);
+    }
+  } else {
+    // Network error or no response
+    toast.error("Network error. Please check your connection.");
+  }
+
+  
+}
+
   };
 
   return (
@@ -288,7 +330,7 @@ function DoctorLogin() {
                   </div>
 
                   {/* Error Message and Forgot Password */}
-                  <div className="flex flex-col items-end space-y-2">
+                  {/* <div className="flex flex-col items-end space-y-2">
                     {reason && (
                       <p className="text-sm text-red-600 w-full text-center">
                         {reason}
@@ -301,7 +343,7 @@ function DoctorLogin() {
                     >
                       Forgot password?
                     </button>
-                  </div>
+                  </div> */}
 
                   {/* Login Button */}
                   <div className="pt-2">

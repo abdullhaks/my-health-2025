@@ -28,12 +28,13 @@ export default class DoctorAuthController implements IDoctorAuthController {
   async doctorLogin(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
-
+      console.log("email and password is",email,password);
       const result = await this._doctorAuthService.login({
         email,
         password,
       });
 
+          console.log("result doctor is",result);
 
       if (!result) {
         res
@@ -70,13 +71,18 @@ export default class DoctorAuthController implements IDoctorAuthController {
         .json({ message: result.message, doctor: result.doctor });
     } catch (error: unknown) {
         if (error instanceof HttpException) {
-          res.status(error.status).json({ message: error.message, code: error.code });
-          return;
-        }
-    
-        console.error("...................................",error);
-        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-           .json({ message: MESSAGES.server.serverError });
+       res.status(error.status).json({
+        message: error.message,          
+        code: error.code || null,       
+      });
+
+      return
+    }
+
+    console.error("Login error:", error);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+      message: "Something went wrong. Please try again later.",
+    });
       }
   };
 
@@ -107,95 +113,93 @@ export default class DoctorAuthController implements IDoctorAuthController {
     console.error('Logout error:', error);
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.server.serverError });
   }
-}
-  async doctorSignup(req: Request, res: Response): Promise<void> { 
-    try {
-      const { fullName, email, password, graduation, category, registerNo } =
-        req.body;
-
-      const parsedSpecializations: {
-        title: string;
-        certificate?: MulterFile;
-      }[] = [];
-
-      let i = 0;
-      while (req.body[`specializations[${i}][title]`]) {
-        parsedSpecializations.push({
-          title: req.body[`specializations[${i}][title]`],
-          certificate: (req.files as MulterFiles)?.[
-            `specializations[${i}][certificate]`
-          ]?.[0],
-        });
-        i++;
-      }
-
-      const doctor = {
-        fullName,
-        email,
-        password,
-        graduation,
-        category,
-        registerNo,
-      };
-
-      const registrationCertificateFile = (req.files as MulterFiles)
-        ?.registrationCertificate?.[0];
-      const graduationCertificateFile = (req.files as MulterFiles)
-        ?.graduationCertificate?.[0];
-      const verificationIdFile = (req.files as MulterFiles)
-        ?.verificationId?.[0];
-      const profileFile = (req.files as MulterFiles)
-              ?.profile?.[0];
-      const certificates = {
-        registrationCertificate: registrationCertificateFile
-          ? {
-              buffer: registrationCertificateFile.buffer,
-              originalname: registrationCertificateFile.originalname,
-              mimetype: registrationCertificateFile.mimetype,
-            }
-          : undefined,
-        graduationCertificate: graduationCertificateFile
-          ? {
-              buffer: graduationCertificateFile.buffer,
-              originalname: graduationCertificateFile.originalname,
-              mimetype: graduationCertificateFile.mimetype,
-            }
-          : undefined,
-        verificationId: verificationIdFile
-          ? {
-              buffer: verificationIdFile.buffer,
-              originalname: verificationIdFile.originalname,
-              mimetype: verificationIdFile.mimetype,
-            }
-          : undefined,
-          profile: profileFile
-          ? {
-              buffer: profileFile.buffer,
-              originalname: profileFile.originalname,
-              mimetype: profileFile.mimetype,
-            }
-          : undefined,
-      };
-
-      
+};
 
 
-      const response = await this._doctorAuthService.signup(
-        doctor,
-        certificates,
-        parsedSpecializations
-      );
 
-      res
-        .status(HttpStatusCode.CREATED)
-        .json({ message: "Doctor signed up successfully!",doctor: response.doctor });
-    } catch (error) {
-      console.log(error);
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: MESSAGES.server.serverError });
+
+async doctorSignup(req: Request, res: Response): Promise<void> { 
+  try {
+    const { fullName, email, password, graduation, category, registerNo } = req.body;
+
+    const parsedSpecializations: {
+      title: string;
+      certificate?: MulterFile;
+    }[] = [];
+
+    let i = 0;
+    while (req.body[`specializations[${i}][title]`]) {
+      parsedSpecializations.push({
+        title: req.body[`specializations[${i}][title]`],
+        certificate: (req.files as MulterFiles)?.[
+          `specializations[${i}][certificate]`
+        ]?.[0],
+      });
+      i++;
     }
+
+    const doctor = {
+      fullName,
+      email,
+      password,
+      graduation,
+      category,
+      registerNo,
+    };
+
+    const registrationCertificateFile = (req.files as MulterFiles)?.registrationCertificate?.[0];
+    const graduationCertificateFile = (req.files as MulterFiles)?.graduationCertificate?.[0];
+    const verificationIdFile = (req.files as MulterFiles)?.verificationId?.[0];
+    const profileFile = (req.files as MulterFiles)?.profile?.[0];
+
+    const certificates = {
+      registrationCertificate: registrationCertificateFile
+        ? {
+            buffer: registrationCertificateFile.buffer,
+            originalname: registrationCertificateFile.originalname,
+            mimetype: registrationCertificateFile.mimetype,
+          }
+        : undefined,
+      graduationCertificate: graduationCertificateFile
+        ? {
+            buffer: graduationCertificateFile.buffer,
+            originalname: graduationCertificateFile.originalname,
+            mimetype: graduationCertificateFile.mimetype,
+          }
+        : undefined,
+      verificationId: verificationIdFile
+        ? {
+            buffer: verificationIdFile.buffer,
+            originalname: verificationIdFile.originalname,
+            mimetype: verificationIdFile.mimetype,
+          }
+        : undefined,
+      profile: profileFile
+        ? {
+            buffer: profileFile.buffer,
+            originalname: profileFile.originalname,
+            mimetype: profileFile.mimetype,
+          }
+        : undefined,
+    };
+
+    const response = await this._doctorAuthService.signup(
+      doctor,
+      certificates,
+      parsedSpecializations
+    );
+
+    console.log('signup response ', response);
+
+    res.status(HttpStatusCode.CREATED).json(response); // Use service's full response {message, doctor}
+  } catch (error) {
+    console.error("Doctor signup controller error:", error); // Improved logging
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: MESSAGES.server.serverError });
   }
+};
+
+
+
 
   async verifyOtp(req: Request, res: Response): Promise<void> {
     try {

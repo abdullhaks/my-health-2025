@@ -92,7 +92,12 @@ export default class DoctorAuthService implements IDoctorAuthService {
       email: doctorData.email,
     });
 
+
+
+    console.log("existingDoctor",existingDoctor);
+
     if (!existingDoctor) {
+      console.log("no doctor found");
           throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
     }
 
@@ -101,10 +106,13 @@ export default class DoctorAuthService implements IDoctorAuthService {
       existingDoctor.password
     );
     if (!isPasswordValid) {
+      console.log("isPasswordValid");
+
      throw new HttpException(HttpStatusCode.BAD_REQUEST, 'Invalid credentials', 'INVALID_CREDENTIALS');
     }
 
     if (existingDoctor.isBlocked) {
+      console.log("isBlocked");
 
      throw new HttpException(HttpStatusCode.BAD_REQUEST, 'blocked', 'BLOCKED_CREDENTIALS');
 
@@ -118,8 +126,9 @@ export default class DoctorAuthService implements IDoctorAuthService {
     if (!existingDoctor.isVerified) {
       const otp = generateOtp();
       await this.sendMail(existingDoctor.email, otp);
-
-     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'unauthorized', 'UNAUTHORIZED_CREDENTIALS');
+      console.log("isVerified");
+      
+     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'not otp verified', 'UNAUTHORIZED_CREDENTIALS');
 
       // return {
       //   doctor: existingDoctor,
@@ -129,8 +138,9 @@ export default class DoctorAuthService implements IDoctorAuthService {
     }
 
     if (existingDoctor.adminVerified == 0) {
+      console.log("NONVERIFIED_CREDENTIALS");
 
-     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'not verified', 'NONVERIFIED_CREDENTIALS');
+     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'not admin verified', 'NONVERIFIED_CREDENTIALS');
 
       // return {
       //   doctor: existingDoctor,
@@ -139,6 +149,8 @@ export default class DoctorAuthService implements IDoctorAuthService {
     }
 
     if (existingDoctor.adminVerified == 3) {
+      console.log("rejected");
+
       await this._doctorRepository.delete(existingDoctor._id.toString());
 
       return {
@@ -172,6 +184,8 @@ export default class DoctorAuthService implements IDoctorAuthService {
       accessToken,
       refreshToken,
     };
+
+
   }
 
   async sendMail(email: string, otp: string): Promise<void> {
@@ -186,62 +200,86 @@ export default class DoctorAuthService implements IDoctorAuthService {
     const expirationTime = "2 minutes";
     const mailOptions = generateOtpMail(email, otp, expirationTime);
     await transporter.sendMail(mailOptions);
+  };
+
+  
+
+async signup(
+  doctor: Partial<IDoctor>,
+  certificates: ICertificates,
+  parsedSpecializations: IParsed[]
+): Promise<{ message: string; doctor: IDoctor; }> {
+
+  console.log("doctor in signup process is", doctor);
+  console.log("certificates in signup process is", certificates);
+  console.log("parsedSpecializations in signup process is", parsedSpecializations);
+
+  if (!certificates.graduationCertificate || !certificates.registrationCertificate || !certificates.verificationId || !certificates.profile) {
+    throw new Error("All required certificates and profile are mandatory");
   }
 
-  async signup(
-    doctor: Partial<IDoctor>,
-    certificates: ICertificates,
-    parsedSpecializations: IParsed[]
-  ): Promise<{  message: string;doctor: IDoctor;}> {
+  const existingUser = await this._doctorRepository.findOne({
+    email: doctor.email,
+  });
 
-    const existingUser = await this._doctorRepository.findOne({
-      email: doctor.email,
-    });
-
-
-    if (existingUser) {
-
-      if(existingUser.adminVerified == 3){
+  if (existingUser) {
+    if (existingUser.adminVerified == 3) {
       await this._doctorRepository.delete(existingUser._id.toString());
-      }else{
+    } else {
       throw new Error("User already exists");
+    }
+  }
+
+  const graduationCertUrl = await uploadFileToS3(
+    certificates.graduationCertificate.buffer,
+    certificates.graduationCertificate.originalname,
+    "doctors/graduation-certificates",
+    certificates.graduationCertificate.mimetype
+  );
+
+  const profileUrl = await uploadFileToS3(
+    certificates.profile.buffer,
+    certificates.profile.originalname,
+    "doctors/profiles", // Fixed path
+    certificates.profile.mimetype
+  );
+
+  const registrationCertUrl = await uploadFileToS3(
+    certificates.registrationCertificate.buffer,
+    certificates.registrationCertificate.originalname,
+    "doctors/registration-certificates",
+    certificates.registrationCertificate.mimetype
+  );
+
+  const verificationIdUrl = await uploadFileToS3(
+    certificates.verificationId.buffer,
+    certificates.verificationId.originalname,
+    "doctors/verification-ids", // Fixed casing
+    certificates.verificationId.mimetype
+  );
+
+  // Handle specializations certificates if present
+  const specializationsWithUrls = await Promise.all(
+    parsedSpecializations.map(async (spec, index) => {
+      if (spec.certificate) {
+        const specCertUrl = await uploadFileToS3(
+          spec.certificate.buffer,
+          spec.certificate.originalname,
+          `doctors/specializations/${index}`,
+          spec.certificate.mimetype
+        );
+        return { title: spec.title, certificate: specCertUrl.uniqueFileName };
       }
-    }
+      return { title: spec.title };
+    })
+  );
 
-    const graduationCertUrl = await uploadFileToS3(
-      certificates.graduationCertificate.buffer,
-      certificates.graduationCertificate.originalname,
-      "doctors/graduation-certificates",
-      certificates.graduationCertificate.mimetype
-    );
+  if (doctor.password) {
+    const salt = await bcrypt.genSalt(10);
+    doctor.password = await bcrypt.hash(doctor.password, salt);
+  }
 
-    const profileUrl = await uploadFileToS3(
-      certificates.profile.buffer,
-      certificates.profile.originalname,
-      "doctors/graduation-certificates",
-      certificates.profile.mimetype
-    );
-
-    const registrationCertUrl = await uploadFileToS3(
-      certificates.registrationCertificate.buffer,
-      certificates.registrationCertificate.originalname,
-      "doctors/registration-certificates",
-      certificates.registrationCertificate.mimetype
-    );
-
-    const verificationIdUrl = await uploadFileToS3(
-      certificates.verificationId.buffer,
-      certificates.verificationId.originalname,
-      "doctors/verification-Ids",
-      certificates.verificationId.mimetype
-    );
-
-    if (doctor.password) {
-      const salt = await bcrypt.genSalt(10);
-      doctor.password = await bcrypt.hash(doctor.password, salt);
-    }
-
-    const newDoctor = {
+     const newDoctor = {
       fullName: doctor.fullName,
       email: doctor.email,
       password: doctor.password,
@@ -256,19 +294,20 @@ export default class DoctorAuthService implements IDoctorAuthService {
 
     const response = await this._doctorRepository.create(newDoctor);
 
-
     const otp = generateOtp();
 
-    if (!doctor.email) {
-      throw new Error("Doctor email is required");
-    }
-    await this.sendMail(doctor.email, otp);
-
-    return {
-      message: "Signup successful. OTP sent to email.",
-      doctor: response,
-    };
+  if (!doctor.email) {
+    throw new Error("Doctor email is required");
   }
+  await this.sendMail(doctor.email, otp);
+
+  return {
+    message: "Signup successful. OTP sent to email.",
+    doctor: response,
+  };
+};
+
+
 
   async verifyOtp(email: string, otp: string): Promise<{ message: string }> {
     const otpRecord = await this._otpRepository.findLatestOtpByEmail(email);
