@@ -189,7 +189,7 @@ async sendMail(email: string, otp: string): Promise<void> {
     const mailOptions = generateOtpMail(email, otp, expirationTime);
     console.log("Mail options: ", mailOptions);
     try {
-      const result = await transporter.sendMail(mailOptions, (error, info) => {
+      const result = transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.log("Error sending email: ", error);
           throw new Error("Error sending email");
