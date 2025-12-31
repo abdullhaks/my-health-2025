@@ -166,10 +166,12 @@ const handleSubmit = async (e: React.FormEvent) => {
          navigate("/doctor/otp");
       })
       .catch((error) => {
-        console.error("Signup error", error);
+        alert(`Signup error1, ${error}`);
         setErrors({ email: "Email already exists" });
         message.error({ content: "Email already exists or invalid inputs. Try again.", key: 'signup' });
       });
+
+
   } catch (error) {
     console.error("Doctor signup error:", error);
     message.error({ content: "Signup failed. Try again.", key: 'signup' });
