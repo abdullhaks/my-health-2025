@@ -202,34 +202,32 @@ const parseResult = signupSchema.safeParse(userData);
 };
 
 
-
 async sendMail(email: string, otp: string): Promise<void> {
-    const otpRecord = new OtpModel({
-      email: email,
-      otp: otp,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 5 * 60 * 1000, // OTP valid for 5 minutes
-    });
+  const otpRecord = new OtpModel({
+    email: email,
+    otp: otp,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 5 * 60 * 1000, // OTP valid for 5 minutes
+  });
 
-    otpRecord.save();
+  await otpRecord.save();  // Use await for consistency, assuming save() is async
 
-    const expirationTime = "2 minutes";
+  const expirationTime = "2 minutes";
 
-    const mailOptions = generateOtpMail(email, otp, expirationTime);
-    console.log("Mail options: ", mailOptions);
-    try {
-      const result = await transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log("Error sending email: ", error);
-          throw new Error("Error sending email");
-        }
-        console.log("Email sent: ", info.response);
-      });
-    } catch (error) {
-      console.log(error);
-      throw new Error("Error in sending mail");
-    }
+  const mailOptions = generateOtpMail(email, otp, expirationTime);
+  console.log("Mail options: ", mailOptions);
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent: ", info.response);
+  } catch (error) {
+    console.log("Error sending email: ", error);
+    throw new Error("Error in sending mail");
   }
+};
+
+
+
 
   async verifyOtp(email: string, otp: string): Promise<Partial<IUserResponse>> {
     const otpRecord = await this._otpRepository.findLatestOtpByEmail(email);
