@@ -55,7 +55,14 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => {
+  console.log("my health is running....");
+  res.send("my health is running....");
+});
+
+
 app.get("/api", (req, res) => {
+  console.log("Health check endpoint hit");
   res.send("my health is running....");
 });
 

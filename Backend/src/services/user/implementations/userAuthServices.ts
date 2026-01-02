@@ -29,10 +29,25 @@ import { HttpStatusCode } from "../../../utils/enum";
 import { HttpException, ValidationException } from "../../../utils/http.exception";
 import { z } from "zod";
 
+// const transporter = nodemailer.createTransport({
+//   service: "Gmail",
+//   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+// });
+
+
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  auth: { user: `${process.env.EMAIL_USER}`, pass: `${process.env.EMAIL_PASS}` },
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_MAIL,
+    pass: process.env.SMTP_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
+
 
 @injectable()
 export default class UserAuthService implements IUserAuthService {
@@ -189,7 +204,7 @@ async sendMail(email: string, otp: string): Promise<void> {
     const mailOptions = generateOtpMail(email, otp, expirationTime);
     console.log("Mail options: ", mailOptions);
     try {
-      const result = transporter.sendMail(mailOptions, (error, info) => {
+      const result = await transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.log("Error sending email: ", error);
           throw new Error("Error sending email");
