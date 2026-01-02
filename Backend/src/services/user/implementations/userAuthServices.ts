@@ -110,6 +110,15 @@ async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
     const otp = generateOtp();
     // await this.sendMail(existingUser.email, otp);   // <-- await!
 
+  const otpRecord = new OtpModel({
+    email: existingUser.email,
+    otp: otp,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 5 * 60 * 1000, // OTP valid for 5 minutes
+  });
+
+  await otpRecord.save(); 
+
     let mailData = {
         app: 'MyHealth',
         logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
@@ -120,7 +129,7 @@ async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
         secMsg: 'This OTP is valid for 2 minutes. If you did not request this, please ignore this email.',
         date:new Date().toLocaleDateString()
       };
-      
+
     return {
       message: 'User not verified, OTP sent',
       user: { email: existingUser.email, isVerified: false },
