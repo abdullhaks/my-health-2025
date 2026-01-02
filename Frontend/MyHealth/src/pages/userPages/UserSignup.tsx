@@ -109,6 +109,9 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     console.log("Signup successful", response);
     localStorage.setItem("userEmail", response.email);
+
+    
+
     navigate("/user/otp");
   } catch (error: any) {
     console.error("Signup error", error);

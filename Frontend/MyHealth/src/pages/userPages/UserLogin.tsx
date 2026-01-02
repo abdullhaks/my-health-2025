@@ -13,6 +13,7 @@ import applogoWhite from "../../assets/applogoWhite.png";
 import userLogin from "../../assets/userLogin.png";
 import "react-toastify/dist/ReactToastify.css";
 import { IUser } from "../../interfaces/user";
+import emailjs from '@emailjs/browser';
 
 // Validation schema
 const userLoginSchema = z.object({
@@ -25,6 +26,7 @@ type UserLoginData = z.infer<typeof userLoginSchema>;
 // Type for the expected API response
 interface LoginResponse {
   user: IUser;
+  mailData?: any;
 }
 
 function UserLogin() {
@@ -102,9 +104,21 @@ function UserLogin() {
       }
 
       // Check if user is verified
-      if (!response.user.isVerified) {
+    if (!response.user.isVerified) {
         toast.error("Please verify your account via OTP sent to your email.");
         localStorage.setItem("userEmail", response.user.email);
+
+    if(!import.meta.env.VITE_EMAILJS_SERVICE_ID || !import.meta.env.VITE_EMAILJS_TEMPLATE_ID || !import.meta.env.VITE_EMAILJS_USER_ID){
+      throw new Error("EmailJS environment variables are not set");
+    }
+
+     await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        response.mailData,
+        import.meta.env.VITE_EMAILJS_USER_ID
+      );
+
         navigate("/user/otp");
         return;
       }

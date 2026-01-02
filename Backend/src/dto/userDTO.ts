@@ -48,6 +48,7 @@ export interface AuthResponseDTO {
   user: Partial<UserResponseDTO>;
   accessToken?: string;
   refreshToken?: string;
+  mailData?: any;
 }
 
 export interface IUserDocument extends Document {

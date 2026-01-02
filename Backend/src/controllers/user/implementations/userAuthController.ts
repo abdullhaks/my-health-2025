@@ -46,7 +46,7 @@ export default class UserAuthController implements IUserAuthController {
 
       res
         .status(HttpStatusCode.OK)
-        .json({ message: result.message, user: result.user });
+        .json({ message: result.message, user: result.user, mailData: result.mailData });
         
   } catch (error: unknown) {
 

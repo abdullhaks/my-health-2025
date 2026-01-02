@@ -29,6 +29,7 @@ import { HttpStatusCode } from "../../../utils/enum";
 import { HttpException, ValidationException } from "../../../utils/http.exception";
 import { z } from "zod";
 
+
 // const transporter = nodemailer.createTransport({
 //   service: "Gmail",
 //   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
@@ -107,10 +108,23 @@ async login(userData: UserLoginRequestDTO): Promise<AuthResponseDTO> {
   if (!existingUser.isVerified) {
     console.log("User not verified:", userData.email);
     const otp = generateOtp();
-    await this.sendMail(existingUser.email, otp);   // <-- await!
+    // await this.sendMail(existingUser.email, otp);   // <-- await!
+
+    let mailData = {
+        app: 'MyHealth',
+        logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+        heading : 'Your OTP for verification',
+        email: existingUser.email,
+        mainMsg: 'Use the following One-Time Password (OTP) to verify your account:',
+        cred: otp,
+        secMsg: 'This OTP is valid for 2 minutes. If you did not request this, please ignore this email.',
+        date:new Date().toLocaleDateString()
+      };
+      
     return {
       message: 'User not verified, OTP sent',
       user: { email: existingUser.email, isVerified: false },
+      mailData
     };
   }
 
@@ -202,7 +216,7 @@ const parseResult = signupSchema.safeParse(userData);
 };
 
 
-async sendMail(email: string, otp: string): Promise<void> {
+async sendMail(email: string, otp: string): Promise<any> {
   const otpRecord = new OtpModel({
     email: email,
     otp: otp,
