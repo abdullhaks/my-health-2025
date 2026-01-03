@@ -68,7 +68,7 @@ export default class DoctorAuthController implements IDoctorAuthController {
 
       res
         .status(HttpStatusCode.OK)
-        .json({ message: result.message, doctor: result.doctor });
+        .json({ message: result.message, doctor: result.doctor, mailData: result.mailData  });
     } catch (error: unknown) {
         if (error instanceof HttpException) {
        res.status(error.status).json({

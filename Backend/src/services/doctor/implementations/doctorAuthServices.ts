@@ -97,6 +97,7 @@ export default class DoctorAuthService implements IDoctorAuthService {
     doctor: IDoctor;
     accessToken?: string;
     refreshToken?: string;
+    mailData?: any;
   }> {
 
     if (!doctorData.email || !doctorData.password) {
@@ -141,15 +142,37 @@ export default class DoctorAuthService implements IDoctorAuthService {
 
     if (!existingDoctor.isVerified) {
       const otp = generateOtp();
-      await this.sendMail(existingDoctor.email, otp);
+      // await this.sendMail(existingDoctor.email, otp);
+
+       const otpRecord = new OtpModel({
+          email: existingDoctor.email,
+          otp: otp,
+          createdAt: Date.now(),
+          expiresAt: Date.now() + 5 * 60 * 1000, // OTP valid for 5 minutes
+        });
+      
+        await otpRecord.save(); 
+      
+        let mailData = {
+            app: 'MyHealth',
+            logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+            heading : 'Your OTP for verification',
+            email: existingDoctor.email,
+            mainMsg: 'Use the following One-Time Password (OTP) to verify your account:',
+            cred: otp,
+            secMsg: 'This OTP is valid for 2 minutes. If you did not request this, please ignore this email.',
+            date:new Date().toLocaleDateString()
+          };
+
       console.log("isVerified");
       
-     throw new HttpException(HttpStatusCode.BAD_REQUEST, 'not otp verified', 'UNAUTHORIZED_CREDENTIALS');
+    //  throw new HttpException(HttpStatusCode.BAD_REQUEST, 'not otp verified', 'UNAUTHORIZED_CREDENTIALS');
 
-      // return {
-      //   doctor: existingDoctor,
-      //   message: "doctor not verified, OTP sent",
-      // };
+      return {
+        doctor: existingDoctor,
+        message: "doctor not verified, OTP sent",
+        mailData: mailData
+      };
 
     }
 
@@ -224,7 +247,7 @@ async signup(
   doctor: Partial<IDoctor>,
   certificates: ICertificates,
   parsedSpecializations: IParsed[]
-): Promise<{ message: string; doctor: IDoctor; }> {
+): Promise<{ message: string; doctor: IDoctor; mailData: any }> {
 
   console.log("doctor in signup process is", doctor);
   console.log("certificates in signup process is", certificates);
@@ -315,13 +338,34 @@ async signup(
   if (!doctor.email) {
     throw new Error("Doctor email is required");
   }
-  await this.sendMail(doctor.email, otp);
+  // await this.sendMail(doctor.email, otp);
+
+     const otpRecord = new OtpModel({
+          email: doctor.email,
+          otp: otp,
+          createdAt: Date.now(),
+          expiresAt: Date.now() + 5 * 60 * 1000, // OTP valid for 5 minutes
+        });
+      
+        await otpRecord.save(); 
+      
+        let mailData = {
+            app: 'MyHealth',
+            logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+            heading : 'Your OTP for verification',
+            email: doctor.email,
+            mainMsg: 'Use the following One-Time Password (OTP) to verify your account:',
+            cred: otp,
+            secMsg: 'This OTP is valid for 2 minutes. If you did not request this, please ignore this email.',
+            date:new Date().toLocaleDateString()
+          };
 
 
   console.log("step 1")
   return {
     message: "Signup successful. OTP sent to email.",
     doctor: response,
+    mailData
   };
 };
 
@@ -345,7 +389,7 @@ async signup(
     return { message: "OTP verified successfully" };
   }
 
-  async resentOtp(email: string): Promise<{ message: string }> {
+async resentOtp(email: string): Promise<{ message: string, mailData: any }> {
     if (!email) {
       throw new Error("Email is required");
     }
@@ -372,17 +416,32 @@ async signup(
     await otpRecord.save();
 
     // Send OTP email
-    const expirationTime = "2 minutes";
-    const mailOptions = generateOtpMail(email, otp, expirationTime);
+    // const expirationTime = "2 minutes";
+    // const mailOptions = generateOtpMail(email, otp, expirationTime);
 
     try {
-      await transporter.sendMail(mailOptions);
-      return { message: "OTP resent to your email" };
+      // await transporter.sendMail(mailOptions);
+
+       let mailData = {
+            app: 'MyHealth',
+            logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+            heading : 'Your OTP for verification',
+            email: email,
+            mainMsg: 'Use the following One-Time Password (OTP) to verify your account:',
+            cred: otp,
+            secMsg: 'This OTP is valid for 2 minutes. If you did not request this, please ignore this email.',
+            date:new Date().toLocaleDateString()
+          };
+
+      return { message: "OTP resent to your email", mailData: mailData  };
+
     } catch (err) {
       console.error("Error sending OTP:", err);
       throw new Error("Failed to send OTP");
     }
-  }
+  };
+
+
 
   async refreshToken(refreshToken: string): Promise<IResponseDTO> {
     if (!refreshToken) {

@@ -7,6 +7,7 @@ import { verifyOtp } from "../../api/user/userApi";
 import { resentOtp } from "../../api/user/userApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { sendMail } from "../../utils/mailService";
 
 function UserOtpVerification() {
   const navigate = useNavigate();
@@ -39,7 +40,10 @@ function UserOtpVerification() {
     try {
       setResendDisabled(true);
       setTimer(60);
-      await resentOtp(email);
+      const response = await resentOtp(email);
+      
+      await sendMail(response.mailData);
+      
       toast.success("OTP resent to your email.");
       setOtp(["", "", "", "", "", ""]);
       const interval: NodeJS.Timeout = setInterval(() => {

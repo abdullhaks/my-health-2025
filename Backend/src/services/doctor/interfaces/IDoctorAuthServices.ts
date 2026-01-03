@@ -42,6 +42,7 @@ export default interface IDoctorAuthService {
     doctor: IDoctor;
     accessToken?: string;
     refreshToken?: string;
+    mailData?: any;
   }>;
   sendMail(email: string, otp: string): Promise<void>;
   refreshToken(refreshToken: string): Promise<IResponseDTO>;

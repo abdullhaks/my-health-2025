@@ -5,6 +5,7 @@ import applogoWhite from "../../assets/applogoWhite.png";
 import Button from "../../sharedComponents/Button";
 import { verifyDoctorOtp, resendDoctorOtp } from "../../api/doctor/doctorApi";
 import { toast } from "react-toastify";
+import { sendMail } from "../../utils/mailService";
 
 function DoctorOtpVerification() {
   const navigate = useNavigate();
@@ -33,7 +34,9 @@ function DoctorOtpVerification() {
 
   const handleResendOTP = async () => {
     try {
-      await resendDoctorOtp(email);
+      const response = await resendDoctorOtp(email);
+      await sendMail(response.mailData);
+      
       toast.success("OTP resent to your email.");
       setResendDisabled(true);
     } catch (err: string | unknown) {

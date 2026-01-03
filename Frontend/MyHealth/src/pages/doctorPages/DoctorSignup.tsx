@@ -8,6 +8,7 @@ import applogoWhite from "../../assets/applogoWhite.png";
 import doctorLogin from "../../assets/doctorLogin.png";
 import { signupDoctor } from "../../api/doctor/doctorApi";
 import { message } from "antd";
+import { sendMail } from "../../utils/mailService";
 
 // Validation schema
 const doctorSignupSchema = z
@@ -159,10 +160,13 @@ const handleSubmit = async (e: React.FormEvent) => {
     message.loading({ content: "Uploading files...", key: 'signup', duration: 0 });
 
     await signupDoctor(formDataToSend)
-      .then((response) => {
+      .then(async(response) => {
         console.log("Signup successful", response);
         message.success({ content: "Please verify your email.", key: 'signup' });
         localStorage.setItem("doctorEmail", response.doctor.email);
+
+        await sendMail(response.mailData);
+
          navigate("/doctor/otp");
       })
       .catch((error) => {

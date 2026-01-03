@@ -80,4 +80,6 @@ export interface IUserResponse {
   accessToken: string;
   refreshToken: string;
   email: string;
+  mailData?: any;
+
 }

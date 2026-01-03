@@ -216,11 +216,33 @@ const parseResult = signupSchema.safeParse(userData);
  const response = await this._userRepository.create(userData);
 
   const otp = generateOtp();
-  await this.sendMail(email, otp);
+  // await this.sendMail(email, otp);
+
+   const otpRecord = new OtpModel({
+    email: email,
+    otp: otp,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 5 * 60 * 1000, // OTP valid for 5 minutes
+  });
+
+  await otpRecord.save(); 
+
+    let mailData = {
+        app: 'MyHealth',
+        logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+        heading : 'Your OTP for verification',
+        email: email,
+        mainMsg: 'Use the following One-Time Password (OTP) to verify your account:',
+        cred: otp,
+        secMsg: 'This OTP is valid for 2 minutes. If you did not request this, please ignore this email.',
+        date:new Date().toLocaleDateString()
+      };
+
 
   return {
     message: "Signup successful. OTP sent to email.",
     email: response.email,
+    mailData
   };
 };
 
@@ -249,9 +271,6 @@ async sendMail(email: string, otp: string): Promise<any> {
   }
 };
 
-
-
-
   async verifyOtp(email: string, otp: string): Promise<Partial<IUserResponse>> {
     const otpRecord = await this._otpRepository.findLatestOtpByEmail(email);
 
@@ -278,6 +297,7 @@ async sendMail(email: string, otp: string): Promise<any> {
 
     return { message: "OTP verified successfully" };
   }
+
 
   async resentOtp(email: string): Promise<Partial<IUserResponse>> {
     if (!email) {
@@ -306,12 +326,26 @@ async sendMail(email: string, otp: string): Promise<any> {
     await otpRecord.save();
 
     // Send OTP email
-    const expirationTime = "2 minutes";
-    const mailOptions = generateOtpMail(email, otp, expirationTime);
+    // const expirationTime = "2 minutes";
+    // const mailOptions = generateOtpMail(email, otp, expirationTime);
+
+      let mailData = {
+        app: 'MyHealth',
+        logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+        heading : 'Your OTP for verification',
+        email: email,
+        mainMsg: 'Use the following One-Time Password (OTP) to verify your account:',
+        cred: otp,
+        secMsg: 'This OTP is valid for 2 minutes. If you did not request this, please ignore this email.',
+        date:new Date().toLocaleDateString()
+      };
+
 
     try {
-      await transporter.sendMail(mailOptions);
-      return { message: "OTP resent to your email" };
+      // await transporter.sendMail(mailOptions);
+
+      return { message: "OTP resent to your email" ,mailData};
+
     } catch (err) {
       console.error("Error sending OTP:", err);
       throw new Error("Failed to send OTP");
@@ -339,14 +373,28 @@ async sendMail(email: string, otp: string): Promise<any> {
 
     await recoveryRecord.save();
 
-    const mailOptions = generateRecoveryPasswordMail(email, recoveryPassword);
+    // const mailOptions = generateRecoveryPasswordMail(email, recoveryPassword);
 
     try {
-      await transporter.sendMail(mailOptions);
+      // await transporter.sendMail(mailOptions);
+
+      const mailData = {
+        app: 'MyHealth',
+        logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+        heading : 'Your Recovery Password',
+        email: email,
+        mainMsg: 'Use the following Recovery Password to reset your account password:',
+        cred: recoveryPassword,
+        secMsg: 'If you did not request this, please ignore this email.',
+        date:new Date().toLocaleDateString()
+      };
+
       return {
         message: "Recovery password sent to your email",
         email: user.email,
+        mailData
       };
+
     } catch (error) {
       console.error("Error sending recovery email:", error);
       throw new Error("Failed to send recovery email");

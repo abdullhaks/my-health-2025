@@ -8,6 +8,7 @@ import PasswordInput from "../../sharedComponents/PasswordInput";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { signupUser } from "../../api/user/userApi";
+import { sendMail } from "../../utils/mailService";
 
 // Schema - signup validation
 const signupSchema = z
@@ -110,7 +111,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     console.log("Signup successful", response);
     localStorage.setItem("userEmail", response.email);
 
-    
+    await sendMail(response.mailData);
 
     navigate("/user/otp");
   } catch (error: any) {

@@ -14,6 +14,7 @@ import {
 } from "../../redux/slices/doctorSlices";
 import toast from "react-hot-toast";
 import "react-toastify/dist/ReactToastify.css";
+import { sendMail } from "../../utils/mailService";
 // import { ApiError } from "../../interfaces/error";
 
 // Define the validation schema
@@ -104,6 +105,9 @@ function DoctorLogin() {
       if (!response.doctor.isVerified) {
         toast.error("Please verify your account via OTP sent to your email.");
         localStorage.setItem("doctorEmail", response.doctor.email);
+
+        await sendMail(response.mailData);
+        
         navigate("/doctor/otp");
         return;
       }

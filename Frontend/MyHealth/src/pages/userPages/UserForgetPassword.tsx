@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import applogoWhite from "../../assets/applogoWhite.png";
 import userLogin from "../../assets/userLogin.png";
 import "react-toastify/dist/ReactToastify.css";
+import { sendMail } from "../../utils/mailService";
 
 // Validation schema
 const userEmailSchema = z.object({
@@ -82,10 +83,13 @@ function UserForgetPassword() {
         toast.warning("Sending recovery password has been failed.");
         return;
       }
-
       localStorage.setItem("userEmail", response.email);
+
+      await sendMail(response.mailData);
+
       toast.info("Reset your password");
       navigate("/user/recoverPassword");
+      
     } catch (error: unknown) {
       console.error("Login failed:", error);
 
