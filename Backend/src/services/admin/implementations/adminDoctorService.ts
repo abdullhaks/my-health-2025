@@ -92,7 +92,7 @@ export default class AdminDoctorService implements IAdminDoctorService {
     return response;
   }
 
-  async declineDoctor(id: string, reason: string): Promise<IDoctor> {
+  async declineDoctor(id: string, reason: string): Promise<{  response: IDoctor; mailData?: any}> {
     const response = await this._doctorRepository.update(id,
         { adminVerified: 3, rejectionReason: reason });
 
@@ -100,19 +100,33 @@ export default class AdminDoctorService implements IAdminDoctorService {
       throw new Error("doctor declining failed");
     }
 
+    const doctor = await this._doctorRepository.getDoctor(id);
+    if (!doctor || !doctor.email) {
+    throw new Error("doctor declining failed");
+    }
     // Send decline email
     try {
-      const doctor = await this._doctorRepository.getDoctor(id);
-      if (doctor && doctor.email) {
-        const mailOptions = generateDeclineMail(doctor.email, reason);
-        await transporter.sendMail(mailOptions);
-      }
+        // const mailOptions = generateDeclineMail(doctor.email, reason);
+        // await transporter.sendMail(mailOptions);
+
+      const mailData = {
+        app: 'MyHealth',
+        logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+        heading : 'Signup Application Declined',
+        email: doctor.email,
+        mainMsg: 'We regret to inform you that your application to join MyHealth as a doctor has been declined. Please find the reason for the decline below:',
+        cred: reason,
+        secMsg: 'If you have any questions or require further clarification, feel free to contact our support team.',
+        date:new Date().toLocaleDateString()
+      };
+
+      return {response, mailData};
+
     } catch (error) {
       console.error("Error sending decline email:", error);
-      // Don't throw error to avoid failing the decline process
     }
 
-    return response;
+    return {response};
   }
 
   async block(id: string): Promise<IDoctor | null> {

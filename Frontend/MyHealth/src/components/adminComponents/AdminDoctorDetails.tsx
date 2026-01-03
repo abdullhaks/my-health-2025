@@ -10,6 +10,7 @@ import { Popconfirm, Input } from "antd";
 import toast from "react-hot-toast";
 import { ILocation } from "../../interfaces/doctor";
 import ImageViewer from "../../sharedComponents/ImageViewer";
+import { sendMail } from "../../utils/mailService";
 
 interface DoctorDetails {
   _id: string;
@@ -78,8 +79,14 @@ const AdminDoctorDetails = () => {
       return;
     }
     try {
-      await declineDoctor(id, rejectReason);
+      let resp = await declineDoctor(id, rejectReason);
+
+      if(resp.mailData){
+        await sendMail(resp.mailData);
+      }
       setDoctor((prev) => (prev ? { ...prev, adminVerified: 2 } : prev));
+
+
       toast.success("Doctor declined successfully");
       setRejectReason("");
     } catch (err) {

@@ -9,6 +9,7 @@ import { forgetPassword } from "../../api/admin/adminApi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ApiError } from "../../interfaces/error";
+import { sendMail } from "../../utils/mailService";
 
 // Define the validation schema
 const adminEmailSchema = z.object({
@@ -93,8 +94,12 @@ function AdminForgetPassword() {
       }
 
       localStorage.setItem("adminEmail", response.email);
+
+      await sendMail(response.mailData);
+
       toast.info("Check your email to reset your password.");
       navigate("/admin/resetPassword");
+      
     } catch (error) {
       console.error("Forgot password failed:", error);
       toast.error(

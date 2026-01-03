@@ -10,7 +10,7 @@ export default interface IAdminDoctorService {
   ): Promise<{ doctors: IDoctor[] | null; totalPages: number }>;
   getDoctor(id: string): Promise<IDoctor>;
   verifyDoctor(id: string): Promise<IDoctor>;
-  declineDoctor(id: string, reason: string): Promise<IDoctor>;
+  declineDoctor(id: string, reason: string): Promise<{  response: IDoctor; mailData?: any}>;
   block(id: string): Promise<IDoctor | null>;
   unblock(id: string): Promise<IDoctor | null>;
 }

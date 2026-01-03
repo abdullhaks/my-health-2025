@@ -98,7 +98,7 @@ export default class AdminAuthService implements IAdminAuthService {
 
   async forgotPassword(
     email: string
-  ): Promise<{ message: string; email: string }> {
+  ): Promise<{ message: string; email: string ; mailData: any}> {
     if (!email) {
       throw new Error("Email is required");
     }
@@ -122,10 +122,24 @@ export default class AdminAuthService implements IAdminAuthService {
     const mailOptions = generateRecoveryPasswordMail(email, recoveryPassword);
 
     try {
-      await transporter.sendMail(mailOptions);
+      // await transporter.sendMail(mailOptions);
+
+      const mailData = {
+        app: 'MyHealth',
+        logo:"https://myhealth-app-storage.s3.ap-south-1.amazonaws.com/app-images/applogoblue.png",
+        heading : 'Your Recovery Password',
+        email: email,
+        mainMsg: 'Hi Admin , Use the following Recovery Password to reset your account password:',
+        cred: recoveryPassword,
+        secMsg: 'If you did not request this, please ignore this email.',
+        date:new Date().toLocaleDateString()
+      };
+
+
       return {
         message: "Recovery password sent to your email",
         email: admin.email,
+        mailData
       };
     } catch (error) {
       console.error("Error sending recovery email:", error);
