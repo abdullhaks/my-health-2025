@@ -7,4 +7,9 @@ export default interface IUserBlogService {
     pageNumber: number,
     limitNumber: number
   ): Promise<{ blogs: blogResponseDTO[]; totalPages: number }>;
+
+  getBlog(blogId: string): Promise<blogResponseDTO | null>;
+
+
+
 }

@@ -193,7 +193,7 @@ const UserDashboard = () => {
   };
 
   const handleViewBlog = (blog: Blog) => {
-    navigate("/user/blog", { state: { blog } });
+    navigate(`/user/blog/${blog._id}`, );
   };
 
   const handleGetPrescription = (appointmentId: string) => {

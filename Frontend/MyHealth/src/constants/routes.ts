@@ -35,6 +35,7 @@ export const ROUTES = {
     walletPayment : "/user/walletPayment",
     notifications : "/user/notifications",
     getBlogs: "/user/getBlogs",
+    getBlog: "/user/blog",
     dashboard: "/user/dashboard",
     prescription: "/user/prescription",
     unAvailableDays: "/user/unAvailableDays",

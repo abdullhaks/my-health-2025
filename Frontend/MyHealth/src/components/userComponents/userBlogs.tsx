@@ -106,7 +106,7 @@ const UserBlogs = () => {
 
   const handleViewBlog = useCallback(
     (blog: Blog) => {
-      navigate("/user/blog", { state: { blog } });
+      navigate(`/user/blog/${blog._id}`);
     },
     [navigate]
   );

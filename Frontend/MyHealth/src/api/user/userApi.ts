@@ -520,6 +520,28 @@ export const getBlogs = async (search: string, page: number, limit: number) => {
   }
 };
 
+
+
+export const getBlog = async (blogId: string) => {
+  try {
+    const response = await userInstance.get(ROUTES.user.getBlog, {
+      params: {
+        blogId,
+    
+      },
+    });
+
+    console.log("response from frontend....", response);
+
+    return response.data.data;
+  } catch (err) {
+    console.log("error in get total analytics");
+    throw err;
+  }
+};
+
+
+
 export const getDashboardContent = async (
   days: number,
   userId: string,

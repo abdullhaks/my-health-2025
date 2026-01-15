@@ -37,7 +37,8 @@ export default class BlogsRepository
       console.log(error);
       throw new Error("Failed to fetch blogs");
     }
-  }
+  };
+
 
   async getBlogsWithSearch(
     search: string,
@@ -79,5 +80,8 @@ export default class BlogsRepository
       console.error("Error fetching blogs by time period:", error);
       throw new Error("Failed to fetch blogs");
     }
-  }
+  };
+
+
+
 }

@@ -1,20 +1,60 @@
 import { Heart, ArrowLeft, Bookmark, Share2 } from "lucide-react";
-import { JSX } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { JSX, useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getBlog } from "../../api/user/userApi";
+import { message } from "antd";
+import { blogResponse } from "../../interfaces/blog";
 
 const UserBlogDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { blog } = location.state || { blog: null };
+  // const { blog } = location.state || { blog: null };
+  const { blogId } = useParams<{ blogId: string }>();
+  const [blog, setBlog] = useState<blogResponse | null>(null);
+
+
+
+
+    useEffect(() => {
+    const fetchArticle = async () => {
+      if (!blogId) {
+        message.error("Article ID is missing");
+        return;
+      }
+
+      try {
+        const response = await getBlog(blogId);
+        console.log("Article from frontend:", response);
+        setBlog(response);
+      } catch (error: any) {
+        message.error(error.message || "Failed to fetch article");
+      }
+    };
+
+    fetchArticle();
+  }, [blogId]);
+
+
+    const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({ title: blog?.title, url: window.location.href });
+    } else {
+      message.success("Share link copied!");
+    }
+  };
 
   // Split content into paragraphs and insert images strategically
-  const contentParagraphs = blog.content
+  const contentParagraphs = blog?.content
     .split("\n\n")
     .filter((p: string) => p.trim());
-  const images = [blog.img1, blog.img2, blog.img3].filter((img) => img);
+  const images = [blog?.img1, blog?.img2, blog?.img3].filter((img) => img);
 
   const renderContentWithImages = () => {
     const elements: JSX.Element[] = [];
+
+    if(!contentParagraphs){
+      return elements;
+    }
 
     contentParagraphs.forEach((paragraph: string, index: number) => {
       // Add paragraph
@@ -73,19 +113,24 @@ const UserBlogDetails = () => {
               <ArrowLeft size={20} />
             </button>
             <div className="flex items-center gap-2 sm:gap-3">
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
+              {/* <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
                 <Bookmark size={20} />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
-                <Share2 size={20} />
+              </button> */}
+              <button className="p-2 cursor-pointer shadow-sm shadow-blue-600  text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                <Share2 size={20} onClick={handleShare}/>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Article Container */}
-      <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+
+      {blog === null ? (
+        <div className="text-center text-gray-500 py-20">Loading blog...</div>
+      ) : blog === undefined ? (
+        <div className="text-center text-red-500 py-20">Blog not found.</div>
+      ) : ( 
+   <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Title Section */}
         <header className="mb-6 sm:mb-8 lg:mb-12">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4 sm:mb-6 font-serif tracking-tight">
@@ -102,8 +147,9 @@ const UserBlogDetails = () => {
                 <span className="font-medium text-gray-900 text-base sm:text-lg">
                   Dr. {blog.author}
                 </span>
-                <button className="text-emerald-600 text-sm font-medium hover:text-emerald-700 transition-colors">
-                  • Follow
+                <button className="text-emerald-600 text-sm font-medium hover:text-emerald-700 
+                transition-colors cursor-pointer"  onClick={()=>  navigate(`/user/doctor-details/${blog.authorId}`)}>
+                  view profile
                 </button>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500">
@@ -119,7 +165,7 @@ const UserBlogDetails = () => {
                 <span className="hidden sm:inline">•</span>
                 <div className="flex items-center gap-1">
                   <Heart className="text-red-500" size={14} />
-                  <span>{blog.likes}</span>
+                  {/* <span>{blog.likes}</span> */}
                 </div>
               </div>
             </div>
@@ -163,17 +209,17 @@ const UserBlogDetails = () => {
                   size={18}
                   className="group-hover:scale-110 transition-transform"
                 />
-                <span className="font-medium text-sm sm:text-base">
+                {/* <span className="font-medium text-sm sm:text-base">
                   {blog.likes}
-                </span>
+                </span> */}
               </button>
-              <button className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
-                <Share2 size={18} />
+              <button className="text-gray-600 hover:text-blue-500 p-2 rounded-full transition-colors duration-200 cursor-pointer shadow-sm shadow-blue-600">
+                <Share2 size={18} onClick={handleShare}/>
               </button>
             </div>
-            <button className="text-gray-600 hover:text-emerald-500 transition-colors duration-200">
+            {/* <button className="text-gray-600 hover:text-emerald-500 transition-colors duration-200">
               <Bookmark size={18} />
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -188,10 +234,15 @@ const UserBlogDetails = () => {
                 Dr. {blog.author}
               </h3>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                <button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 active:scale-95">
+                {/* <button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 active:scale-95">
                   Follow
-                </button>
-                <button className="w-full sm:w-auto border border-gray-300 hover:border-gray-400 text-gray-700 px-6 sm:px-8 py-2 sm:py-3 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 active:scale-95">
+                </button> */}
+                <button className="w-full sm:w-auto border border-gray-300
+                 hover:border-gray-400 text-gray-700 px-6 sm:px-8 py-2 sm:py-3 
+                 rounded-full text-sm font-medium transition-all duration-200 
+                 focus:outline-none focus:ring-2 focus:ring-gray-300 active:scale-95"
+                 onClick={()=>  navigate(`/user/doctor-details/${blog.authorId}`)}
+                 >
                   View Profile
                 </button>
               </div>
@@ -210,6 +261,14 @@ const UserBlogDetails = () => {
           </p>
         </div>
       </article>
+
+      )
+
+
+      }
+
+      {/* Article Container */}
+      
     </div>
   );
 };

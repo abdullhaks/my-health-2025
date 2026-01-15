@@ -46,5 +46,44 @@ export default class UserBlogController implements IUserBlogController {
         message: MESSAGES.server.serverError,
       });
     }
-  }
+  };
+
+
+
+  async getBlog(req: Request, res: Response): Promise<void> {
+    try{
+
+      const {blogId} = req.query;
+
+      if(!blogId){
+        res.status(HttpStatusCode.BAD_REQUEST).json({message:"blogId is required"});
+        return;
+      }
+      const response = await this._blogService.getBlog(blogId.toString());
+
+      if(!response){
+        res.status(HttpStatusCode.NOT_FOUND).json({message:"Blog not found"});
+        return;
+      }
+      res.status(HttpStatusCode.OK).json({
+        message: "Blog fetched successfully",
+        data: response,
+      });
+
+
+
+
+    }catch(err){
+      console.error("Error fetching blog:", err);
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+        message: MESSAGES.server.serverError,
+      });
+    }
+
+
+  };
+
+
+
+  
 }

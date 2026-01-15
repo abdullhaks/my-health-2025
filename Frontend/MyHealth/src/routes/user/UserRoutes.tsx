@@ -67,8 +67,7 @@ const UserRoutes = () => {
           <Route path="health-report-analysis" element={< UserHealthReportAnalysis/>} />
           <Route path="report-analysis" element={< UserReportAnalysis/>} />
           <Route path="blogs" element={< UserBlogs/>} />
-          <Route path="blog" element={< UserBlogDetails/>} />
-          <Route path="doctor-details/:doctorId" element={< UserDoctorDetails/>} />
+       
           <Route path="prescription/:appointmentId" element={< UserPrescriptionDetails/>} />
           <Route path="transactions" element={< UserTransactions/>} />
           
@@ -79,6 +78,11 @@ const UserRoutes = () => {
         </Route>
         
       </Route>
+
+
+         <Route path="blog/:blogId" element={< UserBlogDetails/>} />
+        <Route path="doctor-details/:doctorId" element={< UserDoctorDetails/>} />
+
  
       {/* Catch All */}
       <Route path="*" element={<Navigate to="/user/login" />} />

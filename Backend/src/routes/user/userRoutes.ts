@@ -17,7 +17,6 @@ import IUserBlogController from "../../controllers/user/interfaces/IUserBlogCont
 import IUserDashboardController from "../../controllers/user/interfaces/IUserDashboardController";
 import IUserPrescriptionController from "../../controllers/user/interfaces/IUserPrescriptionController";
 import IUserTransactionController from "../../controllers/user/interfaces/IUserTransactionController";
-import { resolve } from "path";
 import IUserHealthStatusController from "../../controllers/user/interfaces/IUserHealthStatusController";
 
 const userRoutes = Router();
@@ -111,7 +110,7 @@ userRoutes.post(
 
 userRoutes.get("/sessions",verifyAccessTokenMidleware("user"),(req,res)=> sessionCtrl.getSessions(req,res) );
 
-userRoutes.get("/doctorDetails",verifyAccessTokenMidleware("user"),(req,res)=>detailsCtrl.getDoctor(req,res) )
+userRoutes.get("/doctorDetails",(req,res)=>detailsCtrl.getDoctor(req,res) );
 
 userRoutes.post(
   "/stripe/create-one-time-payment",
@@ -141,6 +140,9 @@ userRoutes.get("/notifications",verifyAccessTokenMidleware("user"),(req,res)=> n
 userRoutes.patch("/notifications",verifyAccessTokenMidleware("user"),(req,res)=> notificationCtrl.readAllNotifications(req,res) )
 
 userRoutes.get("/getBlogs",verifyAccessTokenMidleware("user"),(req,res)=>blogCtrl.getBlogs(req,res));
+
+userRoutes.get("/blog",(req,res)=>blogCtrl.getBlog(req,res));
+
 
 userRoutes.get("/dashboard",verifyAccessTokenMidleware("user"),(req,res)=> dashboardCtrl.getDashboardContent(req,res));
 

@@ -38,5 +38,30 @@ export default class UserBlogService implements IUserBlogService {
       console.error("Error in getBlogs:", error);
       throw error;
     }
-  }
+  };
+
+
+  async getBlog(blogId: string): Promise<blogResponseDTO | null> {
+    try {
+      let blog = await this._blogRepository.findOne({_id:blogId});
+
+      if (!blog) {
+        return null;
+      }
+
+      const blogDto = await BlogMapper.toResponseDTO(blog);
+
+      return blogDto;
+
+    } catch (error) {
+      console.error("Error in getBlog:", error);
+      throw error;
+    }
+  };
+
+
+
+
+
+
 }

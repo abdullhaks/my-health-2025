@@ -7,6 +7,7 @@ export default interface IBlogRepository extends BaseRepository<IBlogDocument> {
     pageNumber: number,
     limitNumber: number
   ): Promise<{ blogs: IBlogDocument[]; totalPages: number }>;
+
   getBlogsWithSearch(
     search: string,
     pageNumber: number,
