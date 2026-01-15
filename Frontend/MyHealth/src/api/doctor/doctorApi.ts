@@ -449,6 +449,26 @@ export const deleteBlog = async (blogId: string) => {
   }
 };
 
+export const getBlog = async (blogId: string) => {
+  try {
+    const response = await doctorInstance.get(ROUTES.doctor.blog, {
+      params: {
+        blogId,
+    
+      },
+    });
+
+    console.log("response from frontend....", response);
+
+    return response.data.data;
+  } catch (err) {
+    console.log("error in get total analytics");
+    throw err;
+  }
+};
+
+
+
 export const createAdvertisement = async (AddData: advertisement) => {
   try {
     console.log("deleteBlog from frndend...", AddData);

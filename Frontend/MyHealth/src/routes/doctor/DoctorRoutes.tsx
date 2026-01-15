@@ -62,7 +62,7 @@ const DoctorRoutes = () => {
           <Route path="plans" element={< DoctorSubscriptionPlans/>} />
           <Route path="blogs" element={< DoctorBlogs/>} />
           <Route path="blog-create-edit" element={< DoctorBlogEditAndCreate/>} />
-          <Route path="blog" element={< DoctorBlogDetails/>} />
+          <Route path="blog/:blogId" element={< DoctorBlogDetails/>} />
           <Route path="adds" element={< DoctorAdds/>} />
           <Route path="advertisement-create" element={< DoctorAdvertisementCreate/>} />
           <Route path="payout" element={< DoctorPayouts/>} />

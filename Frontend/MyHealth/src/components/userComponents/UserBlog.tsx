@@ -1,18 +1,14 @@
-import { Heart, ArrowLeft, Bookmark, Share2 } from "lucide-react";
+import { Heart, ArrowLeft, Share2 } from "lucide-react";
 import { JSX, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getBlog } from "../../api/user/userApi";
 import { message } from "antd";
 import { blogResponse } from "../../interfaces/blog";
 
 const UserBlogDetails = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  // const { blog } = location.state || { blog: null };
   const { blogId } = useParams<{ blogId: string }>();
   const [blog, setBlog] = useState<blogResponse | null>(null);
-
-
 
 
     useEffect(() => {

@@ -1,20 +1,64 @@
-import { Heart, ArrowLeft, Bookmark, Share2 } from "lucide-react";
-import { JSX } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Heart, ArrowLeft, Share2 } from "lucide-react";
+import { JSX, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { blogResponse } from "../../interfaces/blog";
+import { getBlog } from "../../api/doctor/doctorApi";
+import { message } from "antd";
+
 
 const DoctorBlogDetails = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { blog } = location.state || { blog: null };
+  const { blogId } = useParams<{ blogId: string }>();
+  const [blog, setBlog] = useState<blogResponse | null>(null);
+
+
+  useEffect(() => {
+    const fetchArticle = async () => {
+      if (!blogId) {
+        message.error("Article ID is missing");
+        return;
+      }
+
+      try {
+        const response = await getBlog(blogId);
+        console.log("Article from frontend:", response);
+        setBlog(response);
+      } catch (error: any) {
+        message.error(error.message || "Failed to fetch article");
+      }
+    };
+
+    fetchArticle();
+  }, [blogId]);
+
+
+  
+    const handleShare = () => {
+    if (navigator.share) {
+
+      let link = window.location.href;
+      if(link.includes("doctor")){
+        link = link.replace("doctor", "user");
+      };
+
+      navigator.share({ title: blog?.title, url: link});
+    } else {
+      message.success("Share link copied!");
+    }
+  };
 
   // Split content into paragraphs and insert images strategically
-  const contentParagraphs = blog.content
+  const contentParagraphs = blog?.content
     .split("\n\n")
     .filter((p: string) => p.trim());
-  const images = [blog.img1, blog.img2, blog.img3].filter((img) => img);
+  const images = [blog?.img1, blog?.img2, blog?.img3].filter((img) => img);
 
   const renderContentWithImages = () => {
     const elements: JSX.Element[] = [];
+
+     if(!contentParagraphs){
+      return elements;
+    }
 
     contentParagraphs.forEach((paragraph: string, index: number) => {
       elements.push(
@@ -73,25 +117,28 @@ const DoctorBlogDetails = () => {
             </button>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <button
+              {/* <button
                 className="p-2 sm:p-3 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                 aria-label="Bookmark"
               >
                 <Bookmark size={20} className="sm:w-6 sm:h-6" />
-              </button>
-              <button
-                className="p-2 sm:p-3 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                aria-label="Share"
-              >
-                <Share2 size={20} className="sm:w-6 sm:h-6" />
+              </button> */}
+               <button className="p-2 cursor-pointer shadow-sm shadow-green-600  text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                <Share2 size={20} onClick={handleShare}/>
               </button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Article Container */}
-      <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+
+     {blog === null ? (
+        <div className="text-center text-gray-500 py-20">Loading blog...</div>
+      ) : blog === undefined ? (
+        <div className="text-center text-red-500 py-20">Blog not found.</div>
+      ) : ( 
+
+              <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         {/* Title Section */}
         <header className="mb-8 sm:mb-12">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4 sm:mb-6 font-serif tracking-tight">
@@ -127,7 +174,7 @@ const DoctorBlogDetails = () => {
                 <span className="hidden sm:inline">•</span>
                 <div className="flex items-center gap-1">
                   <Heart className="text-red-500" size={14} />
-                  <span>{blog.likes}</span>
+                  {/* <span>{blog.likes}</span> */}
                 </div>
               </div>
             </div>
@@ -171,19 +218,19 @@ const DoctorBlogDetails = () => {
                   size={20}
                   className="sm:w-6 sm:h-6 group-hover:scale-110 transition-transform"
                 />
-                <span className="font-medium text-sm sm:text-base">
+                {/* <span className="font-medium text-sm sm:text-base">
                   {blog.likes}
-                </span>
+                </span> */}
               </button>
 
-              <button className="text-gray-600 hover:text-blue-500 transition-colors duration-200">
-                <Share2 size={20} className="sm:w-6 sm:h-6" />
+               <button className="text-gray-600 hover:text-blue-500 p-2 rounded-full transition-colors duration-200 cursor-pointer shadow-sm shadow-green-600">
+                <Share2 size={18} onClick={handleShare}/>
               </button>
             </div>
 
-            <button className="text-gray-600 hover:text-emerald-500 transition-colors duration-200">
+            {/* <button className="text-gray-600 hover:text-emerald-500 transition-colors duration-200">
               <Bookmark size={20} className="sm:w-6 sm:h-6" />
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -198,29 +245,19 @@ const DoctorBlogDetails = () => {
               <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">
                 Dr. {blog.author}
               </h3>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-                  Follow
-                </button>
-                <button className="border border-gray-300 hover:border-gray-400 text-gray-700 px-6 sm:px-8 py-2 sm:py-3 rounded-full text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
-                  View Profile
-                </button>
-              </div>
+            
             </div>
           </div>
         </div>
 
-        {/* Related Articles Suggestion */}
-        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">
-            More from Dr. {blog.author}
-          </h3>
-          <p className="text-gray-600 text-sm sm:text-base">
-            Discover more insights on healthcare innovation and medical
-            technology
-          </p>
-        </div>
       </article>
+
+      )
+
+    }
+
+      {/* Article Container */}
+
     </div>
   );
 };

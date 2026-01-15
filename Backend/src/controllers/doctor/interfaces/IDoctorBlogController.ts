@@ -5,4 +5,5 @@ export default interface IDoctorBlogController {
   getBlogs(req: Request, res: Response): Promise<void>;
   updateBlog(req: Request, res: Response): Promise<void>;
   deleteBlog(req: Request, res: Response): Promise<void>;
+  getBlog(req: Request, res: Response): Promise<void>;
 }

@@ -164,5 +164,43 @@ export default class DoctorBlogController implements IDoctorBlogController {
     }
   }
 
-  async deleteBlog(req: Request, res: Response): Promise<void> {}
+  async deleteBlog(req: Request, res: Response): Promise<void> {};
+
+
+  
+    async getBlog(req: Request, res: Response): Promise<void> {
+      try{
+  
+        const {blogId} = req.query;
+  
+        if(!blogId){
+          res.status(HttpStatusCode.BAD_REQUEST).json({message:"blogId is required"});
+          return;
+        }
+        const response = await this._doctorBlogService.getBlog(blogId.toString());
+  
+        if(!response){
+          res.status(HttpStatusCode.NOT_FOUND).json({message:"Blog not found"});
+          return;
+        }
+        res.status(HttpStatusCode.OK).json({
+          message: "Blog fetched successfully",
+          data: response,
+        });
+  
+  
+  
+  
+      }catch(err){
+        console.error("Error fetching blog:", err);
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
+          message: MESSAGES.server.serverError,
+        });
+      }
+  
+  
+    };
+
+
+
 }

@@ -118,7 +118,7 @@ const DoctorBlogs = () => {
 
   const handleViewBlog = useCallback(
     (blog: blogCreate) => {
-      navigate("/doctor/blog", { state: { blog } });
+      navigate(`/doctor/blog/${blog._id}`);
     },
     [navigate]
   );

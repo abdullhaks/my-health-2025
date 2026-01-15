@@ -152,6 +152,8 @@ doctorRoutes.get("/getSubscriptions",verifyAccessTokenMidleware("doctor"),(req,r
 
 doctorRoutes.get("/getBlogs",verifyAccessTokenMidleware("doctor"),(req,res)=>blogCtrl.getBlogs(req,res));
 
+doctorRoutes.get("/blog",verifyAccessTokenMidleware("doctor"),(req,res)=>blogCtrl.getBlog(req,res));
+
 doctorRoutes.post("/blog",verifyAccessTokenMidleware("doctor"),(req,res)=>blogCtrl.createBlog(req,res));
 
 doctorRoutes.put("/blog",verifyAccessTokenMidleware("doctor"),(req,res)=>blogCtrl.updateBlog(req,res));

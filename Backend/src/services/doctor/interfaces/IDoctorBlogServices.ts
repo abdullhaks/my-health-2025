@@ -10,4 +10,8 @@ export default interface IDoctorBlogService {
     limitNumber: number
   ): Promise<{ blogs: blogResponseDTO[]; totalPages: number }>;
   updateBLog(blogId: string, blogData: object): Promise<blogResponseDTO | null>;
+
+    getBlog(blogId: string): Promise<blogResponseDTO | null>;
+  
+  
 }
