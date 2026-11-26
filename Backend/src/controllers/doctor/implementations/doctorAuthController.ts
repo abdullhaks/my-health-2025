@@ -5,6 +5,7 @@ import IDoctorAuthService from "../../../services/doctor/interfaces/IDoctorAuthS
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 import { HttpException } from "../../../utils/http.exception";
+import { getCookieOptions, getClearCookieOptions } from "../../../utils/cookieHelper";
 
 interface MulterFile {
   fieldname: string;
@@ -45,26 +46,11 @@ export default class DoctorAuthController implements IDoctorAuthController {
 
      
 
-      res.cookie("refreshToken", result.refreshToken, {
-        httpOnly: true,
-        sameSite: "none", // allow cross-site
-        secure: true, // only over HTTPS
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("refreshToken", result.refreshToken, getCookieOptions());
 
-      res.cookie("accessToken", result.accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("accessToken", result.accessToken, getCookieOptions());
 
-      res.cookie("doctorEmail", result.doctor.email, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("doctorEmail", result.doctor.email, getCookieOptions());
 
       res
         .status(HttpStatusCode.OK)
@@ -88,25 +74,11 @@ export default class DoctorAuthController implements IDoctorAuthController {
 
    async doctorLogout(req: Request, res: Response): Promise<void> {
   try {
-    const isProduction = process.env.NODE_ENV === 'production';
+    res.clearCookie('refreshToken', getClearCookieOptions());
 
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
-    });
+    res.clearCookie('accessToken', getClearCookieOptions());
 
-    res.clearCookie('accessToken', {
-      httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
-    });
-
-    res.clearCookie('doctorEmail', {
-      httpOnly: true,
-      sameSite: isProduction ? 'none' : 'lax',
-      secure: isProduction,
-    });
+    res.clearCookie('doctorEmail', getClearCookieOptions());
 
     res.status(HttpStatusCode.OK).json({ message: 'Logout successful' });
   } catch (error) {
@@ -267,12 +239,7 @@ async doctorSignup(req: Request, res: Response): Promise<void> {
          const { accessToken } = result;
    
    
-         res.cookie("accessToken", accessToken, {
-           httpOnly: true,
-           sameSite: "none",
-           secure: true,
-           maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-         });
+         res.cookie("accessToken", accessToken, getCookieOptions());
    
          res.status(HttpStatusCode.OK).json(result);
     } catch (error) {

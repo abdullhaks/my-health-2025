@@ -3,6 +3,7 @@ import IUserAuthController from "../interfaces/IUserAuthController";
 import { inject, injectable } from "inversify";
 import IUserAuthService from "../../../services/user/interfaces/IUserAuthServices";
 import { HttpStatusCode } from "../../../utils/enum";
+import { getCookieOptions, getClearCookieOptions } from "../../../utils/cookieHelper";
 
 //..................temp
 import axios from "axios";
@@ -30,19 +31,9 @@ export default class UserAuthController implements IUserAuthController {
     console.log("Login result:", result);
 
 
-     res.cookie("refreshToken", result.refreshToken, {
-        httpOnly: true,
-        sameSite: "none", // allow cross-site
-        secure: true, // only over HTTPS
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+     res.cookie("refreshToken", result.refreshToken, getCookieOptions());
 
-      res.cookie("accessToken", result.accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("accessToken", result.accessToken, getCookieOptions());
 
       res
         .status(HttpStatusCode.OK)
@@ -85,24 +76,11 @@ export default class UserAuthController implements IUserAuthController {
 
   async userLogout(req: Request, res: Response): Promise<void> {
     try {
-      res.clearCookie("refreshToken", {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
+      res.clearCookie("refreshToken", getClearCookieOptions());
 
-      res.clearCookie("accessToken", {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
+      res.clearCookie("accessToken", getClearCookieOptions());
 
-
-      res.clearCookie("userEmail", {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      });
+      res.clearCookie("userEmail", getClearCookieOptions());
 
 
       res
@@ -263,7 +241,7 @@ export default class UserAuthController implements IUserAuthController {
         res.status(HttpStatusCode.BAD_REQUEST).json({ msg: "invalid inputs" });
         return;
       }
-      const response = this._userService.resetPassword(email, newPassword);
+      const response = this._userService.resetPassword( String(email), newPassword);
 
       if (!response) {
         res.status(HttpStatusCode.BAD_REQUEST).json({success:false, msg: "user not found" });
@@ -301,12 +279,7 @@ export default class UserAuthController implements IUserAuthController {
 
       const { accessToken } = result;
 
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("accessToken", accessToken, getCookieOptions());
 
       res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
@@ -391,26 +364,11 @@ export default class UserAuthController implements IUserAuthController {
 
  
 
-      res.cookie("userEmail", user.email, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("userEmail", user.email, getCookieOptions());
 
-      res.cookie("refreshToken", myRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("refreshToken", myRefreshToken, getCookieOptions());
 
-      res.cookie("accessToken", myAccessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("accessToken", myAccessToken, getCookieOptions());
 
       // Redirect to frontend dashboard
       res.redirect(`${clientUrl}/user/google-success`);

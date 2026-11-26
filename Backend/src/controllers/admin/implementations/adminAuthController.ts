@@ -5,6 +5,7 @@ import IAdminAuthService from "../../../services/admin/interfaces/IAdminAuthServ
 import { HttpStatusCode } from "../../../utils/enum";
 import { MESSAGES } from "../../../utils/messages";
 import { HttpException } from "../../../utils/http.exception";
+import { getCookieOptions, getClearCookieOptions } from "../../../utils/cookieHelper";
 
 @injectable()
 export default class AdminAuthController implements IAdminAuthController {
@@ -28,19 +29,9 @@ export default class AdminAuthController implements IAdminAuthController {
         return;
       }
 
-      res.cookie("refreshToken", result.refreshToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("refreshToken", result.refreshToken, getCookieOptions());
 
-      res.cookie("accessToken", result.accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("accessToken", result.accessToken, getCookieOptions());
 
       res
         .status(HttpStatusCode.OK)
@@ -157,12 +148,7 @@ export default class AdminAuthController implements IAdminAuthController {
       const { accessToken } = result;
 
 
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        maxAge: parseInt(process.env.MAX_AGE || "604800000"),
-      });
+      res.cookie("accessToken", accessToken, getCookieOptions());
 
       res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
@@ -177,17 +163,9 @@ export default class AdminAuthController implements IAdminAuthController {
 
     async adminLogout(req: Request, res: Response): Promise<void> {
       try {
-        res.clearCookie("refreshToken", {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
+        res.clearCookie("refreshToken", getClearCookieOptions());
   
-        res.clearCookie("accessToken", {
-          httpOnly: true,
-          sameSite: "none",
-          secure: true,
-        });
+        res.clearCookie("accessToken", getClearCookieOptions());
   
         res
           .status(HttpStatusCode.OK)

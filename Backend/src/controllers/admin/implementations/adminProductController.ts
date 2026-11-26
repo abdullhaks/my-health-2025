@@ -102,7 +102,7 @@ export default class AdminProductController implements IAdminProductController {
     try {
       const { id } = req.params;
 
-      await stripe.products.update(id, { active: false });
+      await stripe.products.update(String(id), { active: false });
 
       res
         .status(HttpStatusCode.OK)
@@ -119,7 +119,7 @@ export default class AdminProductController implements IAdminProductController {
     try {
       const { id } = req.params;
 
-      await stripe.products.update(id, { active: true });
+      await stripe.products.update(String(id), { active: true });
 
       res
         .status(HttpStatusCode.OK)

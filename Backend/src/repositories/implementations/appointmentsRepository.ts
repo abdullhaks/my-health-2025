@@ -93,7 +93,6 @@ export default class AppointmentsRepository
         .limit(limit)
         .populate("userId", "name email")
         .populate("doctorId", "name category")
-        .lean();
 
       const total = await this._appointmentModel.countDocuments(query);
       const totalPages = Math.ceil(total / limit);
@@ -125,7 +124,6 @@ export default class AppointmentsRepository
         .limit(limit)
         .populate("userId", "name email")
         .populate("doctorId", "name category")
-        .lean();
 
       const total = await this._appointmentModel.countDocuments(query);
       const totalPages = Math.ceil(total / limit);

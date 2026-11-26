@@ -1,3 +1,4 @@
+import { getClearCookieOptions } from "../../utils/cookieHelper";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { HttpStatusCode } from "../../utils/enum";
 import doctorModel from "../../models/doctor";
@@ -24,9 +25,9 @@ export function verifyIsPremiume(): RequestHandler {
 
       if (!isPremium) {
         // 🟢 Clear doctor cookies (logout effect)
-        res.clearCookie("accessToken");
-        res.clearCookie("refreshToken");
-        res.clearCookie("doctorEmail");
+        res.clearCookie("accessToken", getClearCookieOptions());
+        res.clearCookie("refreshToken", getClearCookieOptions());
+        res.clearCookie("doctorEmail", getClearCookieOptions());
 
         res
           .status(HttpStatusCode.FORBIDDEN)
@@ -41,9 +42,9 @@ export function verifyIsPremiume(): RequestHandler {
     } catch (err) {
       console.error("Premium verification error", err);
 
-      res.clearCookie("doctorAccessToken");
-      res.clearCookie("doctorRefreshToken");
-      res.clearCookie("doctorEmail");
+      res.clearCookie("doctorAccessToken", getClearCookieOptions());
+      res.clearCookie("doctorRefreshToken", getClearCookieOptions());
+      res.clearCookie("doctorEmail", getClearCookieOptions());
 
       res
         .status(HttpStatusCode.FORBIDDEN)

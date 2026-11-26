@@ -88,7 +88,7 @@ export default class DoctorProfileController implements IDoctorProfileController
  
 
       const updatedDoctor = await this._doctorProfileService.updateDoctorDp(
-        id,
+        String(id),
         updatedFields,
         uploadedImageKey
       );
@@ -122,7 +122,7 @@ export default class DoctorProfileController implements IDoctorProfileController
       }
 
       const result = await this._doctorProfileService.updateProfile(
-        userId,
+        String(userId),
         userData
       );
       res.status(HttpStatusCode.OK).json(result);

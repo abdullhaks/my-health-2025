@@ -110,7 +110,7 @@ const handleTokenRefresh = async (
     }
 
     console.log(`Token refreshed for ${role}:`, response);
-    return axios(originalRequest);
+    return axios({ ...originalRequest, withCredentials: true });
   } catch (err) {
     await handleLogout(role, err as AxiosError<ErrorResponse>);
     throw err;

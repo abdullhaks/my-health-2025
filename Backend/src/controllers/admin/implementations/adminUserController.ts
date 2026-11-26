@@ -43,7 +43,7 @@ export default class AdminUserController implements IAdminUserController {
       const { id } = req.params;
 
 
-      const result = this._adminUserService.block(id);
+      const result = this._adminUserService.block(String(id));
 
 
       if (!result) {
@@ -65,7 +65,7 @@ export default class AdminUserController implements IAdminUserController {
       const { id } = req.params;
 
 
-      const result = this._adminUserService.unblock(id);
+      const result = this._adminUserService.unblock(String(id));
 
 
       if (!result) {

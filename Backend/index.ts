@@ -26,6 +26,9 @@ const paymentCtrl = container.get<IPaymentController>("IPaymentController");
 dotenv.config();
 
 const app = express();
+
+// Trust reverse proxy (Render, AWS ALB, Cloudflare) for secure cookies over HTTPS
+app.set("trust proxy", 1);
 const port = process.env.PORT || 3000;
 
 const server = http.createServer(app);
@@ -33,6 +36,8 @@ const io = new Server(server, {
   cors: {
     origin: [
       process.env.CLIENT_URL as string,
+      "https://www.myhealthcarelive.in",
+      "https://myhealthcarelive.in",
       "https://myhealth.abdullhakalamban.online",
       'https://www.myhealth.abdullhakalamban.online',
       "https://my-health-2025.vercel.app"
@@ -46,6 +51,8 @@ app.use(
   cors({
      origin: [
       process.env.CLIENT_URL as string,
+      "https://www.myhealthcarelive.in",
+      "https://myhealthcarelive.in",
       "https://myhealth.abdullhakalamban.online",
       "https://www.myhealth.abdullhakalamban.online",
       "https://my-health-2025.vercel.app"

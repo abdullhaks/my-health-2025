@@ -65,18 +65,15 @@ export default class BaseRepository<T extends Document>
     }
   }
 
-  async create(data: Partial<T>): Promise<T> {
-
-    try {
-
-      const createdDocument = new this._model(data);
-
-      return await createdDocument.save();
-    } catch (error) {
-      console.log("Error creating document:", error);
-      throw error;
-    }
+async create(data: Partial<T>): Promise<T> {
+  try {
+    const createdDocument = new this._model(data);
+    return (await createdDocument.save()) as T; // <--- Type assertion
+  } catch (error) {
+    console.log("Error creating document:", error);
+    throw error;
   }
+}
 
   async update(id: string, data: UpdateQuery<T>): Promise<T | null> {
     try {

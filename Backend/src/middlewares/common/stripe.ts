@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { ISubscriptionMetaData, IMetaData } from "../../entities/paymentEntities";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2025-04-30.basil",
+  apiVersion: "2025-08-27.basil",
 });
 
 export default stripe;

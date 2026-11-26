@@ -36,7 +36,7 @@ export default class AdminAnalyticsContorller
     try {
       const filter = req.params.filter;
       const response = await this._adminAnalyticsService.getUserAnalytics(
-        filter
+        String(filter)
       );
       res.status(HttpStatusCode.OK).json(response);
     } catch (error: unknown) {
@@ -87,7 +87,7 @@ export default class AdminAnalyticsContorller
     try {
       const filter = req.params.filter;
       const response = await this._adminAnalyticsService.getDoctorAnalytics(
-        filter
+        String(filter)
       );
       res.status(HttpStatusCode.OK).json(response);
     } catch (error) {

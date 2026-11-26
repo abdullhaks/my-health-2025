@@ -56,7 +56,6 @@ export default class BlogsRepository
         .find(query)
         .skip(skip)
         .limit(limitNumber)
-        .lean(); // Use lean() for better performance
 
       const total = await this._blogModel.countDocuments(query);
       return {
@@ -73,8 +72,7 @@ export default class BlogsRepository
     try {
       const blogs = await this._blogModel
         .find({ createdAt: { $gte: startDate } })
-        .limit(3) // Limit to 3 blogs for dashboard
-        .lean();
+        .limit(3)
       return blogs;
     } catch (error) {
       console.error("Error fetching blogs by time period:", error);

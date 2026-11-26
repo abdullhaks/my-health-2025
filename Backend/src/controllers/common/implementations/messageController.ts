@@ -62,7 +62,7 @@ export default class MessageController implements IMessageController {
           .json({ message: "Conversation ID is required" });
         return;
       }
-      const messages = await this._messageService.getMessages(conversationId);
+      const messages = await this._messageService.getMessages(String(conversationId));
       res.status(HttpStatusCode.OK).json(messages);
     } catch (error) {
       console.error("Error fetching messages:", error);

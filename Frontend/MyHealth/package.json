@@ -19,7 +19,7 @@
     "antd": "^5.24.9",
     "axios": "^1.8.4",
     "framer-motion": "^12.23.12",
-    "jspdf": "^3.0.1",
+    "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.503.0",
     "moment": "^2.30.1",

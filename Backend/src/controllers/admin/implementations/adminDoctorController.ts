@@ -45,7 +45,7 @@ export default class AdminDoctorController implements IAdminDoctorController {
   async getDoctor(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const response = await this._adminDoctorService.getDoctor(id);
+      const response = await this._adminDoctorService.getDoctor(String(id));
 
       if (!response) {
         res
@@ -66,7 +66,7 @@ export default class AdminDoctorController implements IAdminDoctorController {
     try {
       const { id } = req.params;
 
-      const response = await this._adminDoctorService.verifyDoctor(id);
+      const response = await this._adminDoctorService.verifyDoctor(String(id));
       if (!response) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
@@ -87,7 +87,7 @@ export default class AdminDoctorController implements IAdminDoctorController {
       const { id } = req.params;
       const { reason } = req.body;
 
-      const response = await this._adminDoctorService.declineDoctor(id, reason);
+      const response = await this._adminDoctorService.declineDoctor(String(id), reason);
       if (!response) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
@@ -108,7 +108,7 @@ export default class AdminDoctorController implements IAdminDoctorController {
       const { id } = req.params;
 
 
-      const result = this._adminDoctorService.block(id);
+      const result = this._adminDoctorService.block(String(id));
 
 
       if (!result) {
@@ -130,7 +130,7 @@ export default class AdminDoctorController implements IAdminDoctorController {
       const { id } = req.params;
 
 
-      const result = this._adminDoctorService.unblock(id);
+      const result = this._adminDoctorService.unblock(String(id));
 
 
       if (!result) {

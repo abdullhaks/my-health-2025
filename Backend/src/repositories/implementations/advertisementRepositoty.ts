@@ -77,7 +77,6 @@ implements IAdvertisementRepository{
           })
           .limit(5)
           .sort({ createdAt: 1 })
-          .lean();
 
         advertisements = [...advertisements, ...tagAdds];
 
@@ -85,8 +84,7 @@ implements IAdvertisementRepository{
       } 
         let latestAdd = await this._advertisementModel
           .find({ createdAt: { $gte: startDate } })
-          .limit(2) // Limit to 5 ads for carousel
-          .lean();
+          .limit(2) 
 
         advertisements = [...advertisements, ...latestAdd];
       
@@ -111,6 +109,5 @@ implements IAdvertisementRepository{
         },
       })
       .limit(5)
-      .lean();
   }
 }

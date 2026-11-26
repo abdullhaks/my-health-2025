@@ -10,7 +10,7 @@ export const generateAccessToken = (data: {
   role: "user" | "admin" | "doctor";
 }): string => {
   return jwt.sign({ id: data.id, role: data.role }, ACCESS_TOKEN_SECRET, {
-    expiresIn: "30s",
+    expiresIn: (process.env.ACCESS_TOKEN_EXPIRES_IN || "15m") as any,
   });
 };
 

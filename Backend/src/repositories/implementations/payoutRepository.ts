@@ -19,7 +19,6 @@ export default class PayoutRepository extends BaseRepository<IPayoutDocument> {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .lean();
 
       const total = await this._payoutModel.countDocuments(query);
       const totalPages = Math.ceil(total / limit);

@@ -55,7 +55,7 @@ export default class DoctorChatController implements IDoctorChatController {
       //   return;
       // }
       const conversations = await this._doctorChatService.getUserConversations(
-        doctorId,
+        String(doctorId),
         from as string
       );
       res.status(HttpStatusCode.OK).json(conversations);
@@ -118,7 +118,7 @@ export default class DoctorChatController implements IDoctorChatController {
         return;
       }
       const messages = await this._doctorChatService.getMessages(
-        conversationId
+        String(conversationId)
       );
       res.status(HttpStatusCode.OK).json(messages);
     } catch (error) {

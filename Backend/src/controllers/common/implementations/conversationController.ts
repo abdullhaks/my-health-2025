@@ -58,7 +58,7 @@ export default class ConversationController implements IConversationController {
       // }
       const conversations =
         await this._conversationService.getUserConversations(
-          doctorId,
+          String(doctorId),
           from as string
         );
       res.status(HttpStatusCode.OK).json(conversations);
