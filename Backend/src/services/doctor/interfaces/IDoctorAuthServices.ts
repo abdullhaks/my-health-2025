@@ -13,21 +13,21 @@ interface IParsed {
 interface ICertificates {
   registrationCertificate:
     | {
-        buffer: Buffer<ArrayBufferLike>;
+        buffer: Buffer;
         originalname: string;
         mimetype: string;
       }
     | undefined;
   graduationCertificate:
     | {
-        buffer: Buffer<ArrayBufferLike>;
+        buffer: Buffer;
         originalname: string;
         mimetype: string;
       }
     | undefined;
   verificationId:
     | {
-        buffer: Buffer<ArrayBufferLike>;
+        buffer: Buffer;
         originalname: string;
         mimetype: string;
       }
